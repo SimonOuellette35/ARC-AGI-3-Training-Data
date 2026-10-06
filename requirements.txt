@@ -1,0 +1,35 @@
+# Dependencies for play.py and all game backends in its game list.
+# Versions match the existing ARC-AGI-3 environment (Python 3.12).
+#
+# Procgen is built from source on Python 3.12. Its legacy build imports gym3,
+# so bootstrap the build dependencies before installing this file:
+#   python -m pip install setuptools wheel gym3==0.3.3
+#   python -m pip install --no-build-isolation -r requirements.txt
+#
+# Non-pip prerequisites: Git, a C++ compiler, Make, CMake 3.x, and Qt5
+# development libraries for the Procgen source build. See:
+# https://github.com/openai/procgen/blob/master/CONTRIBUTING.md
+# Interactive play also needs a display and Python's tkinter module
+# (Debian/Ubuntu system Python: python3-tk; Conda: conda install tk).
+# Keep game_envs.py, adapters/, utils/, games/, and data/puzzlescript_games/
+# alongside play.py; these project files and game assets are not pip packages.
+
+# ARC runtime and player rendering.
+arc-agi==0.9.6
+arcengine==0.9.3
+matplotlib==3.10.8
+Pillow==12.1.1
+numpy==1.26.4  # Procgen and gym3 require NumPy < 2.
+scipy==1.17.1
+typing_extensions==4.15.0
+
+# MiniGrid and Gym-Gridworlds; ALE is imported by adapters/__init__.py.
+gymnasium==1.2.3
+minigrid==3.0.0
+ale-py==0.11.2
+Gym-Gridworlds @ git+https://github.com/sparisi/gym_gridworlds.git@f9555da0e3a69abc46f819ceec3e2d775340f41b
+
+# Procgen uses legacy Gym in addition to Gymnasium above.
+gym==0.26.2
+gym3==0.3.3
+procgen @ git+https://github.com/openai/procgen.git@37b521dbb530f0734fd82f72d921f5e0e715c0d1
