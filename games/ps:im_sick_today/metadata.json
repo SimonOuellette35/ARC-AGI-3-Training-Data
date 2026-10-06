@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:im_sick_today",
+  "title": "I'm Sick Today",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "I'm_Sick_Today",
+  "local_dir": "games/ps:im_sick_today"
+}

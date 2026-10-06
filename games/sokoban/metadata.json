@@ -1,0 +1,15 @@
+{
+    "game_id": "sokoban",
+    "title": "Sokoban",
+    "tags": ["puzzle", "push", "navigation", "planning"],
+    "level_tags": [
+        ["11x9-2crates", "easy"],
+        ["13x11-2crates", "medium"],
+        ["15x13-3crates", "hard"],
+        ["17x15-3crates", "expert"],
+        ["17x15-4crates", "extra-hard"],
+        ["19x17-4crates", "master"],
+        ["19x17-5crates", "grandmaster"]
+    ],
+    "baseline_actions": [20, 40, 70, 120, 155, 210, 275]
+}

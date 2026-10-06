@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:doors_and_boxes",
+  "title": "Doors and Boxes",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Doors_and_Boxes",
+  "local_dir": "games/ps:doors_and_boxes"
+}

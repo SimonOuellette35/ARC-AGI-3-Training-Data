@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:atlas_shrank_3",
+  "title": "atlas shrank",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "atlas_shrank",
+  "local_dir": "games/ps:atlas_shrank_3"
+}

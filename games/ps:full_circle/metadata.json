@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:full_circle",
+  "title": "FULL CIRCLE",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "FULL_CIRCLE",
+  "local_dir": "games/ps:full_circle"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:five_pulloban_puzzles",
+  "title": "Five Pulloban Puzzles",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Five_Pulloban_Puzzles",
+  "local_dir": "games/ps:five_pulloban_puzzles"
+}

@@ -1,0 +1,454 @@
+title Stand Off
+author Mark Richardson
+again_interval 0.05
+norepeat_action
+(verbose_logging)
+
+(RENDERING FIXES for the ARC adapter.  Only the OBJECTS section is touched --
+every rule, legend character, collision layer, win condition and level below is
+byte-for-byte the author's, so the GAME is unchanged and only what a 64x64 frame
+SHOWS is different.  Measured by solvers/generate_stand_off_training.py --audit,
+which renders every cell COMPOSITION these ten levels can present at every cell
+size they use (3, 4 and 5 px) and asserts pairwise distinctness.  Before the
+fixes it reported, per size:
+
+  10x11 / 11x10 (5px): player == player+gunmode
+  13x13 / 13x15 / 14x15 (4px): player == player+gunmode, window == brokenwindow,
+      bullet == floor, and ALL FOUR GUNS == FLOOR (hence == each other)
+  13x17 / 17x17 (3px): player == player+gunmode == badguy
+
+Five separate ways the picture hid something the game is made of:
+
+1. GUNMODE WAS INVISIBLE AT EVERY SIZE, and it is a real bit of state: after
+   ACTION5 the next arrow key DRAWS OR HOLSTERS A GUN INSTEAD OF WALKING.  Two
+   things hid it.  Its sprite is byte-identical to the Player's, and
+   `_render_frame` sorts player objects LAST ("so the player is always visible
+   on top"), so the Player is painted over it -- the only pixels of GunMode that
+   could ever show are the four corners where the Player sprite is transparent,
+   and GunMode is transparent there too.  It is now four ORANGE corner pixels
+   and nothing else, which is exactly the Player's transparent mask and is
+   sampled at cell_px 3 ({0,2,4}), 4 ({0,1,3,4}) and 5.
+
+2. THE PLAYER AND THE BAD GUYS WERE THE SAME PICTURE at cell_px 3, i.e. on the
+   two 17-wide boards.  Player was `#642 #963` and BadGuy `#b31 #f00`; #642,
+   #963 and #b31 all quantize to ARC 13, and at cell_px 3 a 5x5 sprite is read
+   only at rows/cols {0,2,4}, where BOTH sprites show colour 0 and nothing else.
+   So the thing you must not stand in line with rendered as a second copy of
+   you.  Player is now Yellow (11) bodied, BadGuy Red (8).
+
+3. ALL FOUR GUNS RENDERED AS BARE FLOOR at cell_px 4.  Every painted pixel of
+   GunU/GunD sat in column 2 and of GunL/GunR in row 2, and cell_px 4 samples
+   {0,1,3,4} -- the middle is never read.  A gun is the game's only portable
+   line-of-sight blocker, so at 4px the whole shield mechanic was missing from
+   the frame.  They are now WHITE brackets hugging the cell edge they point at.
+   The four are still a CLOSED ORBIT under 90-degree rotation (rotate GunU and
+   you get exactly GunR, then GunD, then GunL, then GunU again), which the
+   author's art also was and which the rotation augmentation requires: a turned
+   frame must show art the game owns.
+
+4. THE EXIT was `#555 #444`, the walls' own two greys, i.e. the one square the
+   win condition names ("any Exit on Player") was drawn in wall colour.  It is
+   now Green (14), free of every other colour here, and its sprite is untouched
+   so the Player's transparent corners still show it through -- the WINNING
+   composition (player on exit) is distinct from both a bare player and a bare
+   exit at all three cell sizes.
+
+5. THE CRATE was `#642 #963` -- ARC 13 again, so the only pushable object in the
+   game was Player/BadGuy coloured.  It is now Purple (15), redrawn with
+   TRANSPARENT CORNERS so a crate shoved onto an Exit still shows the exit's
+   green corners underneath (a crate can legally be pushed onto one, and that
+   is the difference between a blocked goal and an open one).
+
+   The BULLET had the guns' bug -- a plus-shape on row/column 2 only, so it
+   rendered as bare floor at cell_px 4.  It is a transient object, but it is on
+   screen in two frames the corpus contains: the WIN frame of a level whose exit
+   is itself in a bad guy's line (stepping onto the Exit wins BEFORE the shot
+   lands, so the winning frame shows the bullet that missed), and every death
+   the exploration prefix walks into.  Drawn as a ring, which survives both
+   sampling grids.
+
+   ...and BrokenWindow, which differed from Window only at rows/cols 1-3 of the
+   sprite -- at cell_px 4 the sampled interior cells (1,1) (1,3) (3,1) (3,3) are
+   plain glass in both.  The crack marks moved onto those cells.  Cosmetic (a
+   broken window is mechanically identical to an intact one: both are Obstacle,
+   neither is Shroud), fixed because a bullet passing through a window is a
+   visible event a dynamics model should be able to predict.
+
+Colour budget after the fixes -- every index used once, so nothing collides:
+  5 background, 3/4 walls + window frame, 10 window glass, 2 crack, 14 exit,
+  11 player, 12 gunmode, 8 badguy, 13 corpse, 15 crate, 0 gun.)
+
+
+========
+OBJECTS
+========
+
+Background
+Black
+
+Wall
+#555 #444
+01110
+10001
+10001
+10001
+01110
+
+Window
+#555 #444 #cff
+01110
+12221
+12221
+12221
+01110
+
+BrokenWindow
+#555 #444 #cff #9bb #000
+01110
+13231
+12421
+13231
+01110
+
+Exit
+Green Green
+01110
+1...1
+1...1
+1...1
+0...0
+
+Player
+Yellow White
+.000.
+01110
+01010
+00100
+.000.
+
+GunMode
+Orange
+0...0
+.....
+.....
+.....
+0...0
+
+BadGuy
+Red DarkRed
+.000.
+01110
+01010
+00100
+.000.
+
+Crate
+Purple
+.000.
+00.00
+0.0.0
+00.00
+.000.
+
+GunU
+White
+00000
+0...0
+.....
+.....
+.....
+
+GunD
+White
+.....
+.....
+.....
+0...0
+00000
+
+GunL
+White
+00...
+0....
+0....
+0....
+00...
+
+GunR
+White
+...00
+....0
+....0
+....0
+...00
+
+Bullet
+#888 #444
+.....
+.111.
+.101.
+.111.
+.....
+
+Corpse
+#f00 #a00
+.1...
+..01.
+1000.
+..0.1
+1.1..
+
+LoS
+Transparent
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
++ = Window
+P = Player
+B = BadGuy
+C = Crate
+X = Exit
+
+Gun = GunU or GunD or GunL or GunR
+Obstacle = Wall or Window or BrokenWindow or BadGuy or Crate
+Shroud = Wall or BadGuy or Crate or Gun or Exit or Bullet
+
+
+=======
+SOUNDS
+=======
+
+Gun Create          80432507
+Gun Destroy         74204901
+Crate Move          58388907
+Bullet Create       38215704
+BrokenWindow Create 99929700
+Corpse Create       95969308
+EndLevel            44184703
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Wall, Window, BrokenWindow, Player, BadGuy, Crate, Gun, Corpse
+Exit, GunMode, LoS, Bullet
+
+
+======
+RULES
+======
+
+(Move bullet)
+[stationary Bullet|...|Player]->[> Bullet|...|Player]again
+[stationary Bullet|...|Corpse]->[> Bullet|...|Corpse]again
+[> Bullet|Player]->[|Corpse]
+[> Bullet|Corpse]->[|Corpse]
+
+(Toggle mode)
+[action Player GunMode]->[Player]
+[action Player]->[Player GunMode]
+
+(Holster gun)
+[> Player GunMode|Gun]->[Player|]
+
+(Draw gun)
+      [> Player GunMode|   Obstacle]->cancel
+up    [> Player GunMode|no Obstacle]->[Player|GunU]
+down  [> Player GunMode|no Obstacle]->[Player|GunD]
+left  [> Player GunMode|no Obstacle]->[Player|GunL]
+right [> Player GunMode|no Obstacle]->[Player|GunR]
+
+(Validate number of guns)
+random [stationary Gun]->[up   Gun]
+random [stationary Gun]->[down Gun]
+random [stationary Gun]->cancel
+[moving Gun]->[Gun]
+
+(Move player)
+[> Player|Crate|Obstacle]->cancel
+[> Player|Crate]->[> Player|> Crate]
+[> Player|stationary Obstacle]->cancel
+[> Player][stationary Gun]->[> Player][> Gun]
+[> Gun|Obstacle]->[|Obstacle]
+
+(Remove gun from exit)
+late[Gun Exit]->[Exit]
+
+(Bad guys shoot)
+late[Player|BadGuy]->[Player Bullet|BadGuy]
+late[Player Bullet]->[Corpse]
+late[Corpse Bullet]->[Corpse]
+late[Player|no Shroud]->[Player|LoS]
+late[Player|...|LoS|no Shroud]->[Player|...|LoS|LoS]
+late[Player|...|LoS|BadGuy]->[Player|...|Bullet|BadGuy]again
+late[LoS]->[]
+late[Bullet Window]->[Bullet BrokenWindow]
+late[Corpse GunMode]->[Corpse]
+
+
+==============
+WINCONDITIONS
+==============
+
+any Exit on Player
+
+
+=======
+LEVELS
+=======
+
+message Don't let them varmints point a gun at ya unless yer pointin' one at them too.
+message Press X 'n' an arrow to draw or holster one o' yer two guns.
+
+##########
+#...#.+..#
+#.P.#.#..#
+#...#.+..#
+#...#.#..#
+#...#B+..X
+#...#.#..#
+#........#
+#........#
+#...#....#
+##########
+
+#############
+#......B....#
+X...........#
+#...........#
+#...#B..#...#
+#........B..#
+#B..........#
+#...B.......#
+#...#...#..B#
+#...........#
+#.P.........#
+#.......B...#
+#############
+
+.##########X##.
+.#....#B#....#.
+.#.CC.#.#....#.
+.#....#.#....#.
+##...##.##...##
+#....#...#....#
+#B...........B#
+#....#...#....#
+##...##.##...##
+.#....#.#....#.
+.#.P..#.#....#.
+.#....#B#....#.
+.#############.
+
+#############
+#.B....#.B..#
+#......#....#
+#......#...P#
+#......#....#
+#...#..#....#
+#B..#.......#
+#...#.......#
+###C###...###
+#.....+.....#
+#.....+.....#
+#.....+B...B#
+#########X###
+
+#################
+#B..B...#B......#
+#.......#.......#
+#+......#.......#
+X..............B#
+#+......#.......#
+#.....C.#B.....B#
+#B......#.......#
+####.#######.####
+#.......#......B#
+#...C...#.......#
+#.......#.......#
+#...............#
+#.......#.....C.#
+#.P.....#.......#
+#......B#...B...#
+#################
+
+#####X#X#####
+#...#B#B#...#
+#...#+#+#...X
+#...C....C..#
+###C..C.C.###
+XB+....C..+BX
+###.C...C.###
+XB+..C....+BX
+###C..C..C###
+#...C...C...#
+#.P.#+#+#...#
+#...#B#B#...#
+#####X#X#####
+
+#####X#####
+#B.......B#
+#B........#
+#........B#
+#B........#
+#..C...C.B#
+#...P.....#
+#.........#
+#..B.B.B..#
+###########
+
+#################
+#......#.#......#
+#.....B#.#B.....#
+#B....++.++.....#
+#...##+...+##...#
+#...#.......#.#.#
+#...C...P...C...#
+#.#.#.......#.#.#
+#...##+...+##...#
+#B....++.++....B#
+#.....B#.#B..C..#
+#......#.#......#
+########X########
+
++++++++X+++++++
++B...+...+...B+
++B...+...+...B+
++B...+...+...B+
++B...+...+...B+
++B...+...+...B+
++++..+...+..+++
+.+.....+.....+.
+.+.C.+...+.C.+.
+.+.C.+...+.C.+.
+.+.C.+...+.C.+.
+.+.C.+...+.C.+.
+.+.P.+...+...+.
+.++++++B++++++.
+
+.....#######.....
+...###..B..###...
+..##.........##..
+.##..B.....B..##.
+.#.............#.
+##.B.........B.##
+#.....P...C.....#
+#...............#
+#B......B......B#
+#...............#
+#.....C.....#...#
+##.B..........B##
+.#........#.X..#.
+.##..B.......B##.
+..##.......B.##..
+...###..B..###...
+.....#######.....
+
+message Man, am I glad to be outta that town.

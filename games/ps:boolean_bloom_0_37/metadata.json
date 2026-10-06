@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:boolean_bloom_0_37",
+  "title": "Boolean Bloom 0.37",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Boolean_Bloom_0.37",
+  "local_dir": "games/ps:boolean_bloom_0_37"
+}

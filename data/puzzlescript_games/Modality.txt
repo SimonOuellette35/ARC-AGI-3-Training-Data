@@ -1,0 +1,322 @@
+title Modality
+author Sean Barrett
+homepage www.silverspaceship.com
+background_color #603060
+noaction
+
+========
+OBJECTS
+========
+
+(--------------------------------------------------------------------
+ SPRITE / COLOUR CONTRACT (rewritten for the ARC adaptation, 2026-08-14)
+ Mechanics are untouched -- only the OBJECTS block below changed, and
+ solvers/generate_modality_training.py --audit is the check.
+
+ In this game the FLOOR COLOUR is the mechanic: whether you may step
+ from here to there, and whether you may push the crate in front of you,
+ is decided entirely by the White / Black / Grey tiles under the two of
+ you. So the frame has to keep three things readable in every cell:
+ the tile colour, whether the cell is a Target, and which body (if any)
+ is standing there. The shipped art lost two of the three.
+
+   1. The Player was opaque across the whole of the Target's ring, so a
+      player standing on the goal was pixel-identical to a player
+      standing on bare floor -- the one cell the win condition names
+      simply vanished while anyone was on it.
+   2. Both bodies were solid frames covering all but the middle 3x3 (the
+      Crate) or all but nine scattered pixels (the Player), and the
+      Target then filled that middle. A crate parked on a target left
+      exactly ONE pixel of floor showing, i.e. the tile colour that
+      decides whether that crate can ever be pushed again was unreadable
+      on the frame the whole game is about.
+
+ The rewrite gives the cell three disjoint zones, so nothing is ever
+ hidden by anything:
+
+   * TARGET owns the four corners and the centre pixel;
+   * PLAYER owns an inner square ring, CRATE a diamond outline -- both
+     disjoint from the target zone, and different enough from each other
+     to survive the downsample;
+   * the remaining 12-17 pixels are always floor, whatever is stacked
+     there, which is what keeps the tile colour readable underneath.
+
+ Colours: the three tiles are now the three FLAT palette greys 0 / 2 / 4
+ (White / Grey / Black), one index each, so a tile reads the same from
+ whichever pixels happen to survive -- the shipped Grey was a two-tone
+ checkerboard, which meant "grey" had several appearances depending on
+ which corner of it a body left uncovered. The bodies and the goal are
+ the three saturated hues left over: Player Blue (9), Crate Orange (12),
+ Target Purple (15). Nothing collides with the letterbox border (5).
+
+ Every sprite here is invariant under all eight symmetries of the
+ square, so no frame can betray which of the 16 presentations it is --
+ which is what lets this game take the flip augmentation on top of the
+ mandatory rotation (see PuzzleScriptAdapter._FLIP_GAMES, and
+ --symmetry, which measures the mechanic's half of that claim).
+--------------------------------------------------------------------)
+
+White
+White
+
+Black
+#333333
+
+
+Grey
+#999999
+
+
+Background
+Red
+
+Target
+Purple
+0...0
+.....
+..0..
+.....
+0...0
+
+Player
+Blue
+.....
+.000.
+.0.0.
+.000.
+.....
+
+Crate
+Orange
+..0..
+.0.0.
+0...0
+.0.0.
+..0..
+
+
+=======
+LEGEND
+=======
+
+. = Black
++ = White
+g = Grey
+p = Player and Black
+Q = Player and White
+* = Crate and Black
+@ = Crate and White
+t = Target and Black
+U = Target and White
+
+(The shipped legend has no way to write a piece standing on Grey, which the
+ levels authored below need. Note the parser is case-INSENSITIVE, so `G` is
+ already taken by Grey itself -- hence h / c / s rather than the obvious
+ capitals.)
+h = Player and Grey
+c = Crate and Grey
+s = Target and Grey
+
+Nonwhite = Black or Grey
+Nonblack = White or Grey
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+White, Black, Grey
+Target
+Player, Crate
+
+======
+RULES     
+======     
+
+[ >  Player Nonblack | Crate Nonblack ] -> [  > Player Nonblack | > Crate Nonblack ]     
+[ >  Player Black | Crate Black ] -> [  > Player Black | > Crate Black ]
+[ > Player White | Black ] -> CANCEL
+[ > Player Black | White ] -> CANCEL
+
+==============
+WINCONDITIONS
+==============
+
+All Crate on Target
+
+=======     
+LEVELS
+=======
+
+(--------------------------------------------------------------------
+ LEVELS (extended for the ARC adaptation, 2026-08-14)
+
+ The game shipped with the three boards below -- 3x5, 5x5 and 6x6, one
+ crate each, solved in 6, 33 and 66 presses. That is not a corpus: it is
+ three boards x 16 presentations, with a single crate in every one of
+ them and nothing in them a policy could not memorise outright. Fifteen
+ more are authored after them, ordered by expert plan length (10 -> 50
+ presses), on boards from 4x4 to 7x7 and with one, two or three crates.
+
+ How they were built. Each candidate is a random modality map -- a few
+ contiguous White and Black regions with Grey sprinkled over them, blobs
+ rather than per-cell noise, so a board is two half-worlds with bridges
+ rather than a checkerboard of dead ends -- with the player, the crates
+ and the targets dropped on distinct cells. It is kept only if:
+
+   * the exact reverse-BFS field in
+     solvers/generate_modality_training.py wins it from the start, which
+     is what proves it SOLVABLE -- and, being a field over the whole
+     reachable space, proves the shipped plan SHORTEST;
+   * the plan is at least 6 presses longer than the plan for the SAME
+     board with every tile painted Grey. That is the test that the
+     difficulty comes from the MODALITY rather than from the sokoban,
+     and the margin is not marginal: these fifteen take 10-50 presses
+     where their modality-free twins take 2-22;
+   * its whole reachable state space fits the budget the generator
+     enumerates at startup (80k states per level).
+
+ Every level is then re-certified by the generator against this
+ interpreter: --plans replays its plan and requires a WIN, --verify
+ relaxes its field to a Bellman fixpoint and presses every
+ optimal-action label it ships, --selfcheck fuzzes the native model
+ against the interpreter, and --symmetry replays it on all 8 turned and
+ mirrored copies of its own board.
+--------------------------------------------------------------------)
+
+(level 0 -- the original 3x5, 6 presses)
+u+...
+@+g.p
++++..
+
+(level 1 -- the original 5x5, 33 presses)
+++++q
++.*.+
+u++.+
++g..+
++++++
+
+(level 2 -- the original 6x6, 66 presses)
+......
+.++.+.
+.+q++.
+..u.++
+g.*.++
+++++++
+
+(authored level 3 -- 4x4, 1 crate, 10 presses; 2 without the modality)
+...p
+.u@+
+g+++
++g.+
+
+(authored level 4 -- 4x5, 1 crate, 12 presses; 2 without the modality)
++q.*t
+++...
++g++.
+++g+g
+
+(authored level 5 -- 5x5, 1 crate, 16 presses; 6 without the modality)
+++++.
++..+.
+..*h.
+..gg.
+u++.g
+
+(authored level 6 -- 6x6, 1 crate, 20 presses; 6 without the modality)
+..g..+
+....++
+g.g.++
+.tg..+
+..g.*.
++g..p.
+
+(authored level 7 -- 5x5, 2 crates, 22 presses; 8 without the modality)
+g+g++
+.++++
+g@+..
+t....
+.t*.h
+
+(authored level 8 -- 6x6, 2 crates, 24 presses; 10 without the modality)
+.....p
+g...*g
+g.g.t.
+.t....
+..@.g.
+g++...
+
+(authored level 9 -- 6x7, 2 crates, 28 presses; 8 without the modality)
++++.g..
++++tg.g
++.c*t..
+q+++..g
+++g....
+g+.....
+
+(authored level 10 -- 5x6, 2 crates, 31 presses; 11 without the modality)
+.++g++
+.+p+g+
+.*.c..
+t.....
+..ggt.
+
+(authored level 11 -- 7x7, 2 crates, 34 presses; 12 without the modality)
+.....q+
+.....++
+...*.gg
+.c..++g
+ts.g+++
+..++g++
+..+++++
+
+(authored level 12 -- 6x6, 3 crates, 36 presses; 22 without the modality)
++g+qug
++++u++
+g.+gg+
+.*.*+@
+.....+
+....+s
+
+(authored level 13 -- 6x6, 2 crates, 38 presses; 9 without the modality)
+++g+++
+++h+g+
+.g*+++
+..*..+
+..tt.+
+g..g.+
+
+(authored level 14 -- 6x6, 1 crate, 42 presses; 10 without the modality)
+.p....
+.g.t..
+......
++++...
+gg+@..
++g++g.
+
+(authored level 15 -- 5x6, 2 crates, 45 presses; 19 without the modality)
+...gg+
+.g*++q
+.g.+++
+.*..++
+..guu+
+
+(authored level 16 -- 6x6, 3 crates, 49 presses; 17 without the modality)
+u...*.
++*...g
++.....
+++.+gg
++g+++q
++uu@g+
+
+(authored level 17 -- 6x7, 2 crates, 50 presses; 16 without the modality)
+++++g..
+qg++...
+++++...
+g.g++..
+t.*++c.
+g..t++.

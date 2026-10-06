@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:escape_the_void_full",
+  "title": "Escape the Void Full ",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Escape_the_Void_Full_",
+  "local_dir": "games/ps:escape_the_void_full"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:travelling_salesman",
+  "title": "Travelling salesman",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Travelling_salesman",
+  "local_dir": "games/ps:travelling_salesman"
+}

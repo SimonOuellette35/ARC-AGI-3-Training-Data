@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:together_alone",
+  "title": "Together Alone",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Together_Alone",
+  "local_dir": "games/ps:together_alone"
+}

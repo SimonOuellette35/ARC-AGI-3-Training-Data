@@ -1,0 +1,676 @@
+title Sweet Hints
+author Marcos Donnantuoni
+homepage https://marcosd.itch.io
+
+(ARC-AGI-3 rendering fix, 2026-08-19. TEN sprites redrawn -- border, the four
+lineX, the four directional playerX and dot -- and one colour name changed. No
+object, collision layer, legend entry, rule, level or win condition is touched,
+so the mechanic is bit-for-bit the game it was.
+solvers/generate_sweet_hints_training.py --selfcheck is the measurement of that
+(a native model fuzzed against this interpreter, the whole path plus the win
+flag compared after every press) and --audit is the check on the fixes.
+
+1. THE BORDER WAS INVISIBLE. `border` shipped as a solid `blue` 5x5 -- the exact
+   colour and shape of `Background`. It is the ring that encloses level 5's
+   panel, and it is one of the four things `sep` names, so it is what stops the
+   region flood from leaking out of the playfield and joining every coloured
+   square into one region. Drawn as Background, the one boundary that makes that
+   level's puzzle well-posed was not on screen at all. It is now `darkgreen`,
+   i.e. pixel-identical to `wall` -- which is the truth about it: `wall` and
+   `border` share a collision layer, appear in no rule except through `sep`, and
+   in no win condition, so nothing in this game can tell them apart. Two objects
+   that are mechanically one now look like one.
+
+2. THE LINE HAD NO DIRECTION. lineL/lineR/lineU/lineD all shipped as the same
+   solid `white` 5x5, and they are NOT interchangeable: a lineX marks the cell
+   the player walked X-ward out of, so it names that cell's SUCCESSOR, and the
+   reverse-movement rules let a press pop the head only toward the neighbour
+   whose line points back AT the head. Two line cells can touch the head at
+   once (the head sits on the cell between two nodes and the far node is also on
+   the trail), and with identical art nothing on screen said which of the two
+   presses walks the line back and which is refused. Each lineX is now the same
+   solid white block with a CHEVRON of transparent pixels pointing the way the
+   trail continues, so "the neighbour whose chevron points at you is the one you
+   can step back onto" is a statement about the picture:
+
+       lineR  00.00     lineD  00000     lineL  00.00     lineU  00.00
+              000.0            00000            0.000            0.0.0
+              0000.            .000.            .0000            .000.
+              000.0            0.0.0            0.000            00000
+              00.00            00.00            00.00            00000
+
+   The four are an exact orbit of the full 8-element symmetry group of the
+   square (each is up/down- or left/right-symmetric about its own axis and a
+   quarter turn carries each onto the next), so every rotation and mirror the
+   adapter presents maps line art onto line art exactly as it maps the motion.
+
+3. THE PLAYER'S FACING WAS CHIRAL. playerS/L/R/U/D are one collision-layer
+   object with five pictures, chosen by four rules that run in the fixed order
+   L, R, U, D and let the LAST match win. When two differently-directed lines
+   touch the player that order is a fact about the letters in this file, not
+   about the board: rotate the board a quarter turn and the same neighbourhood
+   picks a facing that is not the rotation of the old one. Since the adapter
+   presents every board at a rotation and a mirror, the shipped art was showing
+   a policy contradictory evidence for a picture that decides nothing -- the
+   facing is a pure function of the neighbouring lines, which are on screen and
+   now carry the direction themselves. So playerL/R/U/D are drawn as playerS's
+   own picture, which is symmetric under the whole group. The rules still fire
+   and the object still changes; only the picture is now invariant.
+
+   `player on target` survives all five: playerS is transparent at its four
+   corners and every targetX is opaque at two of them, so the win frame is
+   distinct from a player on a plain space at every presentation.
+
+4. THE DOT WAS CHIRAL. `dot` shipped as a hand-drawn diagonal blob, and it
+   marks a square the line has to cover -- it names no direction and no rule
+   reads an orientation off it. Four of the eight symmetries of the square turn
+   it into a picture it is not, so the sixteen presentations the adapter draws
+   showed the same marker as four different blobs. It is now the 3x3 box minus
+   its centre, which is invariant under the whole group:
+
+       dot (was)  .....        dot (now)  .....
+                  ..00.                   .000.
+                  .000.                   .0.0.
+                  .00..                   .000.
+                  .....                   .....
+
+   The ring also puts two of its pixels under the lineX chevrons above, so a dot
+   the line has already covered is still legible as a covered dot rather than as
+   a blank segment.
+END OF ARC-AGI-3 NOTE.)
+
+noaction
+key_repeat_interval 0.11
+
+========
+OBJECTS
+========
+
+Background
+blue
+00000
+00000
+00000
+00000
+00000
+
+border
+darkgreen
+00000
+00000
+00000
+00000
+00000
+
+wall
+darkgreen
+00000
+00000
+00000
+00000
+00000
+
+lineL
+white
+00.00
+0.000
+.0000
+0.000
+00.00
+
+lineR
+white
+00.00
+000.0
+0000.
+000.0
+00.00
+
+lineD
+white
+00000
+00000
+.000.
+0.0.0
+00.00
+
+lineU
+white
+00.00
+0.0.0
+.000.
+00000
+00000
+
+playerS
+white
+.000.
+00000
+00000
+00000
+.000.
+
+playerR
+white
+.000.
+00000
+00000
+00000
+.000.
+
+playerL
+white
+.000.
+00000
+00000
+00000
+.000.
+
+playerU
+white
+.000.
+00000
+00000
+00000
+.000.
+
+playerD
+white
+.000.
+00000
+00000
+00000
+.000.
+
+targetU
+grey
+.000.
+00000
+00000
+00000
+00000
+
+targetR
+grey
+0000.
+00000
+00000
+00000
+0000.
+
+targetL
+grey
+.0000
+00000
+00000
+00000
+.0000
+
+targetD
+grey
+00000
+00000
+00000
+00000
+.000.
+
+space
+grey
+00000
+00000
+00000
+00000
+00000
+
+dot
+#222222 grey
+.....
+.000.
+.0.0.
+.000.
+.....
+
+sq1
+#222222
+.....
+.000.
+.000.
+.000.
+.....
+
+sq2
+white
+.....
+.000.
+.000.
+.000.
+.....
+
+sq3
+lightgreen
+.....
+.000.
+.000.
+.000.
+.....
+
+st1
+#222222
+.....
+.0.0.
+..0..
+.0.0.
+.....
+
+st2
+white
+.....
+.0.0.
+..0..
+.0.0.
+.....
+
+st3
+lightgreen
+.....
+.0.0.
+..0..
+.0.0.
+.....
+
+sqmark
+transparent
+
+amark
+transparent
+
+bmark
+transparent
+
+cmark
+transparent
+
+dmark
+transparent
+
+emark
+transparent
+
+fmark
+transparent
+
+error
+red
+00000
+0...0
+0...0
+0...0
+00000
+
+endmark
+transparent
+
+=======
+LEGEND
+=======
+
+. = Background
+# = wall
+b = border
+
+p = playerS
+q = playerS and space
+
+u = targetU
+r = targetR
+d = targetD
+l = targetL
+
+s = space
+h = dot
+i = dot and space
+target = targetU or targetD or targetL or targetR
+line = lineL or lineR or lineU or lineD
+player = playerS or playerL or playerR or playerU or playerD
+sep = wall or border or line or player
+1 = sq1
+2 = sq2
+3 = sq3
+square = sq1 or sq2 or sq3
+* = st1
+& = st2
+% = st3
+st1comp = st1 or sq1
+st2comp = st2 or sq2
+st3comp = st3 or sq3
+stmark = amark or bmark or cmark or dmark or emark or fmark
+floor = space or target
+
+=======
+SOUNDS
+=======
+
+endlevel 50433303
+sfx0 44622304
+
+================
+COLLISIONLAYERS
+================
+
+Background
+wall, border
+space, target
+sq1, sq2, sq3
+st1, st2, st3
+dot
+player, line, lineL, lineR, lineU, lineD
+sqmark
+amark
+bmark
+cmark
+dmark
+emark
+fmark
+error
+endmark
+
+======
+RULES
+======
+
+
+[ error ] -> [ ]
+
+(direct movement)
+right [ right player | floor ] -> [ lineR no floor | player floor ]
+left  [ left  player | floor ] -> [ lineL no floor | player floor ]
+up    [ up    player | floor ] -> [ lineU no floor | player floor ]
+down  [ down  player | floor ] -> [ lineD no floor | player floor ]
+(reverse movement)
+right [ right player floor | lineL ] -> [ no player floor | player space ]
+left  [ left  player floor | lineR ] -> [ no player floor | player space ]
+up    [ up    player floor | lineD ] -> [ no player floor | player space ]
+down  [ down  player floor | lineU ] -> [ no player floor | player space ]
+
+[ player | lineL ] -> [ playerL | lineL ]
+[ player | lineR ] -> [ playerR | lineR ]
+[ player | lineU ] -> [ playerU | lineU ]
+[ player | lineD ] -> [ playerD | lineD ]
+
+[ > player | no space ] -> cancel
+
+(line end marker)
+
+[ endmark ] -> [ ]
+[ player target ] -> [ player target endmark ]
+[ endmark | no endmark ] -> [ endmark | endmark ]
+
+(dot rules)
+
+[ dot endmark no line ] -> [ dot error ]
+
+
+(colored square rules)
+
+(white squares)
+[ sqmark ] -> [ ]
+[ sq1 ] -> [ sq1 sqmark ]
+[ sqmark | no sep no sqmark ] -> [ sqmark | sqmark ]
+[ square no sq1 endmark sqmark ] -> [ square endmark sqmark error ]
+
+(black squares)
+[ sqmark ] -> [ ]
+[ sq2 ] -> [ sq2 sqmark ]
+[ sqmark | no sep no sqmark ] -> [ sqmark | sqmark ]
+[ square no sq2 endmark sqmark ] -> [ square endmark sqmark error ]
+
+(green squares)
+[ sqmark ] -> [ ]
+[ sq3 ] -> [ sq3 sqmark ]
+[ sqmark | no sep no sqmark ] -> [ sqmark | sqmark ]
+[ square no sq3 endmark sqmark ] -> [ square endmark sqmark error ]
+
+
+(star rules)
+(work for up to six star-group-objects per level)
+
+(white stars)
+[ amark ] -> [ ]
+[ bmark ] -> [ ]
+[ cmark ] -> [ ]
+[ dmark ] -> [ ]
+[ emark ] -> [ ]
+[ fmark ] -> [ ]
+random [ st1comp no stmark ] -> [ st1comp amark ]
+random [ st1comp no stmark ] -> [ st1comp bmark ]
+random [ st1comp no stmark ] -> [ st1comp cmark ]
+random [ st1comp no stmark ] -> [ st1comp dmark ]
+random [ st1comp no stmark ] -> [ st1comp emark ]
+random [ st1comp no stmark ] -> [ st1comp fmark ]
+
+[ amark | no sep no amark ] -> [ amark | amark ]
+[ bmark | no sep no bmark ] -> [ bmark | bmark ]
+[ cmark | no sep no cmark ] -> [ cmark | cmark ]
+[ dmark | no sep no dmark ] -> [ dmark | dmark ]
+[ emark | no sep no emark ] -> [ emark | emark ]
+[ fmark | no sep no fmark ] -> [ fmark | fmark ]
+
+[ endmark st1 amark bmark cmark ] -> [ st1 error ]
+[ endmark st1 amark bmark dmark ] -> [ st1 error ]
+[ endmark st1 amark bmark emark ] -> [ st1 error ]
+[ endmark st1 amark bmark fmark ] -> [ st1 error ]
+[ endmark st1 amark cmark dmark ] -> [ st1 error ]
+[ endmark st1 amark cmark fmark ] -> [ st1 error ]
+[ endmark st1 amark dmark emark ] -> [ st1 error ]
+[ endmark st1 amark dmark fmark ] -> [ st1 error ]
+[ endmark st1 amark emark fmark ] -> [ st1 error ]
+[ endmark st1 bmark cmark dmark ] -> [ st1 error ]
+[ endmark st1 bmark cmark emark ] -> [ st1 error ]
+[ endmark st1 bmark cmark fmark ] -> [ st1 error ]
+[ endmark st1 bmark dmark emark ] -> [ st1 error ]
+[ endmark st1 bmark dmark fmark ] -> [ st1 error ]
+[ endmark st1 bmark emark fmark ] -> [ st1 error ]
+[ endmark st1 cmark dmark emark ] -> [ st1 error ]
+[ endmark st1 cmark dmark fmark ] -> [ st1 error ]
+[ endmark st1 cmark emark fmark ] -> [ st1 error ]
+[ endmark st1 dmark emark fmark ] -> [ st1 error ]
+
+[ endmark st1    amark no bmark no cmark no dmark no emark no fmark ] -> [ st1 error ]
+[ endmark st1 no amark    bmark no cmark no dmark no emark no fmark ] -> [ st1 error ]
+[ endmark st1 no amark no bmark    cmark no dmark no emark no fmark ] -> [ st1 error ]
+[ endmark st1 no amark no bmark no cmark    dmark no emark no fmark ] -> [ st1 error ]
+[ endmark st1 no amark no bmark no cmark no dmark    emark no fmark ] -> [ st1 error ]
+[ endmark st1 no amark no bmark no cmark no dmark no emark    fmark ] -> [ st1 error ]
+
+
+(black star)
+[ amark ] -> [ ]
+[ bmark ] -> [ ]
+[ cmark ] -> [ ]
+[ dmark ] -> [ ]
+[ emark ] -> [ ]
+[ fmark ] -> [ ]
+random [ st2comp no stmark ] -> [ st2comp amark ]
+random [ st2comp no stmark ] -> [ st2comp bmark ]
+random [ st2comp no stmark ] -> [ st2comp cmark ]
+random [ st2comp no stmark ] -> [ st2comp dmark ]
+random [ st2comp no stmark ] -> [ st2comp emark ]
+random [ st2comp no stmark ] -> [ st2comp fmark ]
+
+[ amark | no sep no amark ] -> [ amark | amark ]
+[ bmark | no sep no bmark ] -> [ bmark | bmark ]
+[ cmark | no sep no cmark ] -> [ cmark | cmark ]
+[ dmark | no sep no dmark ] -> [ dmark | dmark ]
+[ emark | no sep no emark ] -> [ emark | emark ]
+[ fmark | no sep no fmark ] -> [ fmark | fmark ]
+
+[ endmark st2 amark bmark cmark ] -> [ st2 error ]
+[ endmark st2 amark bmark dmark ] -> [ st2 error ]
+[ endmark st2 amark bmark emark ] -> [ st2 error ]
+[ endmark st2 amark bmark fmark ] -> [ st2 error ]
+[ endmark st2 amark cmark dmark ] -> [ st2 error ]
+[ endmark st2 amark cmark fmark ] -> [ st2 error ]
+[ endmark st2 amark dmark emark ] -> [ st2 error ]
+[ endmark st2 amark dmark fmark ] -> [ st2 error ]
+[ endmark st2 amark emark fmark ] -> [ st2 error ]
+[ endmark st2 bmark cmark dmark ] -> [ st2 error ]
+[ endmark st2 bmark cmark emark ] -> [ st2 error ]
+[ endmark st2 bmark cmark fmark ] -> [ st2 error ]
+[ endmark st2 bmark dmark emark ] -> [ st2 error ]
+[ endmark st2 bmark dmark fmark ] -> [ st2 error ]
+[ endmark st2 bmark emark fmark ] -> [ st2 error ]
+[ endmark st2 cmark dmark emark ] -> [ st2 error ]
+[ endmark st2 cmark dmark fmark ] -> [ st2 error ]
+[ endmark st2 cmark emark fmark ] -> [ st2 error ]
+[ endmark st2 dmark emark fmark ] -> [ st2 error ]
+
+[ endmark st2    amark no bmark no cmark no dmark no emark no fmark ] -> [ st2 error ]
+[ endmark st2 no amark    bmark no cmark no dmark no emark no fmark ] -> [ st2 error ]
+[ endmark st2 no amark no bmark    cmark no dmark no emark no fmark ] -> [ st2 error ]
+[ endmark st2 no amark no bmark no cmark    dmark no emark no fmark ] -> [ st2 error ]
+[ endmark st2 no amark no bmark no cmark no dmark    emark no fmark ] -> [ st2 error ]
+[ endmark st2 no amark no bmark no cmark no dmark no emark    fmark ] -> [ st2 error ]
+
+(green star)
+[ amark ] -> [ ]
+[ bmark ] -> [ ]
+[ cmark ] -> [ ]
+[ dmark ] -> [ ]
+[ emark ] -> [ ]
+[ fmark ] -> [ ]
+random [ st3comp no stmark ] -> [ st3comp amark ]
+random [ st3comp no stmark ] -> [ st3comp bmark ]
+random [ st3comp no stmark ] -> [ st3comp cmark ]
+random [ st3comp no stmark ] -> [ st3comp dmark ]
+random [ st3comp no stmark ] -> [ st3comp emark ]
+random [ st3comp no stmark ] -> [ st3comp fmark ]
+
+[ amark | no sep no amark ] -> [ amark | amark ]
+[ bmark | no sep no bmark ] -> [ bmark | bmark ]
+[ cmark | no sep no cmark ] -> [ cmark | cmark ]
+[ dmark | no sep no dmark ] -> [ dmark | dmark ]
+[ emark | no sep no emark ] -> [ emark | emark ]
+[ fmark | no sep no fmark ] -> [ fmark | fmark ]
+
+[ endmark st3 amark bmark cmark ] -> [ st3 error ]
+[ endmark st3 amark bmark dmark ] -> [ st3 error ]
+[ endmark st3 amark bmark emark ] -> [ st3 error ]
+[ endmark st3 amark bmark fmark ] -> [ st3 error ]
+[ endmark st3 amark cmark dmark ] -> [ st3 error ]
+[ endmark st3 amark cmark fmark ] -> [ st3 error ]
+[ endmark st3 amark dmark emark ] -> [ st3 error ]
+[ endmark st3 amark dmark fmark ] -> [ st3 error ]
+[ endmark st3 amark emark fmark ] -> [ st3 error ]
+[ endmark st3 bmark cmark dmark ] -> [ st3 error ]
+[ endmark st3 bmark cmark emark ] -> [ st3 error ]
+[ endmark st3 bmark cmark fmark ] -> [ st3 error ]
+[ endmark st3 bmark dmark emark ] -> [ st3 error ]
+[ endmark st3 bmark dmark fmark ] -> [ st3 error ]
+[ endmark st3 bmark emark fmark ] -> [ st3 error ]
+[ endmark st3 cmark dmark emark ] -> [ st3 error ]
+[ endmark st3 cmark dmark fmark ] -> [ st3 error ]
+[ endmark st3 cmark emark fmark ] -> [ st3 error ]
+[ endmark st3 dmark emark fmark ] -> [ st3 error ]
+
+[ endmark st3    amark no bmark no cmark no dmark no emark no fmark ] -> [ st3 error ]
+[ endmark st3 no amark    bmark no cmark no dmark no emark no fmark ] -> [ st3 error ]
+[ endmark st3 no amark no bmark    cmark no dmark no emark no fmark ] -> [ st3 error ]
+[ endmark st3 no amark no bmark no cmark    dmark no emark no fmark ] -> [ st3 error ]
+[ endmark st3 no amark no bmark no cmark no dmark    emark no fmark ] -> [ st3 error ]
+[ endmark st3 no amark no bmark no cmark no dmark no emark    fmark ] -> [ st3 error ]
+
+
+[ error ] -> sfx0
+
+
+==============
+WINCONDITIONS
+==============
+all player on target
+no error
+
+=======
+LEVELS
+=======
+
+
+message Life is easy without decisions
+
+#########
+#.......#
+#.......#
+#.......#
+#.qsssr.#
+#.......#
+#.......#
+#.......#
+#########
+
+
+message But then you must take the wheel
+
+#########
+#.......#
+#.lssss.#
+#.....s.#
+#.....s.#
+#.....s.#
+#.....q.#
+#.......#
+#########
+
+
+message And learn to find the correct path
+
+###########
+#.....u...#
+#.sss.sss.#
+#.s.s...s.#
+#.s.s.sss.#
+#...s.s.s.#
+#.sssss.s.#
+#.s.....s.#
+#.q.sssss.#
+#.........#
+###########
+
+
+message Sometimes you must cover your mistakes
+
+###########
+#.........#
+#.sisssssr#
+#.s...s.s.#
+#.sssis.s.#
+#...s.s.s.#
+#.sis.s.s.#
+#.s.s.s.s.#
+#.qssisss.#
+#.........#
+###########
+
+
+message Other times you may cause controversy and division
+
+###########
+#bbbbbbbbb#
+#bsssssssb#
+#bs2s.s1sb#
+#bsssssssr#
+#bs1s2s1sb#
+#bsssssssb#
+#bs1s.s2sb#
+#bqssssssb#
+#bbbbbbbbb#
+###########
+
+message But when you do, life is sweeter
+message Because you are a winner
+
+
+
+
+
+
+
+

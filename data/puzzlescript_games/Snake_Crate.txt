@@ -1,0 +1,457 @@
+title Snake Crate
+author Joshua Rigsby
+homepage www.playfulsystems.com
+
+(ARC-AGI-3 rendering fixes, 2026-08-18. Four sprites and ONE collision-layer
+line; the objects, the rules, the levels and the win condition are untouched.
+`solvers/generate_snake_crate_training.py --selfcheck` fuzzes a native model of
+the mechanic against this interpreter (whole grid compared after every press)
+and is the proof that nothing mechanical moved; `--audit` is the check on what
+follows. The levels render at cell_px 3 and 4, and `_render_cell_sprite`
+point-samples the 5x5 at rows/cols {0,2,4} and {0,1,3,4} respectively -- so the
+ONLY pixels both sizes see are the four corners, and every mark below is a 2x2
+CORNER BLOCK for that reason.
+
+1. THE TRAIL ERASED THE CRATE. `Snake` shipped as the layer ABOVE
+   `Player, Wall, Crate`, and its sprite is a solid 5x5 -- so a crate standing
+   on the trail rendered as bare trail. That is not a cosmetic loss: a crate on
+   a snake can never be PUSHED again (entering its cell cancels the turn), only
+   pulled, and every pull leaves its crate on a snake. Worse, `Crate` + `Snake`
+   + `Target` -- the frame a win by pulling produces -- was pixel-identical to a
+   trail lying over an EMPTY target, i.e. the win condition was not in the
+   frame. Snake is now the layer directly above Background, so bodies draw over
+   it, and Crate/Player have a transparent bottom-right 2x2 through which it
+   shows. A layer move is inert mechanically: an object alone on its own layer
+   blocks nothing and no rule reads layer order (--selfcheck measures that
+   rather than assuming it).
+
+2. THE START SQUARE ERASED THE CRATE, AND WAS THE PLAYER'S OWN COLOUR. `Start`
+   had no sprite at all, so it filled its cell solid `Darkblue` from a layer
+   above Crate -- a crate pulled or pushed onto the start square vanished. And
+   `Darkblue` is the Player's body colour, so at cell_px 3 (where the player's
+   eye row is not sampled) the player was pixel-identical to the bare start
+   square. Start is now a Purple bottom-right 2x2 and shows through the
+   transparent corner of whichever body stands on it. It has to stay readable:
+   the start square is the one cell that never grows a snake, so it is the only
+   cell the player may re-enter. The Player is transparent in the TOP-LEFT 2x2
+   as well, because `_render_frame` appends the player AFTER every other object
+   in the cell -- above even the Target's own layer -- so without that hole a
+   player standing on a target was pixel-identical to a player on bare trail,
+   and the last press of a level that ends by walking a crate home showed
+   nothing.
+
+3. THE CRATE WAS WALL-COLOURED. `orange` and `brown` are both ARC 12, so the
+   crate was a UNIFORM block of the wall's own second colour. Repainted
+   `yellow orange` (11 over 12).
+
+4. THE TARGET SAT UNDER THE BODIES. Target was a hollow ring on rows/cols 0 and
+   4 -- exactly the pixels a body covers -- so a crate on a target read as a
+   bare crate on three of the four sampling grids. It is now a Black top-left
+   2x2, and it draws from a layer ABOVE the bodies, so it is visible under
+   every one of them.
+
+The result is a four-quadrant code, disjoint by construction and readable at
+both cell sizes: top-left = target, bottom-right = snake or start (never both,
+and never together with a target), the rest = the body.)
+========
+OBJECTS
+========
+
+Background
+gray lightgray
+00000
+01110
+01110
+01110
+00000
+
+Wall
+darkred brown
+00010
+11111
+01000
+11111
+00010
+
+
+Player
+darkblue white
+..001
+..000
+00000
+000..
+100..
+
+Crate
+yellow orange
+00000
+01110
+01110
+011..
+000..
+
+Target
+black
+00...
+00...
+.....
+.....
+.....
+
+Snake
+lightred red 
+10111
+01111
+01101
+11101
+10111
+
+Grass
+LIGHTGREEN GREEN
+11111
+01111
+11101
+11111
+10111
+
+(RedCrate
+red pink
+00000
+01110
+01110
+01110
+00000)
+
+Start
+Purple
+.....
+.....
+.....
+...00
+...00
+
+=======
+LEGEND
+=======
+
+. = Background
+P = Player
+W = Wall
+C = Crate
+T = Target
+S = Snake
+/ = Player and Start
+G = Grass
+
+=======
+SOUNDS
+=======
+
+Player MOVE 36772507
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Snake
+Player, Wall, Crate 
+Target
+Start
+Grass
+
+
+======
+RULES
+======
+
+[ > Player | Crate ] -> [ > Player | > Crate]
+([ Action Player ] -> [ Crate ])
+ [ < Player | Crate ] -> [ < Player | < Crate]
+([ < Player |  No Timer ] -> [ < Player | Timer ])
+([Action Snake | Crate ] -> [ Snake | < Crate])
+LATE[player no start]->[player Snake]
+[> player|Snake]->cancel
+([ > Player | No Timer ] -> [ > Player | TImer ])
+
+
+==============
+WINCONDITIONS
+==============
+
+All Crate on Target
+
+=======
+LEVELS
+=======
+
+Message On a post apocalyptic earth, snakes now rule over the ruins of humanity. Civilization is reborn, and you've just been hired at your local mouse distribution center.
+MESSAGE Welcome to the job, your tasssk is to move thessse cratesss to where they need to go in the warehoussse. Think you can handle that?
+MESSAGE Move the snake to push the crate to the target
+
+wwwwwwwwwwwwwwww
+w..............w
+w/......c.....tw
+w..............w
+wwwwwwwwwwwwwwww
+
+MESSAGE Good Job! Letsss add a turn.
+
+GGGGGGGGGGwwwwww
+GGGGGGGGGGw...tw
+GGGGGGGGGGw....w
+GGGGGGGGGGw....w
+wwwwwwwwwww....w
+w..............w
+w/......c......w
+w..............w
+wwwwwwwwwwwwwwww
+
+MESSAGE Great! Now we're gonna add a wall!
+
+GGGGGGGGGGGGGGGGG
+GGGGGGGGGwwwwwwww
+GGGGGGGGGwt.....w
+GGGGGGGGGw......w
+GGGGGGGGGw......w
+GGGGGGGGGwwww...w
+GGGGGGGGGw......w
+GGGGGGGGGw......w
+wwwwwwwwww......w
+w...............w
+w/......c.......w
+w...............w
+wwwwwwwwwwwwwwwww
+
+MESSAGE You know whatsss better than a wall? 2 wallsss!
+
+GGGGGGGGGGGGGGGGG
+GGGGGGGGGwwwwwwww
+GGGGGGGGGw.....tw
+GGGGGGGGGw......w
+GGGGGGGGGw......w
+wwwwwwwwww......w
+w...............w
+w..c.........wwww
+w...............w
+wwwwwww.........w
+w...............w
+w/..............w
+wwwwwwwwwwwwwwwww
+
+Message You know whatsss better than 2 wallsss? 2 wallsss AND 2 cratesss!
+
+wwwwwwwwwwwwwwwww
+w...............w
+wt..............w
+w...............w
+wwwwwwwwww......w
+GGGGGGGGGw...c..w
+GGGGGGGGGw......w
+wwwwwwwwww......w
+w...............w
+w..c.........wwww
+w...............w
+wwwwwww.........w
+w...............w
+w/.............tw
+wwwwwwwwwwwwwwwww
+
+MESSAGE Sssee if you can wrap your head AROUND thisss one!
+
+wwwwwwwwwwwwwwwww
+w...............w
+wt...........c..w
+w...............w
+www...wwww......w
+w.....wGGw......w
+w.....wGGw......w
+w..c..wwww......w
+w...............w
+w............wwww
+w...............w
+wwwwwww.........w
+w...............w
+w/.............tw
+wwwwwwwwwwwwwwwww
+
+MESSAGE Mitosssisss
+
+wwwwwwwwwwwwwwww
+w..............w
+wt.............w
+w..............w
+w..............w
+w..wwww..wwww..w
+w..wGGwccwGGw..w
+w..wGGw..wGGw..w
+w..wwww..wwww..w
+w..............w
+w..............w
+w..............w
+w..............w
+w..............w
+w/............tw
+wwwwwwwwwwwwwwww
+
+MESSAGE Can you handle 4 cratesss?
+
+wwwwwwwwwwwwwwwww
+wt...t.....t...tw
+w...............w
+w.......w.......w
+w.......w.......w
+w....c..w..c....w
+w.......w.......w
+w....wwwwwww....w
+w...............w
+w...............w
+w..c.........c..w
+w.....w...w.....w
+w.....w...w.....w
+wwwwwww...wwwwwww
+w...............w
+w......./.......w
+wwwwwwwwwwwwwwwww
+
+MESSAGE I'm Sssplit over thisss one
+
+wwwwwwwwwwwwwwwwww
+w................w
+w................w
+w....wwwww.....www
+w.............ww.w
+w.......ww....w..w
+w.......ww..t.w..w
+w...wwwwwwwwwww..w
+w.....w....w..w..w
+w................w
+w.....c....c.....w
+w.....w./..w.....w
+w....wwwwwwwwww..w
+w...ww.tww....w..w
+w..ww...ww....w..w
+wwww.............w
+ww...............w
+wwwwwwwwwwwwwwwwww
+
+MESSAGE Letsss open thingsss up a bit
+
+wwwwwwwwwwwwwwwwwwww
+w/.....t..........tw
+w..................w
+w..................w
+w..................w
+w..................w
+w..................w
+w..........wwww..www
+w..c.......w.......w
+w.....w........c...w
+wwwwwww............w
+w................c.w
+wt.................w
+wwwwwwwwwwwwwwwwwwww
+
+MESSAGE Letsss kick it up a notch
+
+wwwwwwwwwwwwwwwwwwww
+w..................w
+w/.w...t...........w
+w..w........w...c..w
+w..w........w......w
+w..wwwwww...w......w
+w...........www....w
+w..................w
+w................www
+w..c...............w
+w.....w............w
+wwwwwww............w
+wt...............c.w
+w..................w
+wt.................w
+wwwwwwwwwwwwwwwwwwww
+
+MESSAGE Well I'll be. Congratultionsss on making employee of the month!
+
+(------------------------------------------------------------------------------------------
+
+wwwwwwwwwwwwwwwwwwww
+w/.....t..........tw
+w..................w
+w..................w
+w..................w
+w..................w
+w..................w
+w..........wwwwwwwww
+w..........w.......w
+w...c.w....w...c...w
+wwwwwww............w
+w..................w
+w..................w
+wwwwwwwwwwwwwwwwwwww
+
+wwwwwwwwwwwwwwwww
+wp.....t.......tw
+w...............w
+w...............w
+w...............w
+w...............w
+w...............w
+w...............w
+w...............w
+w....c....c.....w
+w...............w
+w...............w
+w...............w
+wwwwwwwwwwwwwwwww
+
+wwwwwwwwwwwwwwwww
+wp..wtt.w.ttw..pw
+w.......w.......w
+wwwwwww.w.wwwwwww
+w.....w.w.w.....w
+w....cw.w.wc....w
+w..wwww.w.wwww..w
+w..w....w....w..w
+w..w....w....w..w
+w..ww...w...ww..w
+w..cwww.w.wwwc..w
+w.....w.w.w.....w
+w.......w.......w
+wwwwwwwwwwwwwwwww
+
+wwwwwwwwwwwwwwwww
+wp..wtt...ttw..pw
+w...............w
+wwwwwww...wwwwwww
+w.....w...w.....w
+w....cw...wc....w
+w..wwww...wwww..w
+w..w.........w..w
+w..w.........w..w
+w..ww.......ww..w
+w..cwww...wwwc..w
+w.....w...w.....w
+w...............w
+wwwwwwwwwwwwwwwww
+
+wwwwwwwwwww
+wp.......cw
+w.........w
+w.........w
+w.........w
+w.........w
+w.........w
+w.........w
+wwwwwwwwwww
+
+wwwwwww
+w.....w
+w.....w
+wp....w
+w.....w
+w.....w
+wwwwwww
+)
+
+

@@ -1,0 +1,15 @@
+{
+    "game_id": "gem_mine",
+    "title": "Gem Mine",
+    "tags": ["puzzle", "navigation", "collection", "planning"],
+    "level_tags": [
+        ["3-gems-11x9", "easy"],
+        ["4-gems-13x11", "medium"],
+        ["5-gems-15x12", "hard"],
+        ["6-gems-17x13", "expert"],
+        ["7-gems-19x17", "extra-hard"],
+        ["8-gems-21x19", "master"],
+        ["9-gems-21x19", "grandmaster"]
+    ],
+    "baseline_actions": [20, 40, 65, 95, 145, 180, 235]
+}

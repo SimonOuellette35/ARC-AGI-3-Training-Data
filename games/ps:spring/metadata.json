@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:spring",
+  "title": "Spring",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Spring",
+  "local_dir": "games/ps:spring"
+}

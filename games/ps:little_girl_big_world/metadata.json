@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:little_girl_big_world",
+  "title": "Little Girl, Big World",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Little_Girl,_Big_World",
+  "local_dir": "games/ps:little_girl_big_world"
+}

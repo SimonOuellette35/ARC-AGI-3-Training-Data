@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sweet_hints",
+  "title": "Sweet Hints",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sweet_Hints",
+  "local_dir": "games/ps:sweet_hints"
+}

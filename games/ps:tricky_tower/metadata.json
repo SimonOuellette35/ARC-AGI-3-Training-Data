@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:tricky_tower",
+  "title": "Tricky Tower",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Tricky_Tower",
+  "local_dir": "games/ps:tricky_tower"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:wizard_school",
+  "title": "Wizard School!",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Wizard_School!",
+  "local_dir": "games/ps:wizard_school"
+}

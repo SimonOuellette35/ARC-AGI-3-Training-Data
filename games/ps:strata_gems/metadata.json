@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:strata_gems",
+  "title": "STRATA-GEMS",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "STRATA-GEMS",
+  "local_dir": "games/ps:strata_gems"
+}

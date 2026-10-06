@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:ball_bros",
+  "title": "Ball Bros",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Ball_Bros",
+  "local_dir": "games/ps:ball_bros"
+}

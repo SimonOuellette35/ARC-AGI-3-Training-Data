@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:four_room_tilt_mazes",
+  "title": "Four-room tilt mazes",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Four-room_tilt_mazes",
+  "local_dir": "games/ps:four_room_tilt_mazes"
+}

@@ -1,0 +1,149 @@
+title Piedra
+author Enzo
+homepage www.puzzlescript.net
+
+(ARC-AGI-3 rendering fix, 2026-08-15. One colour changed and two sprites added;
+the objects, the collision layers, the one rule, the levels and the win
+condition are untouched, and solvers/generate_piedra_training.py --audit is the
+check.
+
+THE GOAL WAS NOT DRAWN AT ALL, AND NEITHER WAS THE WIN. Target shipped as
+#27AE60 -- byte-for-byte the Background's own colour, so it quantized to the
+same ARC index (green, 14) and the one cell the win condition names rendered as
+bare floor. Worse, every object in this game shipped as a bare colour with NO
+sprite, and `_render_cell_sprite` fills a spriteless object over the whole cell:
+the Crate is drawn above the Target, so `crate on target` -- the winning board
+-- painted exactly the same white square as a crate sitting anywhere else. The
+same held for the Player, which can walk onto the Target freely. So neither
+"where must the rock go" nor "is it there" was in the frame.
+
+Two changes:
+
+  * Target is now `red` (ARC 8), distinct from Background green 14, Wall
+    lightgray 1, Player lightpink 7 and Crate white 0 -- five mutually distinct
+    indices, which is what the audit asserts.
+  * Player and Crate are now 3x3 bodies with a TRANSPARENT one-pixel border, so
+    whatever they stand on shows through as a ring: red on the Target, green
+    floor otherwise. That is what makes the winning composition readable.
+
+The ring, not the corners: all four levels are 9x9 and render at cell_px 7,
+where a full border survives the centred nearest sample comfortably (24 of the
+49 pixels). A 3x3-in-5x5 body is also invariant under all eight turns and
+mirrors, so it costs the `_FLIP_GAMES` augmentation nothing.)
+
+========
+OBJECTS
+========
+
+Background
+#27AE60
+
+Target
+red
+
+Wall
+#C0C0C0
+
+Player
+#F5CBA7
+.....
+.000.
+.000.
+.000.
+.....
+
+Crate
+#E5E7E9
+.....
+.000.
+.000.
+.000.
+.....
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+* = Crate
+@ = Crate and Target
+O = Target
+
+
+=======
+SOUNDS
+=======
+
+Crate MOVE 36772507
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Player, Wall, Crate
+
+======
+RULES
+======
+
+
+
+[ >  Player | Crate ] -> [  >  Player | > Crate  ]
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Crate
+
+=======
+LEVELS
+=======
+
+message Empujar una piedra cuesta arriba
+####o####
+#.......#
+#.......#
+#.......#
+#...*...#
+#.......#
+#.......#
+#.......#
+####p####
+message Esfuerzo en vano
+####o####
+#....#..#
+#.......#
+#..##...#
+#.....#.#
+#...*...#
+#.#.....#
+#.......#
+####p####
+message Labor sin frutos
+####o####
+#..#....#
+#.....#.#
+#...#...#
+#...##.##
+#..##..##
+#.......#
+##..*.#.#
+####p####
+message Tiempo perdido
+####o####
+#..#....#
+#....#.##
+#.......#
+#..##.#.#
+#.......#
+#.#.....#
+#...*.#.#
+####p####
+
+

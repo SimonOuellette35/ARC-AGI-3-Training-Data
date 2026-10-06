@@ -1,0 +1,16 @@
+{
+  "game_id": "ft09-0d8bbf25",
+  "title": "FT09",
+  "default_fps": 8,
+  "baseline_actions": [
+    17,
+    19,
+    15,
+    21,
+    65,
+    26
+  ],
+  "tags": [],
+  "local_dir": "environment_files/ft09/0d8bbf25",
+  "date_downloaded": "2026-04-01T18:20:14.259698+00:00"
+}

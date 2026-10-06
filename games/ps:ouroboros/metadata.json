@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:ouroboros",
+  "title": "Ouroboros",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Ouroboros",
+  "local_dir": "games/ps:ouroboros"
+}

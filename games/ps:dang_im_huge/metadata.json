@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:dang_im_huge",
+  "title": "Dang I'm Huge",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Dang_I'm_Huge",
+  "local_dir": "games/ps:dang_im_huge"
+}

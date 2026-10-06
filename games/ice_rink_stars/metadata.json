@@ -1,0 +1,15 @@
+{
+    "game_id": "ice_rink_stars",
+    "title": "Ice Rink Stars",
+    "tags": ["puzzle", "sliding", "planning", "collection"],
+    "level_tags": [
+        ["5-stars-6blocks-12x10", "easy"],
+        ["7-stars-5blocks-14x12", "medium"],
+        ["9-stars-4blocks-16x14", "hard"],
+        ["11-stars-3blocks-18x16", "expert"],
+        ["13-stars-2blocks-20x18", "extra-hard"],
+        ["15-stars-2blocks-20x18", "master"],
+        ["17-stars-1block-21x19", "grandmaster"]
+    ],
+    "baseline_actions": [12, 22, 35, 55, 75, 100, 130]
+}

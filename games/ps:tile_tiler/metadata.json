@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:tile_tiler",
+  "title": "Tile Tiler",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Tile_Tiler",
+  "local_dir": "games/ps:tile_tiler"
+}

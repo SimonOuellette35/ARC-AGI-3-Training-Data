@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sokubunny_and_the_colored_boxes",
+  "title": "Sokubunny and the colored Boxes",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sokubunny_and_the_colored_Boxes",
+  "local_dir": "games/ps:sokubunny_and_the_colored_boxes"
+}

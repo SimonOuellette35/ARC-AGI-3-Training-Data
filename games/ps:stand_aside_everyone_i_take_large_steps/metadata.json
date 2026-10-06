@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:stand_aside_everyone_i_take_large_steps",
+  "title": "Stand aside, everyone! I take large steps!",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Stand_aside,_everyone!_I_take_large_steps!",
+  "local_dir": "games/ps:stand_aside_everyone_i_take_large_steps"
+}

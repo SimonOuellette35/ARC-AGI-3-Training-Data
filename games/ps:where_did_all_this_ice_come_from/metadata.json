@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:where_did_all_this_ice_come_from",
+  "title": "where did all this ice come from ",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "where_did_all_this_ice_come_from_",
+  "local_dir": "games/ps:where_did_all_this_ice_come_from"
+}

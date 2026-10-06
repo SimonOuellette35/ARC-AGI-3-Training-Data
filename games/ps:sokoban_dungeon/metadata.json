@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sokoban_dungeon",
+  "title": "Sokoban Dungeon",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sokoban_Dungeon",
+  "local_dir": "games/ps:sokoban_dungeon"
+}

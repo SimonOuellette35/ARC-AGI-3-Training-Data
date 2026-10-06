@@ -1,0 +1,238 @@
+title The Trouble with Toasters
+author Edward Brown 
+homepage www.casuallabs.com
+
+(ARC-AGI-3 rendering fixes, 2026-08-20. FOUR sprites redrawn. No object,
+colour, collision layer, legend entry, rule, level or win condition is touched,
+so the mechanic is bit-for-bit the game it was. The check is
+solvers/generate_the_trouble_with_toasters_training.py --audit, which renders
+every cell stack a settled board of this game can hold, at every board shape
+this game uses (they are all 7x7, so cell_px is 9 and every sprite pixel is
+sampled), and asserts they are all distinct.
+
+THE SPAWNERS WERE INVISIBLE UNDER EVERYTHING THAT MATTERED. Toaster was opaque
+on every pixel the Spawner and the ToasterGestating draw, and Crate was opaque
+on all twenty-five of its own -- so three compositions rendered as ONE picture:
+
+    toaster  ==  toaster on spawner  ==  toaster on spawner + gestating
+    crate    ==  crate on spawner
+
+Each of those distinctions is load-bearing, not decoration:
+
+  * a spawner under a toaster is a spawner that fires again the moment that
+    toaster is pushed off, and a bare square is not;
+  * a GESTATING toaster under a toaster fires a whole turn sooner than a bare
+    spawner would, because `up [ ToasterGestating no Obstacle ] -> [ Toaster ]`
+    runs before `up [ Spawner no Obstacle ] -> [ Spawner random
+    ToasterGestating ]` and needs no fresh spawn;
+  * a crate on a spawner is this game's one permanent answer to a spawner --
+    `late [ Crate ToasterGestating ] -> [ Crate ]` kills the hatchling every
+    single turn -- and level 4 is titled "A crate is better than no crate".
+
+Fixed on both sides, the way ps:the_blob and ps:stickyban were. Spawner and
+ToasterGestating each grew four CORNER dots in their own colour, and Toaster
+and Crate had their corners punched transparent:
+
+    Spawner   0...0     ToasterGestating  0...0     Toaster  .222.    Crate  .111.
+              ..0..                       .000.              21012           12021
+              .010.                       .010.              21012           10201
+              ..0..                       .000.              22222           12021
+              0...0                       0...0              .333.           .111.
+
+ToasterGestating draws on the layer ABOVE Spawner, so its red corners cover the
+spawner's white ones: under a toaster, white corners mean "spawner" and red
+corners mean "spawner with a hatchling on it". Both marks are a full orbit of
+the square's 8-element symmetry group, so no rotation or flip of the presented
+frame can make them ambiguous -- which is what lets this game sit in the
+adapter's _FLIP_GAMES. The Player already showed both through the two
+transparent pixels of its `1.0.1` row and is unchanged.)
+
+========
+OBJECTS
+========
+
+
+Background  (special, automatically placed in its own layer)
+#BBBBDD #AAAACC
+11111
+11111
+11011
+11111
+11111
+
+Spawner  (Name)
+WHITE #DDDDDD(Color)
+0...0 (Sprite)
+..0..
+.010.
+..0..
+0...0
+
+Player    (Required by game)
+#CC0000 #F9E39D #0000CC BLACK
+..1..
+00000
+1.0.1
+.222.
+33.33
+
+Toaster
+#666666 #222222 #777777 #888888
+.222.
+21012
+21012
+22222
+.333.
+
+ToasterGestating
+#FF0000 #222222
+0...0
+.000.
+.010.
+.000.
+0...0
+
+
+Crate
+#614C18 #715C18 #513C18
+.111.
+12021
+10201
+12021
+.111.
+
+CrateSpawner  (Name)
+WHITE #DDDDDD(Color)
+..... (Sprite)
+..0..
+.010.
+..0..
+.....
+
+
+=======
+LEGEND
+=======
+
+Obstacle = Player or Toaster
+. = Background
+P = Player
+* = Toaster
+O = Spawner
+C = Crate
+
+=======
+SOUNDS
+=======
+
+SFX0 13215908  (player move)
+SFX1 78247108  
+SFX2 80154108  (push a toaster)
+SFX3 86561708  (spawn a toaster)
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Spawner, 
+ToasterGestating
+CrateSpawner
+Player, Toaster, Crate
+
+======
+RULES
+======
+
+(play sfx when player moves)
+[ >  Player ] -> [ >  Player ] SFX0  
+
+(change a ToasterGestating into a Toaster)
+up [ ToasterGestating no Obstacle] -> [ Toaster ]
+
+(spawn a new ToasterGestating)
+up [ Spawner no Obstacle ] -> [ Spawner random ToasterGestating ] SFX3
+
+(Crate blocks ToasterGestating )
+late [ Crate ToasterGestating ] -> [ Crate ] SFX3
+
+
+
+
+
+(push a toaster)
+[ >  Player | Toaster ] -> [  >  Player | > Toaster  ] SFX2
+
+(push a crate)
+[ >  Player | Crate ] -> [  >  Player | > Crate  ] SFX2
+
+(pull a crate)
+[ < Player | Crate ] -> [ < Player | < Crate ]
+
+(match 3 toasters)
+late [ Toaster | Toaster | Toaster ] -> [ | |] SFX1
+
+
+
+==============
+WINCONDITIONS
+==============
+
+No Toaster
+
+=======
+LEVELS
+=======
+
+
+message Match 3 toasters until all gone
+
+.......
+.....*.
+.......
+...O...
+.......
+.P.....
+.......
+
+message Abstinance didn't work
+
+..*....
+.*.....
+....O..
+.......
+.......
+....P..
+.......
+
+message The Rhythm Method is a joke 
+
+......P
+.*.....
+....O..
+.C.....
+..O....
+.......
+.......
+
+message Educate your toasters early
+
+.......
+.C...*.
+.......
+*..O...
+O......
+....C..
+...P...
+
+message A crate is better than no crate
+
+.*..O..
+....O..
+O.....
+......*
+..C....
+.P.....
+.**....
+
+message Everybody wins!

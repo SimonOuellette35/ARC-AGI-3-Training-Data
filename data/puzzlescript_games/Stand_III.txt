@@ -1,0 +1,367 @@
+title Stand III
+author Connorses [Loneship Games]
+homepage connorspuzzles.tumblr.com
+run_rules_on_level_start
+noaction
+background_color #110018
+text_color purple
+
+(RENDERING FIXES for the ARC adapter -- THREE sprite changes, and all three
+are about what a frame SHOWS, not about what the game DOES.  Every rule, every
+legend character, every level and every other sprite is byte-for-byte the
+author's.  solvers/generate_stand_iii_training.py --audit is the regression
+test and reported all three before these changes.
+
+1. Target2 was  Darkgreen lightgreen .  The ARC palette has exactly ONE green,
+   so darkgreen = lightgreen = green = index 14 -- the Background's own colour.
+   Target2 is what a light becomes while somebody is standing on it
+
+       late [Target1 Player] -> [Target2 Player]
+       late [Target2 no Player] -> [Target1]
+
+   and the win is "No Target1", i.e. every light covered AT ONCE.  So the
+   WINNING composition of the game -- a player standing on a lit light -- was
+   pixel-identical to a player standing on grass at EVERY cell size these
+   fifteen levels use: an agent could see where the unlit lights are and could
+   never see one light up.  It is now  Yellow Yellow  (index 11: free of
+   Background 14, Target1's DarkBlue 9, the walls' Brown 12, the Player's
+   LightBlue 10 and the crates' 12/2 and 5/2), with the author's sprite
+   geometry untouched -- rows 1-3 of the 5x5, exactly where the Player sprite
+   is transparent.  This is the same fix, for the same reason, as
+   data/puzzlescript_games/Stand.txt and data/puzzlescript_games/Stand_II.txt.
+
+2. BigCrate's row 3 was  10010  and is now  1.010  -- ONE pixel turned
+   transparent.  Levels 6 and 11 are 15 and 13 cells wide, so they render at
+   4 px per cell, and the renderer's centred nearest sampling of a 5x5 sprite
+   into 4x4 keeps sprite rows/cols 0,1,3,4 and DROPS row/col 2.  Target1
+   paints rows 1-3, of which only 1 and 3 survive that decimation, and
+   BigCrate's rows 1 and 3 were both fully opaque -- so a BigCrate on a light
+   erased it from the frame, which is how level 11 OPENS (the legend's `&`).
+   The new hole sits at sprite (3,1), a column the 4-px sampling keeps, so the
+   light shows through the boulder at every cell size the levels use.  Same
+   fix as Stand_II.txt.
+
+3. hole was  black #170220  and is now  black purple .  This one is about the
+   mechanic this game introduces.  `#170220` is a near-black purple, so BOTH
+   of the hole's colours quantized to index 5 and the sprite rendered as a
+   FLAT BLACK BLOCK -- and index 5 is also what the ARC renderer letterboxes
+   the frame with.  Eleven of the fifteen levels draw their border out of
+   holes, so the frame showed a green playfield surrounded by black with NO
+   seam between the black that RESTARTS THE LEVEL if you step into it and the
+   black that is merely the edge of the picture: two different mechanics, one
+   colour, on the game that stops between levels to say "and don't step in the
+   holes".  The author's intent survives the fix -- the pit was always meant to
+   be purple-black -- and the author's own lattice geometry now paints a purple
+   pit-mouth on black.  Row 0 of that sprite is solid, so the mark survives the
+   4-px decimation, which is the smallest cell any of these levels uses.)
+
+========
+OBJECTS
+========
+
+Background 
+GREEN #3c833d
+00000
+01110
+01110
+01110
+00000
+
+
+Target1
+DarkBlue Blue
+.....
+00000
+01110
+00000
+.....
+
+Target2
+Yellow Yellow
+.....
+00000
+01110
+00000
+.....
+
+Wall1 
+BROWN
+
+Wall2
+Brown
+00000
+00000
+00000
+00000
+.....
+
+Player 
+lightblue
+.000.
+00000
+.0.0.
+.....
+.....
+
+Crate 
+Brown lightbrown
+1..01
+1.0.1
+10..1
+11111
+.....
+
+CrateTop
+Brown lightbrown
+.....
+.....
+.....
+.....
+11111
+
+
+BigCrate
+Black grey
+1.0.0
+00100
+0.0.1
+1.010
+.....
+
+BigCrateTop
+black Grey
+.....
+.....
+.....
+.....
+01001
+
+hole
+black purple
+11111
+00000
+10001
+00000
+01010
+
+lose
+darkblue
+.....
+.000.
+00000
+.0.0.
+.....
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall1
+% = Wall2
+P = Player
+* = Crate
++ = BigCrate
+@ = Crate and Target1
+& = BigCrate and Target1
+O = Target1
+Q = Target1 and player
+X = hole
+
+falls = crate or bigcrate
+
+=======
+SOUNDS
+=======
+Target2 Destroy 67186706
+Target2 Create 74302900
+StartGame 13756108
+EndLevel 23510908
+EndGame  84025508
+Player Move 81570907
+Crate Move 22518904 (73907102 3366707)
+BigCrate Move 89017902
+sfx0 93887302 (falling)
+================
+COLLISIONLAYERS
+================
+
+
+Background
+Target1, Target2,hole
+Player, Wall1, Wall2 Crate, BigCrate, lose
+cratetop, bigcrateTop
+
+======
+RULES     
+======     
+(2 Crates that push in different ways)
+[ >  Player | Crate ] -> [  >  Player | > Crate  ]
+[ > Player | BigCrate] -> [ Player | > BigCrate ]
+
+(Targets toggle on and off)
+late [Target1 Player] -> [Target2 Player]
+late [Target2 no Player] -> [Target1]
+
+(stuff dissapears in holes, characters can't fall in or it resets)
+late [falls hole] -> [hole] sfx0
+late [player hole] -> [lose hole] sfx0
+[lose hole] -> restart
+
+(graphical thing so I can draw crates 1 square higher)
+late [CrateTop] -> [   ]
+late [Bigcratetop] -> [   ]
+late up [crate|no crateTop] -> [Crate|Cratetop]
+late up [BiGcRaTe|NO Bigcratetop] -> [BIGCRATE|bigCratetop]
+==============
+WINCONDITIONS
+==============
+
+No Target1
+
+=======     
+LEVELS
+=======
+xxxxxxxxx
+x...x
+x.x.
+x..#o#.x
+xx.###x
+x..xp.x.x
+x......x
+xxxxxx
+message Oh, he1!0 I d$dn't s˙e yˆˆ µhere. J¨$t li˚3 be4: Ge† all the little guys *x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x**x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x
+message Remember, you can undo with Z
+message and restart w¥©ˆ˙ø¥ R
+
+xxxxxxxxxxx
+xxp......xx
+xx.......xx
+xx%.....oxx
+xx....#..xx
+xxxxxxxxxxx
+xxp......xx
+xx.......xx
+xx....o..xx
+xx...#...xx
+xxxxxxxxxxx
+
+x...xx..x.
+.##xx#%%#x
+x#.....o#.
+.x.#..#.#.
+.#p#p.#.#.
+.#o#..#.#.
+x#o#..#pxx
+xx.%x%x%%.
+xx.xxxx..x
+xxxxxxxxxx
+
+#######x
+#p.@x*.x
+#p.*.oxx
+###.###x
+
+###p.##
+#x##o##
+#**..o#
+#p##x##
+###xx#x
+
+message Did we mention you can push the l¡ttle sokoban crates? You T%/}-u+ ç4n
+
+x..xxxxx
+x......x
+x.op..px
+x...*..x
+x..*..ox
+x......x
+xxxxxxxx
+
+
+
+message Sorry about that, we had some technical difficulties. You may now return to your regularly scheduled puzzle game.
+message Oh, and don't step in the holes.
+
+x##############
+x########.*.###
+xoppo..o....###
+x#########*####
+x########xp####
+x##############
+
+xxxxx#xx
+xp.o+o.x
+xp.....x
+xxxxx..x
+
+xxxxxxxxxx
+x........x
+x.pp.....x
+x........x
+x...++...x
+x........x
+xo......ox
+x%xxxxxx%x
+
+
+#%##%%%####
+#px#...####
+#.xx.#.%%x#
+#....x....#
+####%%%%%.#
+###xq...+o#
+#%%%%#%%%%#
+#...#%....#
+#.#.%..#%.#
+#p#...x%o.#
+%xx%%%%%%%%
+
+xxxxxxxxxx
+x.....o..x
+x......p.x
+x..p....+x
+x.....o.+x
+x.+.....xx
+x.......xx
+xxxxxxxxxx
+message Wait a minute, half of these puzzles are just edited levels from the other games!
+
+xx#x#########
+xp.*&p...o..#
+xx#p#########
+
+xxxxxxx
+x.....x
+x.+p+.x
+x.p.p.x
+x.+p+.x
+xoooo.x
+xxxxxxx
+
+#.*pp####
+##.*p#..o
+.#*.*#..o
+...###..o
+...###..o
+p.*...*.o
+p..*..*.o
+..##..*#o
+#.*.##...
+..*pp##..
+
+message Huh, that was a bit cluttered.
+
+message Here's something more orderly.
+
+##%%%%%%%%#
+##........#
+##o.p*....#
+##........#
+###%%%%.###
+###po+op###
+#%%.%%%%%##
+#........##
+#o..p*...##
+#........##
+###########
+message Part III Complete!

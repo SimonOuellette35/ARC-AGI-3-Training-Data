@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:vrps",
+  "title": "VRPS",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "VRPS",
+  "local_dir": "games/ps:vrps"
+}

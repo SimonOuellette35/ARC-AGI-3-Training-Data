@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:nekopuzzle",
+  "title": "nekopuzzle",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "nekopuzzle",
+  "local_dir": "games/ps:nekopuzzle"
+}

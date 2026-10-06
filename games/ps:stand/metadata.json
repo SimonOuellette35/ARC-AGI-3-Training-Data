@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:stand",
+  "title": "Stand",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Stand",
+  "local_dir": "games/ps:stand"
+}

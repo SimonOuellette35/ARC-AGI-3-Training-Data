@@ -1,0 +1,264 @@
+title Switcheroo
+author CNIAngel
+homepage www.cniangel.net
+
+(ARC-AGI-3 rendering fix, 2026-08-19. ONE sprite redrawn -- VBeam. No colour
+name, object, collision layer, legend entry, rule, level or win condition is
+touched, so the mechanic is bit-for-bit the game it was:
+solvers/generate_switcheroo_training.py --selfcheck is the measurement of that
+(a native model fuzzed against this interpreter -- the shipped levels plus
+thousands of random boards with up to three players and three blocks -- the
+whole board compared after every press), and --audit is the check on the fix:
+it renders every cell stack a board of this game can hold, at every board
+shape, and asserts they are all distinct.
+
+THE CANCEL RULE WAS INVISIBLE. HBeam and VBeam shipped as the SAME five-by-five
+picture -- four lightblue corners each -- and they sit on two different
+collision layers, so they stack:
+
+    HBeam        0...0        VBeam (was)    0...0
+                 .....                       .....
+                 .....                       .....
+                 .....                       .....
+                 0...0                       0...0
+
+A block lights its whole row with HBeam and its whole column with VBeam, and
+the first rule of the game is
+
+    [ Action Player Vbeam HBeam ] -> [ Player VBeam HBeam ]
+
+-- standing where a row beam and a column beam CROSS, the X button does
+nothing at all. That is the one thing a player has to read off the screen
+before pressing, and with identical art `one beam` and `two beams` were the
+same four pixels: --audit found 21 colliding cell stacks at every board shape
+and all 21 were that identity (hbeam == vbeam == hbeam+vbeam, once under each
+of the seven things that can be beneath a beam).
+
+The information was not lost -- a cell is lit horizontally iff its row holds a
+block and vertically iff its column does, and the blocks are on screen -- but
+it was not LOCAL: reading one square meant tracing its whole row and column.
+
+The fix gives VBeam the four EDGE MIDPOINTS instead of the corners:
+
+    VBeam (now)  ..0..     crossed: 0.0.0    so `both beams` is eight pixels
+                 .....               .....   and neither single beam is,
+                 0...0               0...0   at any of the three cell sizes
+                 .....               .....   this game renders at (5, 6, 9 px)
+                 ..0..               0.0.0
+
+Both pixel sets are orbits of the full eight-element symmetry group -- corners
+map to corners and edge midpoints to edge midpoints under every turn and
+mirror -- which is what the frame rotation this game is augmented with needs:
+a quarter turn exchanges rows with columns, so it exchanges which beam runs
+which way, and a beam whose art was not group-invariant would land on the
+other's picture. --audit's second pass measures exactly that.
+
+The midpoints also stay VISIBLE under everything a beam can cover, which is the
+other thing the choice had to satisfy. Over Background they replace plain
+white; over Wall the dark masonry; over Player the crown pixel and the two ends
+of the white sash; over Temp they fall in the transparent ring around the black
+block; over Exit they cut into the solid green. Every one of those is a colour
+change, so the beam reads on all seven stacks -- and it has to read on all
+seven, because a beam crosses walls and blocks as freely as it crosses floor.)
+
+run_rules_on_level_start  (make the beams draw)
+
+========
+OBJECTS
+========
+
+Background 
+White LightGray
+10001
+00000
+00000
+00000
+10001
+
+Wall     
+DarkGray LightGray  
+00000
+01010
+00000
+01010
+00000
+
+Player 
+Black Orange White Blue     
+.000.
+.111.
+22222
+.333.
+.3.3.
+
+Exit
+DarkGreen
+
+Temp
+Black
+.....
+.000.
+.000.
+.000.
+.....
+
+HBeam
+lightblue
+0...0
+.....
+.....
+.....
+0...0
+
+VBeam
+lightblue
+..0..
+.....
+0...0
+.....
+..0..
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+E = Exit
+T = Temp
+
+
+=======
+SOUNDS
+=======
+
+sfx0 79068106     
+sfx1 31175909 (cancel move)
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Exit
+Player, Wall, Temp
+HBeam
+VBeam
+
+======
+RULES     
+======     
+
+[ Action Player Vbeam HBeam] -> [Player VBeam HBeam] sfx1
+
+[ Action Player HBeam no VBeam| ... | Temp ] -> [ Temp | ... | Player ] sfx0
+
+[ Action Player VBeam no HBeam| ... | Temp ] -> [ Temp | ... | Player ] sfx0
+
+[ HBeam ] -> []
+[ VBeam ] -> []
+
+late horizontal [ Temp | ] -> [ Temp | HBeam ] 
+late vertical [ Temp | ] -> [ Temp | VBeam ] 
+
+late horizontal [ HBeam | ] -> [ HBeam | HBeam ] 
+late vertical [ VBeam | ] -> [ VBeam | VBeam ] 
+
+==============
+WINCONDITIONS
+==============
+
+All Exit on Temp
+    
+
+=======     
+LEVELS
+=======
+
+message Level 1 : Simple
+
+message Press X to teleport
+
+######
+#...E#
+#....#
+#.P..#
+#....#
+#T...#
+######
+
+message Level 2 : Walls?
+
+#######
+#P...E#
+#..#..#
+#..#..#
+##.####
+#..T###
+#######
+
+message Level 3 : Rooms!
+
+##########
+#....e#..#
+#.....####
+#....p#..#
+#######..#
+#........#
+#........#
+#t.......#
+##########
+message Level 4 : Maze.
+##########
+##...#..e#
+##.p.#...#
+#....#.###
+#.###....#
+#.....####
+#.....#..#
+#t....#..#
+##########
+message Level 5 : Interlock
+########..
+#.....e#..
+#.########
+#.#......#
+#.######.#
+#.....p#.#
+########.#
+..#t.....#
+..########
+message Level 6 : Two?
+###########
+#.#.....#t#
+#p#######.#
+#e#.....#.#
+###.....#.#
+#.#######.#
+#..t...e#.#
+###########
+message Level 6 : Roundabout
+############
+#.....#...t#
+#.....#....#
+#.p...###..#
+####...e#..#
+#..#....#e.#
+#..#....####
+#..###.....#
+#....#.....#
+#t...#.....#
+############
+
+message Level 8 : ...Two!?
+##########
+#.#.....p#
+#.########
+#.#......#
+#.#......#
+#.#......#
+#.########
+#t#e....p#
+##########
+message Game : Complete!

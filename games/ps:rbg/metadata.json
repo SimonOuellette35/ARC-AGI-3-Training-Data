@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:rbg",
+  "title": "RBG",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "RBG",
+  "local_dir": "games/ps:rbg"
+}

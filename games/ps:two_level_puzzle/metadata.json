@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:two_level_puzzle",
+  "title": "Two level puzzle",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Two_level_puzzle",
+  "local_dir": "games/ps:two_level_puzzle"
+}

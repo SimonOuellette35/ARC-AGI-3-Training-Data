@@ -1,0 +1,192 @@
+title Sokoban Dungeon
+author Joseph King
+homepage www.puzzlescript.net
+Again_interval 0.1
+
+(ARC-AGI-3 rendering fix, 2026-08-18. THREE sprites redrawn -- Target, Exit and
+Exitlocked. No colour name, object, collision layer, rule, legend entry, level
+or win condition is touched, so the mechanic is bit-for-bit the game it was. The
+check is solvers/generate_sokoban_dungeon_training.py --audit, which renders
+every composition a settled board of this game can hold, at both cell sizes the
+levels use, and asserts they are pairwise distinct.
+
+TWO OBJECTS VANISHED UNDER THE THINGS THAT STAND ON THEM. Target shipped as a
+dark-blue ring on rows/cols 1-3, and Exit as a hollow brown doorway with nothing
+inside it. Player, Skeleton and Crate all sit on the collision layer ABOVE them:
+
+  * `player on target` rendered as a bare player -- Player's 5x5 paints over
+    every pixel of the old ring -- so the blue goal cell disappeared for as long
+    as anyone stood on it, on all three levels;
+  * `crate on exit` rendered as a bare crate -- Crate is a solid 5x5 border and
+    the old Exit had no interior pixel at all -- so pushing a box in front of
+    the door erased the door.
+
+Neither could be fixed by moving a sprite into "the pixels the occluder leaves
+transparent", because the two occluders leave DISJOINT holes: Player is
+transparent only on its border (0,0) (0,4) (1,0) (1,4) (3,0) (3,4) (4,0) (4,2)
+(4,4), Crate only in its interior rows/cols 1-3. So each sprite now claims
+pixels in BOTH regions:
+
+  * Target -> corners (survive Player and Skeleton) + the four diagonal
+    interior pixels (survive Crate). It still reads as a ring.
+  * Exit -> the original doorway plus a two-pixel handle at (2,3) (3,3), which
+    is inside Crate's hole. It still reads as a door, and stays distinct from
+    Exitlocked, whose interior is a solid dark-brown slab.
+
+Exitlocked's top row went from `.000.` to `00000` for a third, smaller reason.
+`player on exit` is the WIN and `player on exitlocked` is the transient before
+the door shoves you back off, and under the Player the two differed by exactly
+ONE pixel -- (4,2), the only interior hole Player leaves. Filling Exitlocked's
+top corners, which Player also leaves transparent, widens that to three pixels
+per cell without changing what either sprite reads as.
+
+The levels' cell sizes are 5px (6x12) and 9px (7x7), so no pixel is dropped by
+the renderer's nearest-neighbour sampling at either size.)
+
+========
+OBJECTS
+========
+
+Background
+GRay
+Skeleton
+White
+.000.
+0.0.0
+00000
+.000.
+0.0.0
+skeledust
+Lightgray
+..0..
+0....
+....0
+.0...
+...0.
+
+
+Target
+DarkBlue
+0...0
+.0.0.
+.....
+.0.0.
+0...0
+
+Wall
+BROWN DARKBROWN
+00010
+11111
+01000
+11111
+00010
+
+Player
+Black Orange White Blue
+.000.
+.111.
+22222
+.333.
+.3.3.
+
+Crate
+Orange Yellow
+00000
+0...0
+0...0
+0...0
+00000
+Burst
+red blue white
+.000.
+02202
+00100
+01.00
+.000.
+Exit x
+Brown
+.000.
+0...0
+0..00
+0..00
+0...0
+Exitlocked
+Brown darkbrown
+00000
+01110
+01110
+01110
+01110
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+* = Crate
+@ = Crate and Target
+O = Target
+S = skeleton  
+Z = exit and skeleton
+obstacle = wall or skeleton or crate
+w = skeleton and target
+=======
+SOUNDS
+=======
+
+Crate MOVE 36772507
+Skeleton MOVE 2489558
+
+================
+COLLISIONLAYERS 
+================
+
+Background
+Target, Burst, skeledust, Exit, exitlocked
+Player, Skeleton, Wall, Crate
+
+======
+RULES
+======
+
+[ >  Player | Crate ] -> [  >  Player | > Crate  ]
+[Skeleton| ...|Player] -> [> skeleton | ...| player] again 
+[> Skeleton | PLayer ] -> [burst | Skeleton ]
+late [Burst] ->  restart 
+[> Crate|skeleton]-> [Skeledust|Crate]
+late [exitlocked] [crate target] -> [Exit] [Crate target]
+[exit] [Crate no target] ->[exitlocked] [Crate no target]
+[player exitlocked|no obstacle] -> [Exitlocked| player]message It's locked.
+
+============== 
+WINCONDITIONS
+==============
+
+Some Player on exit
+
+=======
+LEVELS
+=======
+Message How did i get stuck in here?
+############
+############
+############
+#x..p*....o#
+############
+############
+Message Ahh! Skeletons!
+.s.........w
+...#########
+...#########
+....*.p...x#
+............
+############
+Message Great. The skeleton is blocking the exit
+#######
+#.....#
+#.oZ..#
+#...*.#
+#...P.#
+#.....#
+#######

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:twinpush",
+  "title": "TwinPush",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "TwinPush",
+  "local_dir": "games/ps:twinpush"
+}

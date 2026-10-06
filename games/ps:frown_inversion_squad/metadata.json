@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:frown_inversion_squad",
+  "title": "FROWN INVERSION SQUAD",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "FROWN_INVERSION_SQUAD",
+  "local_dir": "games/ps:frown_inversion_squad"
+}

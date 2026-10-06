@@ -1,0 +1,199 @@
+title LameLightsOut
+author Matthew VanDevander
+homepage www.lowtideproductions.com
+
+========
+OBJECTS
+========
+RuleApplier
+Transparent
+
+TempOn
+Transparent
+TempOff
+Transparent
+
+Background
+DarKGrey
+
+(--------------------------------------------------------------------
+ SPRITE CONTRACT (rewritten for the ARC adaptation, 2026-08-14)
+
+ The lights shipped as FLAT squares, and that made the board unreadable
+ after adaptation: two adjacent lights in the same state render as one
+ solid bar with no boundary anywhere in it, so a run of dark cells shows
+ neither how many cells it is nor where the cursor's cross-shaped toggle
+ would land. The 2x2 level is the extreme case -- it starts all-off and
+ fills the whole 64x64 frame, so the entire observation was one uniform
+ grey field. Both lights are now a solid centre inside a one-pixel
+ DarkGrey frame, which paints a gridline between every pair of cells (the
+ frame colour is Background's, so the gaps read as one continuous grid).
+ Only the sprites changed: the colour an agent reads a light's STATE off
+ is still White-vs-Grey exactly as shipped.
+
+ The Player keeps its original four-corner sprite. It sits on the four
+ corners of the cell frame, so the cursor never covers the light it is
+ standing on -- the state under the cursor reads straight out of the
+ sprite's open middle -- and the shape is symmetric under all eight
+ symmetries of the square, which is what lets this game take the flip
+ augmentation on top of the mandatory rotation (see
+ PuzzleScriptAdapter._FLIP_GAMES).
+--------------------------------------------------------------------)
+
+LightOn
+DarKGrey White
+00000
+01110
+01110
+01110
+00000
+
+LightOff
+DarKGrey Grey
+00000
+01110
+01110
+01110
+00000
+
+Player
+Red
+0...0
+.....
+.....
+.....
+0...0
+
+=======
+LEGEND
+=======
+
+. = Background
+1 = LightOn
+0 = LightOff
+I = Player and LightOn
+O = Player and LightOff
+
+=======
+SOUNDS
+=======
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+LightOn, LightOff
+Player
+RuleApplier
+TempOn, TempOff
+
+======
+RULES
+======
+
+[Action Player] -> [Player RuleApplier]
+[RuleApplier | LightOff] -> [RuleApplier |TempOn]
+[RuleApplier | LightOn] -> [RuleApplier | TempOff]
+[RuleApplier LightOn] -> [TempOff]
+[RuleApplier LightOff] -> [TempOn]
+[TempOn] -> [LightOn]
+[TempOff] -> [LightOff]
+
+
+==============
+WINCONDITIONS
+==============
+
+No LightOff
+
+=======
+LEVELS
+=======
+
+(The game shipped with the four boards below -- 1x3, 1x4, 1x5 and 2x2, solved in
+4, 6, 5 and 7 presses. That is not a corpus: the biggest of them has five cells,
+and the whole game would be 16 presentations per board with nothing in it that a
+policy could not memorise outright. Twelve more are authored after them, ordered
+by expert plan length (8 -> 23 presses), on boards from 1x6 up to 4x4.
+
+Every authored board is SOLVABLE by construction -- each was scrambled backwards
+from the all-on winning position by a random set of toggles, and a toggle is its
+own inverse -- and each is then proved solvable AND proved shortest by the exact
+reverse-BFS field in solvers/generate_lamelightsout_training.py, which replays
+its plan through this interpreter to certify it.
+
+The 16-cell ceiling is the field's, not the renderer's: the state is (which
+lights are on, where the cursor is), so a board of n cells has up to 2^n * n
+states. 4x4 and 2x7 land at 65k and 57k because their toggle matrices are rank
+deficient; a full-rank 16-cell board like 2x8 would be 1048576, which is a
+different order of memory for no extra puzzle.)
+
+(level 0 -- the original 1x3)
+O10
+
+(level 1 -- the original 1x4)
+O101
+
+(level 2 -- the original 1x5)
+i0101
+
+(level 3 -- the original 2x2, all dark)
+o0
+00
+
+(level 4 -- 8 presses)
+1O00
+1000
+
+(level 5 -- 9 presses; the cursor starts between the two lit cells)
+11O000
+
+(level 6 -- 10 presses)
+010
+101
+00O
+
+(level 7 -- 11 presses)
+11010
+100O0
+
+(level 8 -- 12 presses)
+1000O10
+
+(level 9 -- 13 presses; one dark row under a lit block)
+O11
+111
+000
+
+(level 10 -- 14 presses, 4x4)
+1001
+1100
+1100
+00O0
+
+(level 11 -- 15 presses, 3x5)
+01110
+0I101
+00100
+
+(level 12 -- 16 presses, 2x7)
+00I1011
+0101000
+
+(level 13 -- 18 presses)
+0O0101
+110010
+
+(level 14 -- 20 presses)
+1000
+01I0
+0100
+
+(level 15 -- 23 presses; the longest board here)
+01I110
+011110
+
+
+MESSAGE Thanks for playing!

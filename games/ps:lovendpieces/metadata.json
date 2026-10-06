@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:lovendpieces",
+  "title": "lovendpieces",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "lovendpieces",
+  "local_dir": "games/ps:lovendpieces"
+}

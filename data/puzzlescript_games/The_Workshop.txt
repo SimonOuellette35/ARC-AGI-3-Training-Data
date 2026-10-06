@@ -1,0 +1,434 @@
+title The Workshop
+author bregehr
+homepage www.puzzlescript.net
+
+(ARC-AGI-3 rendering fix, 2026-08-20. ELEVEN objects RECOLOURED (eight declarations) and nothing else --
+no sprite art, no colour LAYOUT, no object, collision layer, legend entry, rule,
+level or win condition is touched, so the mechanic is bit-for-bit the game it
+was: solvers/generate_the_workshop_training.py --fuzz is the measurement of that
+(a native model driven against this interpreter -- the eleven shipped levels plus
+thousands of random boards with up to six blocks and six cutters, including
+cutters started on walls, on blocks and riding the player -- the whole board
+compared after every press), and --audit is the check on the fix: it renders
+every cell stack a board of this game can hold, at every board shape, and asserts
+they are all distinct.
+
+THE WIN CONDITION FOR IRON WAS INVISIBLE. `iron` shipped as `#d7dfed #b9c1ce`
+and `ironmarker` as `#b7b7b7 #cecccc`; the adapter quantizes all four of those
+onto ARC palette index 1, and both sprites paint every one of their sampled
+pixels, so both objects rendered as the same flat block of colour 1:
+
+    ironmarker      iron            iron on ironmarker
+    11111           ..111           11111
+    11111           11111           11111       -- and the game's third win
+    11111           11111           11111          condition is `all
+    11111           1111.           11111          ironmarker on iron`
+    11111           11...           11111
+
+--audit found exactly that, five identical pairs at every one of the eleven board
+shapes, all of them the same identity under one of the five things that can be
+stacked on an iron marker. Levels 4, 5, 8 and 10 are the ones that carry iron,
+and on those boards `this marker still needs its block` and `this marker is
+done` were the same picture. Level 5 is nine markers in a 3x3 and eight blocks
+that all have to swap, i.e. it is nothing BUT that distinction.
+
+THE WALL WAS THE LETTERBOX. `Wall` was `#010c21`, a near-black navy, which
+quantizes to ARC 5 -- and 5 is the colour `_render_frame` pads a non-square board
+out to 64x64 with. Every level of this game is drawn inside a wall border, so the
+frame showed a playfield surrounded by black with no seam between the black that
+is a WALL A CUTTER CAN DESTROY and the black that is merely the edge of the
+picture. Cutting is the entire second half of this game and how many wall layers
+sit behind a given wall decides whether a cut opens anything, so the one terrain
+the tool acts on was unreadable. (A pairwise composition matrix cannot catch
+this: the other half of the pair is not a composition. --audit tests it
+separately.)
+
+The six recolours, all of them just a palette index, chosen so that the floor,
+the wall, the three materials, the three markers and the cutter's two parts are
+eleven MUTUALLY DISTINCT ARC indices, and so that every material still differs
+from the marker it may be standing on:
+
+    Wall            #010c21          -> #333333       ARC 5 (pad) -> 4
+    stone           #828282 #727272  -> darkgray      ARC 2 (= floor) -> 3
+    stonemarker     #6b6a6a #565555  -> lightgray     ARC 3 -> 1
+    wood            #b7955f #93794e  -> orange        ARC 12/13 -> 12
+    woodmarker      #d1a151 ...      -> darkbrown     ARC 12/13 -> 13
+    iron            #d7dfed #b9c1ce  -> lightblue     ARC 1 -> 10
+    ironmarker      #b7b7b7 #cecccc  -> blue          ARC 1 -> 9
+    cutters (x4)    #ce4646 #d1d1d1  -> #ce4646 white ARC 8/1 -> 8/0
+
+`stone` and the floor were the second collision and it is the same shape as the
+iron one, one notch quieter: the block's own `#828282` is ARC 2, which is what
+`Background` (`gray`) renders as, so a stone was a rock drawn mostly in floor
+colour -- two pixels out of nine at the 3 px cells level 9 uses. The cutter's
+blade moved off ARC 1 because the stone MARKER moved onto it.
+
+The markers keep their original sprites, which paint all 25 pixels. That is
+deliberate and it is what makes a marker readable UNDER a block or under the
+player: the block sprite is transparent at (0,0), (0,1), (0,2), (1,0), (3,4),
+(4,2), (4,3), (4,4) and the player at (0,0), (0,4), (1,0), (1,4), (3,0), (3,4),
+(4,0), (4,2), (4,4), and `_render_cell_sprite` samples rows/cols {0,2,4} at
+cell_px 3, {0,1,3,4} at 4 and all five at 5 or more -- so both bodies leave
+sampled holes at every cell size these levels render at (3, 4, 5, 7, 8 and 9 px)
+and the marker's colour shows through all of them. --audit is the measurement.
+
+Nothing is done to the four cutter sprites' ART. They are already an exact orbit
+of the quarter turn -- rotate `cuttersup` and you get `cuttersright`, byte for
+byte -- which the rotation augmentation this game takes requires, since a quarter
+turn maps the mechanic the same way. --audit's second pass measures that pixel
+for pixel at every cell size. The game is deliberately NOT in
+`PuzzleScriptAdapter._FLIP_GAMES`: ACTION swings a cutter CLOCKWISE, a mirror
+takes clockwise to counter-clockwise, and the cutter art is mirror-symmetric as a
+SET -- so a mirrored board would show the identical picture for two different
+outcomes. The argument is spelled out in the generator's module docstring.)
+
+========
+OBJECTS
+========
+
+Background
+gray
+
+stonemarker
+lightgray lightgray
+11111
+10001
+10001
+10001
+11111
+
+woodmarker
+darkbrown darkbrown darkbrown
+12212
+20001
+20001
+10002
+12121
+
+ironmarker
+blue blue
+00000
+01110
+01110
+01110
+00000
+
+Wall
+#333333
+
+Player
+Black Orange White Blue
+.000.
+.111.
+22222
+.333.
+.3.3.
+
+stone
+darkgray darkgray
+...00
+.0000
+00001
+0011.
+11...
+
+wood
+orange orange
+...00
+.0000
+00001
+0011.
+11...
+
+iron
+lightblue lightblue
+...00
+.0000
+00001
+0011.
+11...
+
+cuttersup
+#ce4646 white
+1...1
+.1.1.
+.010.
+0...0
+0...0
+
+cuttersdown
+#ce4646 white
+0...0
+0...0
+.010.
+.1.1.
+1...1
+
+cuttersleft
+#ce4646 white
+1..00
+.10..
+..1..
+.10..
+1..00
+
+cuttersright
+#ce4646 white
+00..1
+..01.
+..1..
+..01.
+00..1
+
+beside
+YELLOW
+.....
+.....
+..0..
+.....
+.....
+
+
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+o = stone
+@ = stone and stonemarker
+$ = stone and woodmarker
+q = stone and ironmarker
+* = stonemarker
+& = wood and woodmarker
+` = wood and stonemarker
+1 = wood and ironmarker
+% = woodmarker
+- = wood
+I = iron
+x = ironmarker
+2 = iron and stonemarker
+3 = iron and woodmarker
+4 = iron and ironmarker
+U = cuttersup
+D = cuttersdown
+L = cuttersleft
+R = cuttersright
+cutters = cuttersup or cuttersdown or cuttersleft or cuttersright
+markers = stonemarker or woodmarker or ironmarker
+pushable = stone or wood or iron
+
+
+=======
+SOUNDS
+=======
+
+pushable MOVE 18757107
+wall destroy 24575107
+startlevel 74493908
+cutters move 22170307
+
+================
+COLLISIONLAYERS
+================
+
+Background
+markers
+Player, Wall, pushable
+cutters
+beside
+
+======
+RULES
+======
+
+[ >  Player | pushable] -> [  >  Player | > pushable  ]
+[ >  Player | cutters] -> [  >  Player | > cutters  ]
+[> cutters | cutters] -> [> cutters | > cutters]
+
+UP [ > player | cutters no cuttersup | wall] -> cancel
+DOWN [ > player | cutters no cuttersdown | wall] -> cancel
+LEFT [ > player | cutters no cuttersleft | wall] -> cancel
+RIGHT [ > player | cutters no cuttersright | wall] -> cancel
+[ > player | cutters | wall] -> [> player | | ]
+[ > cutters | cutters | wall] -> [> cutters | | ]
+
+
+
+[> pushable | pushable] -> [> pushable | > pushable ]
+[> pushable | cutters] -> [> pushable | > cutters ]
+[> cutters | pushable] -> [> cutters | > pushable]
+
+(cutters)
+ (checking if there are two cutters to grab, there shouldn't be)
+UP [action player no beside | no beside cuttersup] -> [action player beside | beside cuttersup ]
+DOWN [action player no beside | no beside cuttersdown] -> [action player beside | beside cuttersdown ]
+LEFT [action player no beside | no beside cuttersleft] -> [action player beside | beside cuttersleft ]
+RIGHT [action player no beside | no beside cuttersright] -> [action player beside | beside cuttersright ]
+
+UP [action player beside | no beside cuttersup] -> cancel
+DOWN [action player beside | no beside cuttersdown] -> cancel
+LEFT [action player beside | no beside cuttersleft] -> cancel
+RIGHT [action player beside | no beside cuttersright] -> cancel
+
+[beside] -> []
+
+ (Step one of moving cutter)
+UP [action player  | cuttersup] -> [player cuttersright | ]
+DOWN [action player  | cuttersdown] -> [player cuttersleft | ]
+LEFT [action player  | cuttersleft] -> [player cuttersup | ]
+RIGHT [action player | cuttersright] -> [player cuttersdown | ]
+
+ (Step two of moving cutter)
+RIGHT [player cuttersright | ] -> [player | cuttersright ]
+LEFT [player cuttersleft | ] -> [player | cuttersleft ]
+UP [player cuttersup | ] -> [player | cuttersup ]
+DOWN [player cuttersdown | ] -> [player | cuttersdown]
+
+[cutters wall] -> [wall]
+
+[cutters pushable] -> [pushable]
+
+
+==============
+WINCONDITIONS
+==============
+
+all stonemarker on stone
+all woodmarker on wood
+all ironmarker on iron
+
+=======
+LEVELS
+=======
+
+message Level 1 / 11
+
+#######
+#p.o.*#
+#######
+
+message Level 2 / 11
+
+#####
+#*.*#
+#.p.#
+#ooo#
+#...#
+#.*.#
+#####
+
+message Level 3 / 11
+
+########
+###..###
+#......#
+#p-*%o.#
+#......#
+########
+
+message Level 4 / 11
+
+#######
+#.....#
+#.`$*.#
+#.@$`.#
+#.p.o.#
+#.....#
+#######
+
+message Level 5 / 11
+
+######
+#...p#
+#.--.#
+#.q2.#
+#.--.#
+#....#
+######
+
+message Level 6 / 11
+
+#######
+#.....#
+#..-..#
+#.....#
+#.q2q.#
+#.2%2.#
+#.q2q.#
+#..p..#
+#######
+
+message Level 7 / 11
+
+############
+##....######
+##..p.######
+##....#...##
+##.%..#.-.##
+##....#...##
+##..r.######
+##....######
+############
+
+message Level 8 / 11
+message Press X at the handle to control the cutter.
+
+############
+##.........#
+#....u.p.*.#
+##.........#
+##.........#
+############
+########d.r#
+##...###...#
+##o.r###...#
+##...###...#
+############
+
+message Level 9 / 11
+
+############
+######uu####
+#..........#
+#.o.##.p#%.#
+#.i.#....x.#
+#.-.#..#.*.#
+#...#..#####
+############
+
+message Level 10 / 11
+
+####################
+#############..#####
+####.##..##.r..ooo##
+##.l.#....#.......##
+##.#.#..#.......p.##
+##.#.#....#.......##
+##.l.#.#.r#....***##
+####################
+####################
+
+message Level 11 / 11
+
+############
+##....r.####
+##.#.##.####
+##.......###
+##d#.u.i.###
+##...#######
+##...#######
+########.ux#
+##...###.p.#
+#....#.....#
+##.....#.###
+##...#...###
+############
+
+message Thank you for playing!
+message Please post feedback and tell me what you think!
+
+

@@ -1,0 +1,594 @@
+title Spider's Hollow
+author John Thyer
+again_interval 0.1
+
+(ARC-AGI-3 rendering fixes, 2026-08-18.  Nine objects repainted or redrawn:
+FIVE of them shipped as five rows of nothing (SpiderSleep and the four
+timekeeping marks), three are the web's three charge states and one is the
+floor of the opening scenes.  No object was added or
+removed, no collision layer moved, no rule and no level touched, and
+`solvers/generate_spiders_hollow_training.py` plans by stepping THIS
+interpreter (there is no re-implemented model that could drift from it), so
+the mechanic here is the shipped one by construction.  `--audit` is the
+regression test for what follows and `--plans` re-derives every level.
+
+1. THE WEB'S CHARGE WAS INVISIBLE, AND IT IS THE WHOLE GAME.  Web1, Web2 and
+   Web3 shipped with the same sprite AND the same two greys, so the three
+   states of the one mechanic that costs presses -- a web holds you for two
+   presses and lets you go on the third -- rendered pixel-identically.  A
+   frame could not say whether the next press would move you.  They are now a
+   charge ramp on the same lace pattern: grey (fresh, two presses to go),
+   yellow (one to go), white (the next press moves you).  Nothing reads a web's
+   colour; the rules match the three objects by name.
+
+2. WOOD WAS THE WALL.  `Wood` and `Wall` had the same five rows and all six of
+   their colours land on ARC 13, so the floor of the two opening scenes was
+   pixel-identical to the wall that stops you everywhere else -- a walkable
+   tile drawn as the game's one impassable tile.  Wood is now a two-tone plank
+   (12 over 13) and the wall keeps the solid maroon.
+
+3. THE SPIDER'S NEST WAS INVISIBLE.  `SpiderSleep` marks the cell a spider is
+   spawned into, which on the last level is the cell the player starts on and
+   must leave.  Its sprite was empty.  It is now four black CORNER pixels --
+   the four the Player sprite leaves transparent -- so it shows under the
+   player instead of hiding it.
+
+4. A CRATE ERASED THE WEB UNDER IT.  `Block` is the layer above the webs and
+   the web's lace had no pixel in any of the four corners the block's sprite
+   leaves clear, so a crate shoved onto a web rendered as a crate on bare
+   floor.  One pixel added to the bottom-right of all three web sprites (the
+   only change to their shared pattern) puts the charge back under it in the
+   web's own colour.
+
+5. THE COUNTDOWN WAS INVISIBLE.  `Timer` / `Timer2` marching one cell right per
+   turn toward a `TimerAlarm` IS the fuse on the spider spawn, and the solver's
+   admissible heuristic reads it, so leaving it undrawn would have been an
+   expert planning on something no frame shows.  Four distinct marks in the
+   margin: Timer a filled block, Timer2 an X, TimerAlarm a ring, TimerSleep a
+   cross.  They sit in their own top collision layer over cells nothing else
+   uses, except level 8's alarm, which is stamped on a wall.)
+
+========
+OBJECTS
+========
+
+( Background objects )
+
+Background
+Brown #8b5d2e
+00100 
+00001
+01000
+00100
+10000
+
+Entrance
+Brown  #ad7438
+00100 
+00001
+01000
+00100
+10000
+
+
+BackgroundBlack
+Black
+00000
+00000
+00000
+00000
+00000
+
+BackgroundRed
+Red
+00000
+00000
+00000
+00000
+00000
+
+Sky1
+#8fc2fc 
+00000
+00000
+00000
+00000
+00000
+
+Sky2
+#afd4ff
+00000
+00000
+00000
+00000
+00000
+
+Sky3
+#9ecbff
+00000
+00000
+00000
+00000
+00000
+
+Wood
+#c89b6a #a0522d #c89b6a
+00000
+11111
+00000
+22222
+11111
+
+BackgroundWeb
+#a8a8a8 #bdbdbd
+00000
+00000
+00000
+00000
+00000
+
+Leaf1
+#3f7f18 #5db724
+..0..
+.010.
+.100.
+.110.
+..11.
+
+Leaf2
+#3f7f18 #5db724
+.11..
+.110.
+.100.
+.010.
+..0..
+
+( Collision-detecting objects )
+
+Player
+#28A9C9 #d180fc (#f49ade) (#7DA012) #C3C3C3 #ebcb99 #2873c9
+.111.
+21312
+20002
+.000.
+.4.4.
+
+Fairy
+#fc6f86 #7DA012 #C3C3C3 #ebcb99 #ff3f5f
+.111.
+21312
+20002
+.000.
+.4.4.
+
+TrappedFairy
+#828282 #7DA012 #C3C3C3 #ebcb99 #8e8e8e
+.111.
+41314
+44444
+00000
+.444.
+
+
+Wall
+#52361b #3f2a14 #654321
+00000
+11111
+00000
+22222
+11111
+
+Hole
+Brown #8b5d2e Black DarkGrey
+.222.
+22222
+22222
+22222
+.222.
+
+Block
+#7a7a7a #b0b0b0 #4a4a4a
+.111.
+11002
+01202
+01022
+.222.
+
+Web1
+#a8a8a8 #bdbdbd
+.001. 
+0..01
+.01.0
+1.010
+.1.01
+
+Web2
+#ffdc00 #ffdc00
+.001. 
+0..01
+.01.0
+1.010
+.1.01
+
+Web3
+#ffffff #ffffff
+.001. 
+0..01
+.01.0
+1.010
+.1.01
+
+Spider
+Black DarkRed
+.....
+.000.
+01010
+.000.
+0...0
+
+SpiderRed
+Black Red
+.....
+.000.
+01010
+.000.
+0...0
+
+( Invisible control objects )
+
+SpiderSleep
+Black
+0...0
+.....
+.....
+.....
+0...0
+
+Path1
+#FFAAAA
+00000
+0...0
+0...0
+0...0
+00000
+
+Path2
+#55FF55
+00000
+0...0
+0...0
+0...0
+00000
+
+Path3
+#0000FF
+00000
+0...0
+0...0
+0...0
+00000
+
+RightPath 
+Blue
+.....
+.....
+..0..
+.....
+.....
+
+Timer
+Red
+.....
+.000.
+.000.
+.000.
+.....
+
+TimerAlarm
+Green
+00000
+0...0
+0...0
+0...0
+00000
+
+Timer2
+Yellow
+0...0
+.0.0.
+..0..
+.0.0.
+0...0
+
+TimerSleep
+LightRed
+..0..
+..0..
+00000
+..0..
+..0..
+
+=======
+LEGEND
+=======
+
+( Legend icons are largely arbitrary, next project I'll work out a better system )
+
+. = Background
+, = BackgroundBlack
+; = Sky1
+: = Sky2
+" = Sky3
+' = Wood
+# = Wall
+P = Player and Entrance
+W = Spider
+B = Block
+S = Web1 and Background
+D = Web1 and BackgroundWeb
+H = Hole and Background
+E = Hole and Wood
+Q = Web1 and Block
+$ = Wood and Fairy
+[ = Player and Wood
+L = Leaf1 and Sky1
+U = Leaf2 and Sky3
+I = Leaf2 and Sky1
+Y = Leaf1 and Sky3
+T = TrappedFairy and Web1 and BackgroundWeb
+G = Player and Web1 and BackgroundWeb and SpiderSleep
+! = Timer and BackgroundBlack
+@ = TimerAlarm and BackgroundBlack
+% = Player and SpiderSleep and Entrance
+& = TimerAlarm and Wall
+2 = Timer2 and BackgroundBlack
+* = TimerSleep and BackgroundBlack
+
+( Shortcut catch-all terms for defining rules and collisions )
+
+Path = Path1 or Path2 or Path3
+Obstacle = Wall or Block
+Leaf = Leaf1 or Leaf2
+Sky = Sky1 or Sky2 or Sky3
+StickyWeb = Web1 or Web2
+
+=======
+SOUNDS
+=======
+
+Player MOVE 36772507
+Block MOVE 57485107
+Web2 Create 72977302
+Web3 Create 72977302
+Sfx0 83744503
+startgame 92244503
+SpiderRed Create 76932302
+
+================
+COLLISIONLAYERS
+================
+
+Background
+BackgroundBlack, BackgroundWeb, BackgroundRed, Sky, Wood, Entrance
+Web1, Web2, Web3, Hole, Leaf
+Wall,Player,Block, Fairy, TrappedFairy, Spider
+SpiderRed, SpiderSleep
+Path1,Path2,Path3
+RightPath
+Timer, TimerAlarm, Timer2, TimerSleep
+
+======
+RULES
+======
+
+ ( Pushing blocks if you're stuck in a web )
+
+ [ > Player no StickyWeb | Block ] -> [ > Player | > Block ]
+
+ ( Defines web behavior )
+
+ [ Player | Web2 ] -> [ Player | Web1 ]
+ [ Player | Web3 ] -> [ Player | Web1 ]
+ [ > Player Web1 ] -> [ Player Web2 ]
+ [ > Player Web2 ] -> [ Player Web3 ]
+ 
+ ( Keeps player and spider from swapping places )
+ 
+ [ > Player | Spider ] -> [ Player | Spider ]
+ 
+ ( Spider can be pushed )
+ 
+ [ > Block | Spider ] -> [ > Block | > Spider]
+ 
+ ( Define fairy behavior during intro cutscene)
+ 
+ [ Stationary Fairy ] -> [randomDir Fairy] 
+
+ ( Win state )
+
+ [ > Player | Hole no Block ] -> [ | Player Hole ] Sfx0 Win 
+ 
+( Tweaked version of Maadball's pathfinding algorithm -- many thanks! )
+( Source: https://groups.google.com/forum/#!topic/puzzlescript/lHy9O4DuWhk )
+
+ [ Player ][ Spider | no Obstacle ] -> [ Player ][ Spider | Path1 ]
+ 
+startloop
+ [ Player Path1 ] -> [ Player Path1 ]
+ [ Player ][ Path1 | no Obstacle no Spider no Path3 ] -> [  Player ][ Path1 | Path2 ]
+ [ Player ][ Path2 | no Obstacle no Path1 ] -> [  Player ][ Path2 | Path3 ]
+ [ Player Path3 ] -> [ Player Path3 ]
+ [ Player ][ Path3 | no Obstacle no Path2 ] -> [ Player ][ Path3 | Path1 ]
+endloop
+
+[ Player Path ] -> [ Player Path RightPath ]
+
+startloop
+ [ Path3 RightPath | Path2 ] -> [ RightPath | Path2 RightPath ]
+ [ Path2 RightPath | Path1 ] -> [ RightPath | Path1 RightPath ]
+ [ Path1 RightPath | Path3 ] -> [ RightPath | Path3 RightPath ]
+endloop
+
+[ Path ] -> [ ]
+[ Player ] -> [ Player ]
+[ Spider | RightPath no Block] -> [ > Spider | ] 
+[ RightPath ] -> [ ]
+
+( Ends last room )
+
+ late[ TrappedFairy ][ SpiderRed ] -> [ TrappedFairy ][ SpiderRed]  Win
+
+( Death animation) 
+
+ [ > Spider | Player ] -> [ | SpiderRed ]
+ late [ SpiderRed ][ BackgroundBlack ] -> [ SpiderRed ][ BackgroundRed ]
+ 
+( Spider Spawning )
+
+ [ Timer ] -> [ Right Timer ]
+ [ Timer2 ] -> [ Right Timer2]
+ [ Timer2 | TimerAlarm ][ TimerSleep ] -> [ | ][ Timer ]
+ 
+ late [ Timer | TimerAlarm ][ SpiderSleep ] -> [ | ][Spider] 
+
+==============
+WINCONDITIONS
+==============
+
+( Defined in rules )
+
+=======
+LEVELS
+=======
+
+message Once upon a time, five tiny adorable fairies happened upon a hollow in a great old tree.
+
+::'''''''::
+::''$''''::
+::'''''$'::
+U"'''E'''""
+''''''''$""
+"Y$''''''""
+;;'''''''I;
+;;'''['''''
+;;''''''';L
+
+message The smallest and most fearful of the fairies peered inside, but was too afraid to go in.
+
+message The other four, who were more curious and adventurous, entered the tree. This left the little fairy all alone. 
+
+::'''''''::
+::'''''''::
+::'''''''::
+U"'''E'''""
+'''''''''""
+"Y'''''''""
+;;'''''''I;
+;;'''['''''
+;;''''''';L
+
+message She waited and waited, but her friends didn't return. Mustering her courage, she ventured in after them.
+
+,###,,,,,,,
+,#H#,,,,,,,
+,#.#,###,,,
+,#S###.#,,,
+,#SSS..#,,,
+######B##,,
+#P....B.#,,
+#####..##,,
+,,,,####,,,
+
+message This was unwise.
+
+,#######,,,
+,#P....##,,
+,#......#,,
+,###BBB##,,
+,,,#...#,,,
+#####S##,,,
+#H.SSS#,,,,
+#######,,,,
+,,,,,,,,,,,
+
+message You see, the brave little fairy didn't know about -me-.
+
+,###,,,,,,,
+,#.########
+,#.....SSS#
+,#.#####S.#
+,#B....##.#
+##.###.#..#
+#P.#SS.#H##
+##.#WS.###,
+,#######,,,
+
+message Watch out for my web little fairy. It's easy to get stuck.
+
+!,,#######,
+####.....#@
+#HS#..##.#,
+##S#...#.#,
+,#S##..#.#,
+,#SS..B#.#,
+,###....%#,
+,,,##B.###,
+,,,,####,,,
+
+!,,,,,,,@,,
+########,,,
+#%ssb..##,,
+#...b...##,
+######b..##
+,,####.bss#
+,,#hs.b.ss#
+,,####.b.##
+,,,,,#####,
+
+!,,,,,,,,,@
+,,#####,,,,
+###.b.###,,
+#s......#,,
+#.###ss.#,,
+#.h#ssb.#,,
+#bb%.b#.#,,
+###.....#,,
+,,#######,,
+
+!,,,,,#&##,
+,,,####SH#,
+,,,#..SS##,
+,,,#..BS.#,
+,###..B..#,
+,#%#SBBBS#,
+,#.......#,
+,#########,
+,,,,,,,,,,,
+
+message Don't worry. Like all the best fairy tales, this one has a happy ending.
+
+,#########,
+##...bb.%#,
+#.s#s...##,
+#.########,
+#s.s##ssh#,
+#bb.##s#s#,
+###ssssss#,
+,,########,
+,,,,,,,,,,,
+
+message The brave little fairy finds her friends.
+
+*,,,,,,,,,,
+,#########@
+,#DDTDDDD#,
+,#DDDDTDD#,
+,#DDDDDDG#,
+,#TDDDDDD#,
+,#DDDTDDD#,
+,#########@
+2,,,,,,,,,,
+
+message And she'll never be apart from them again.
+
+( End of code )

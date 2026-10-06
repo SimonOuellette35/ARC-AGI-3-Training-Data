@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:snake_crate",
+  "title": "Snake Crate",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Snake_Crate",
+  "local_dir": "games/ps:snake_crate"
+}

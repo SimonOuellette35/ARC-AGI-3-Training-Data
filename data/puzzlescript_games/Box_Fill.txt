@@ -1,0 +1,157 @@
+title Box Fill
+author Pichusuperlover
+homepage twitter.com/pichusuperlover
+noaction
+
+========
+OBJECTS
+========
+
+Background
+white
+
+Air
+white
+
+Wall
+brown
+
+(Box / TempBox: `lightbrown` is not a name the ARC-palette quantizer knows, so it
+ landed on the generic fallback (index 2, mid gray) by accident. Named
+ explicitly so the box colour is a decision rather than a fallback -- same
+ rendered index, so this changes no pixel.)
+Box
+gray
+
+TempBox
+gray
+
+(BoxCreator was `orange`, which quantizes to the SAME ARC index (12) as the
+ Wall's `brown` -- the creator sat in a corner of the wall frame and was
+ literally invisible, and WHERE it is is the whole game. Purple (15) is used by
+ nothing else here.)
+BoxCreator
+purple
+
+Button
+red
+
+GateDown
+lightblue
+
+GateUp
+darkblue
+
+=======
+LEGEND
+=======
+
+. = Air
+# = Wall
+P = BoxCreator
+B = Button and Air
+G = GateDown
+
+Player = BoxCreator or Box
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Air
+TempBox
+Button, GateDown
+BoxCreator, Wall, Box,GateUp
+
+======
+RULES
+======
+
+(Box Creator)
+[ > BoxCreator | Air ] -> [ BoxCreator | Air TempBox ]
+[ > BoxCreator | GateDown ] -> [ BoxCreator | GateDown TempBox ]
+[ > BoxCreator ] -> [ BoxCreator ]
+late [ TempBox ] -> [ Box ]
+
+(Gates)
+late [ Box Button ] [ GateDown ] -> [ Box Button ] [ GateUp ]
+
+
+==============
+WINCONDITIONS
+==============
+
+All Air on Box
+
+=======
+LEVELS
+=======
+
+#######
+#.....#
+#.....#
+#.....#
+#.....#
+#P....#
+#######
+
+#######
+#.....#
+#...#.#
+#...###
+#.....#
+#P....#
+#######
+
+#######
+#.....#
+#.###.#
+#...#.#
+#####.#
+#P....#
+#######
+
+#######
+#...G.#
+#...GG#
+#.....#
+#.....#
+#P...B#
+#######
+
+#######
+#..G..#
+#..G.B#
+#.#####
+#.....#
+#P....#
+#######
+
+#######
+#.G..##
+#.G..##
+#.#####
+#..G.B#
+#P.G..#
+#######
+
+#######
+#G....#
+#.#B#.#
+#####.#
+#.....#
+#P....#
+#######
+
+#######
+#.GB###
+#.#####
+#..GB##
+#.#####
+#P..GB#
+#######

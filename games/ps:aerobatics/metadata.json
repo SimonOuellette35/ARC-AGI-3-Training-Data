@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:aerobatics",
+  "title": "Aerobatics",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Aerobatics",
+  "local_dir": "games/ps:aerobatics"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:santas_great_escape",
+  "title": "Santa's Great Escape",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Santa's_Great_Escape",
+  "local_dir": "games/ps:santas_great_escape"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:pitman_mz_700",
+  "title": "Pitman MZ-700",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Pitman_MZ-700",
+  "local_dir": "games/ps:pitman_mz_700"
+}

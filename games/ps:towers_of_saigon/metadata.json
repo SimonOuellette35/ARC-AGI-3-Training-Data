@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:towers_of_saigon",
+  "title": "Towers of Saigon",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Towers_of_Saigon",
+  "local_dir": "games/ps:towers_of_saigon"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:the_dungeon_of_squeamish_chickens",
+  "title": "The Dungeon of Squeamish Chickens",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "The_Dungeon_of_Squeamish_Chickens",
+  "local_dir": "games/ps:the_dungeon_of_squeamish_chickens"
+}

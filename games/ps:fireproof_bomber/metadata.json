@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:fireproof_bomber",
+  "title": "Fireproof bomber",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Fireproof_bomber",
+  "local_dir": "games/ps:fireproof_bomber"
+}

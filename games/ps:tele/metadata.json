@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:tele",
+  "title": "Tele",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Tele",
+  "local_dir": "games/ps:tele"
+}

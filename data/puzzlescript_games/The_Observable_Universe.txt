@@ -1,0 +1,393 @@
+title The Observable Universe
+author Paul Jeffrey
+homepage www.paulevanjeffrey.com
+youtube ZWUlLHv7-64
+
+(ARC-AGI-3 rendering fix, 2026-08-19. Every sprite in the OBJECTS section below
+was repainted; not one rule, legend entry, collision layer, win condition or
+level was touched, so the mechanic is bit-for-bit the shipped game.
+solvers/generate_the_observable_universe_training.py --audit is the check, and
+--selfcheck / --plans / --symmetry all run against this file.
+
+ WHY IT HAD TO CHANGE. The art was built for a human looking at a 400px canvas
+ in two colours, and at the 6px and 4px cells this game renders at inside a
+ 64x64 ARC frame it said almost nothing:
+
+  * WALL2 WAS INVISIBLE. Wall2 is a solid Pink square and the Background it
+    stands on is solid Pink, so the entire pink universe's maze -- every wall
+    Player2 is blocked by -- rendered as empty floor. WallR was worse: its
+    sprite is five rows of "....." , i.e. fully transparent, so the barrier
+    that splits the two universes did not exist on screen at all.
+  * THE WIN CONDITION WAS INVISIBLE. Target is drawn "White Pink 11111 /
+    11111 / 11011 / 11111 / 11111" = a pink square with a white centre pixel,
+    and Player2 is drawn "Pink White ..... 00100 ....." = a pink square with a
+    white centre pixel. The same picture. Target2 and Player were the same
+    picture as each other too. So "the body is standing on its goal", which is
+    the only thing WINCONDITIONS says, was a colour swap between two objects
+    that could not be told apart in the first place.
+  * AND IT WAS ERASED ANYWAY. Player, PlayerR, Player2, Crate2 and Crate3 were
+    opaque 5x5 blocks, and the renderer draws Player above everything. A body
+    standing on its goal painted over the goal square completely.
+  * AT 4px THE CENTRE PIXEL DOES NOT EXIST. Levels 5 and 6 are 10x15, so
+    cell_px = 4 and the renderer samples sprite rows/cols 0,1,3,4 -- row 2 and
+    column 2 are never read. Every sprite whose whole message was its centre
+    pixel (Player, PlayerR, Player2, Player2R, Target, Target2) collapsed to a
+    flat square there, so Player and Wall both rendered as solid white.
+
+ THE SCHEME. This board stacks up to four objects in one cell -- a body (layer
+ 3), the other universe's wall or body (layer 4), a goal (layer 5) and the
+ shadow body (layer 6) all sit on the Player's goal square at the moment the
+ game is won -- and a 4px cell has sixteen pixels. So each COLLISION LAYER is
+ given one 2x2 corner of the sprite, which survives both cell sizes intact, and
+ within a corner the object is named by a colour no other object uses:
+
+    top-left      layer 3   Wall darkgrey / Player lightblue / Crate2 orange
+    bottom-right  layer 4   Wall2 + WallR grey / Player2 blue / Crate3 yellow
+    top-right     layer 5   Target green / Target2 red
+    bottom-left   layer 6   PlayerR lightblue / Player2R blue
+
+ Objects in one corner are in one collision layer and so are mutually
+ exclusive by construction: no composition this game can build can ever hide
+ another, and --audit asserts exactly that -- 90, 207 and 99 compositions for
+ the three board layouts, every one distinct at the cell size it renders at. The three walls additionally paint the centre cross (sprite row 2 and
+ column 2), which no other object uses and which the 4px sampling skips -- it
+ is free weight that makes a wall read as a wall at 6px and costs nothing at
+ 4px.
+
+ The floors keep the author's colours, so the two universes still read as a
+ pink half and a white half: Background is Pink and Background2 is White.
+ WallR is painted the same grey as Wall2 because it IS a Wall2 as far as the
+ rules go (both cancel a Player2 or Crate3 that pushes into them); it is told
+ apart by one missing corner pixel rather than by a colour, so nothing suggests
+ a mechanic that is not there. PlayerR and Player2R keep their body's colour --
+ they are the same body, and the shipped rules let PlayerR walk on WITHOUT the
+ Player when a crate2 ahead of it is jammed by a crate3, so the two marks
+ drifting apart is a real state the frame now shows.
+
+ The four decorative Arrows are the author's hint that a press moves the two
+ universes in opposite directions. They keep their shapes and their floor
+ colours and are drawn in purple, a colour nothing mechanical uses.)
+
+========
+OBJECTS
+========
+
+Background
+Pink
+00000
+00000
+00000
+00000
+00000
+
+Background2
+White
+00000
+00000
+00000
+00000
+00000
+
+
+Target
+Green
+...00
+...00
+.....
+.....
+.....
+
+Target2
+Red
+...00
+...00
+.....
+.....
+.....
+
+Wall
+DarkGray
+000..
+000..
+00000
+..0..
+..0..
+
+Wall2
+Gray
+..0..
+..0..
+00000
+..000
+..000
+
+WallR
+Gray
+..0..
+..0..
+00000
+..000
+..00.
+
+Player
+LightBlue
+00...
+00...
+.....
+.....
+.....
+
+PlayerR
+LightBlue
+.....
+.....
+.....
+00...
+00...
+
+Player2
+Blue
+.....
+.....
+.....
+...00
+...00
+
+Player2R
+Blue
+.....
+.....
+.....
+00...
+00...
+
+Crate2
+Orange
+00...
+00...
+.....
+.....
+.....
+
+Crate3
+Yellow
+.....
+.....
+.....
+...00
+...00
+
+
+Arrow1
+Pink Purple
+..1..
+..1..
+1.1.1
+.111.
+..1..
+
+Arrow2
+White Purple
+..1..
+.111.
+1.1.1
+..1..
+..1..
+
+ArrowL
+White Purple
+..1..
+.1...
+11111
+.1...
+..1..
+
+ArrowR
+Pink Purple
+..1..
+...1.
+11111
+...1.
+..1..
+
+=======
+LEGEND
+=======
+
+. = Background
+" = Background2
+# = Wall
+$ = Wall2
+P = Player
+R = Player and PlayerR
+* = Player2 and Player2R
+2 = Crate2 and Background
+B = Crate2 and Arrow1
+C = Crate2 and ArrowR
+3 = Crate3 and Background2
+N = Crate3 and Arrow2
+D = Crate3 and ArrowL
+@ = Player2 and Background2
+O = Wall2 and Target
+L = Wall and Target2
+F = WallR
+A = Arrow1
+W = Arrow2
+
+=======
+SOUNDS
+=======
+
+Player move 41608706
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Background2, Arrow1, Arrow2, ArrowR, ArrowL
+Player, Wall, Crate2
+Player2, Wall2, Crate3, WallR
+Target, Target2
+PlayerR, Player2R
+
+
+======
+RULES
+======
+
+
+[ > Player ] [ Player2 ] -> [ > Player ] [ < Player2 ]
++ [ > Player ] [ PlayerR ] -> [ > Player ] [ > PlayerR ]
++ [ > Player ] [ Player2R ] -> [ > Player ] [ < Player2R ]
++ [ > Player2 ] [ Player2R ] -> [ > Player2 ] [ > Player2R ]
+
+[ > Player | Crate2 ] -> [ > Player | > Crate2 ]
+[ > PlayerR | Crate2 ] -> [ > PlayerR | > Crate2 ]
+[ > Crate2 | Crate2 ] -> [ > Crate2 | > Crate2 ]
+
+[ > Player | Crate3 ] -> [  Player |  Crate3 ]
+[ > PlayerR | Crate3 ] -> [  PlayerR |  Crate3 ]
+[ > Crate2 | Crate3 ] -> [ Crate2 | Crate3 ]
+
+[ > Player2 | Crate3 ] -> [ > Player2 | > Crate3 ]
+[ > Player2R | Crate3 ] -> [ > Player2R | > Crate3 ]
+[ > Crate3 | Crate3 ] -> [ > Crate3 | > Crate3 ]
+
+[ > Player2 | Crate2 ] -> [ Player2 | Crate2 ]
+[ > Player2R | Crate2 ] -> [ Player2R | Crate2 ]
+[ > Crate3 | Crate2 ] -> [ Crate3 | Crate2 ]
+
+
+
+
+
+
+[ > PlayerR | Wall ] -> cancel
+[ > PlayerR | Crate2 | Wall ] -> cancel
+[ > Player2 | Wall2 ] -> cancel
+[ > Player2 | WallR ] -> cancel
+[ > Player2R | Wall2 ] -> cancel
+[ > Player2R | WallR ] -> cancel
+[ > Crate2 | Wall ] -> cancel
+[ > Crate3 | Wall2 ] -> cancel
+[ > Crate3 | WallR ] -> cancel
+[ > Crate2 | Target ] -> cancel
+[ > Crate3 | Target2 ] -> cancel
+
+
+
+
+
+
+
+==============
+WINCONDITIONS
+==============
+
+Some Target on Player and
+Some Target2 on Player2
+
+
+=======
+LEVELS
+=======
+
+Message The multiverse (or meta-universe) is the hypothetical set of infinite or finite possible universes that together comprise everything that exists and can exist.
+
+Message  The various universes within the multiverse are sometimes called parallel or MIRROR universes.
+
+#####$$$$$
+#R..OL""@$
+#####$$$$$
+
+Message The entirety of space, time, matter, and energy as well as the physical laws and constants that describe them are included in these mirror universes.
+
+#####$$$$$
+#r..F#"""$
+#..AF#"""$
+#..22#"""$
+#..Co33""$
+#..22lD""$
+#...F33""$
+#...F#W""$
+#...F#""@$
+#####$$$$$
+
+Message energy,
+
+#####$$$$$
+#...F#"3"$
+#.R.F#3L3$
+#...F333"$
+#...F#""3$
+#...F#"""$
+#.222#"""$
+#2O2F#"@"$
+#.2.F#"""$
+#####$$$$$
+
+Message religion,
+
+#####$$$$$
+#...#$"""$
+#2R.#$"L3$
+#.2.#$"33$
+#...#$"""$
+#2..#$"3"$
+#2O##$$@3$
+#2###$$$3$
+#...#$"""$
+#####$$$$$
+
+Message space,
+
+###########$$$$
+#...2.....F#""$
+#2##.....F#3"3$
+#.O#.R..F#33""$
+#.##...F#"333"$
+#.22..F#"""$$"$
+#..22F#""@"$L"$
+#2.2F#"""""$$3$
+#.2F#"""""3"""$
+####$$$$$$$$$$$
+
+Message and time,
+
+###############
+#R..2.....#.2.#
+#..#.....2.2.2#
+#.............#
+#FFFFFF2F2F2FO#
+$L############$
+$"""3"3"""""3"$
+$""$"""""3""""$
+$"3"3"3""""""@$
+$$$$$$$$$$$$$$$
+
+
+
+
+
+

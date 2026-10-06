@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:add_man_2_this_time_its_arithmetical",
+  "title": "Add Man 2  This Time It's Arithmetical",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Add_Man_2__This_Time_It's_Arithmetical",
+  "local_dir": "games/ps:add_man_2_this_time_its_arithmetical"
+}

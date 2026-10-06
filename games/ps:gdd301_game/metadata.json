@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:gdd301_game",
+  "title": "GDD301 Game",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "GDD301_Game",
+  "local_dir": "games/ps:gdd301_game"
+}

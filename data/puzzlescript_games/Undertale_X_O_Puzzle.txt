@@ -1,0 +1,163 @@
+title Undertale X/O Puzzle
+author Toby Fox, transcribed by PKRB
+homepage www.puzzlescript.net
+
+(ARC-AGI-3 rendering fix, 2026-08-22. ONE sprite redrawn (Button) and TWO colour
+pairs re-picked (TargetFresh, TargetBaked). No object, collision layer, rule,
+legend entry, level, sound or win condition is touched, so the mechanic is
+bit-for-bit the game it was. The check is
+solvers/generate_undertale_x_o_puzzle_training.py --audit, which renders every
+cell composition a settled board can show, at both cell sizes the two levels
+use, and asserts they are pairwise distinct.
+
+1. THE WIN WAS NOT DRAWN. Button shipped as two bars on rows 2-3, columns 1-3 --
+   exactly the footprint the Player's 5x5 paints over, Player being the higher
+   collision layer. So `player on button`, which is one third of the win
+   condition and the frame the whole episode aims at, rendered PIXEL-IDENTICAL
+   to a player standing on bare floor at both 7px and 5px cells. Button is now
+   drawn on the four CORNERS as well, which are among the nine pixels the Player
+   leaves transparent, and the corners are a closed orbit of the rotation group
+   the adapter augments with.
+
+       Player transparent  (0,0) (0,4) (1,0) (1,4) (3,0) (3,4) (4,0) (4,2) (4,4)
+       Button now paints   (0,0) (0,4) (4,0) (4,4)  + a 3x3 body for the bare cell
+
+2. THE X AND THE O WERE SOLID BLOCKS, AND THE X WAS WALL-COLOURED. `blue` and
+   `darkblue` are both ARC index 9 and `green` and `darkgreen` are both 14 (the
+   palette has exactly one green), so TargetFresh's diagonal X and TargetBaked's
+   ring quantized away into flat blocks -- and TargetFresh's flat 9 is the Wall's
+   own colour, on boards that are mostly wall. The author's ART already draws the
+   game's title: TargetFresh's `0` pixels are both diagonals (an X) and
+   TargetBaked's are a ring (an O). Repainting the second colour of each pair
+   `white` -- the Background's own paper colour -- lets those shapes through
+   untouched, and TargetFresh's first colour moves off blue to `purple` (15,
+   unused by anything else here). TargetBurnt already had two distinct colours
+   (red 8 / darkred 13) and is left alone.
+)
+
+========
+OBJECTS
+========
+
+Background
+lightblue white
+11111
+01111
+11101
+11111
+10111
+
+
+TargetFresh
+purple white
+01.10
+10101
+.101.
+10101
+01.10
+
+TargetBaked
+green white
+10001
+01110
+01.10
+01110
+10001
+
+TargetBurnt
+red darkred
+.101.
+10101
+10101
+01110
+00000
+
+Button
+gray darkgray
+0...0
+.111.
+.111.
+.111.
+0...0
+
+Wall
+darkblue lightblue blue
+.22..
+0112.
+01112
+01112
+.000.
+
+Player
+brown yellow pink Blue
+.000.
+.111.
+22222
+.333.
+.3.3.
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+X = TargetFresh
+: = Button
+Target = TargetFresh or TargetBaked or TargetBurnt
+
+=======
+SOUNDS
+=======
+
+TargetBaked create 43049507
+TargetBurnt create 43794102
+sfx0 59967502
+endlevel 25515703
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target, Button
+Player, Wall
+
+======
+RULES
+======
+
+late [ Player TargetBaked ] -> [ Player TargetBurnt ]
+
+late [ Player TargetFresh ] -> [ Player TargetBaked ]
+
+[ Player Button ] [ Target ] -> [ Player Button ] [ TargetFresh ] sfx0
+
+==============
+WINCONDITIONS
+==============
+
+No TargetFresh
+No TargetBurnt
+All Player on Button
+
+=======
+LEVELS
+=======
+
+P...:....
+.#######.
+..X.#.X..
+.#######.
+.........
+
+............
+P..####.##..
+..#.X..X.X#.
+..#.###X#X#.
+:.#..X.XXX#.
+....X##X.#..
+....XXXX....
+...#######..

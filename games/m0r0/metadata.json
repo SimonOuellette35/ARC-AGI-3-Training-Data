@@ -1,0 +1,18 @@
+{
+  "game_id": "m0r0-dadda488",
+  "title": "M0R0",
+  "default_fps": 7,
+  "tags": [
+    "keyboard_click"
+  ],
+  "baseline_actions": [
+    30,
+    209,
+    83,
+    86,
+    436,
+    126
+  ],
+  "local_dir": "environment_files/m0r0/dadda488",
+  "date_downloaded": "2026-04-01T18:20:17.293417+00:00"
+}

@@ -1,0 +1,15 @@
+{
+    "game_id": "flood",
+    "title": "Flood Fill",
+    "tags": ["puzzle", "flood-fill", "color", "strategy"],
+    "level_tags": [
+        ["small-grid", "easy"],
+        ["medium-grid", "medium"],
+        ["large-grid", "hard"],
+        ["expert-grid", "expert"],
+        ["16x16-6colors", "extra-hard"],
+        ["18x18-6colors", "master"],
+        ["20x20-7colors", "grandmaster"]
+    ],
+    "baseline_actions": [8, 14, 20, 30, 40, 55, 70]
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:touchdown_heroes_prototype",
+  "title": "Touchdown Heroes (Prototype)",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Touchdown_Heroes_(Prototype)",
+  "local_dir": "games/ps:touchdown_heroes_prototype"
+}

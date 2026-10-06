@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:castle_elsewhere",
+  "title": "Castle Elsewhere",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Castle_Elsewhere",
+  "local_dir": "games/ps:castle_elsewhere"
+}

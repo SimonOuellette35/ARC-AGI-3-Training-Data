@@ -1,0 +1,458 @@
+title Touchdown Heroes (Prototype)
+author Matt Ventre
+
+(ARC-AGI-3 rendering fix, 2026-08-21. FIVE sprites redrawn -- Yardline, Ball,
+Lineman, Blitzer, Stalker. No colour name, object, collision layer, legend
+entry, rule, level or win condition is touched, so the mechanic is bit-for-bit
+the game it was: solvers/generate_touchdown_heroes_training.py --selfcheck is
+the measurement of that (a native model of every rule, fuzzed against this
+interpreter -- the whole board plus the win flag compared after every press),
+and --audit is the check on the fix: it renders every cell stack a board of
+this game can hold, at both board shapes the ten levels use, and asserts they
+are all distinct.
+
+THE THREE DEFENDERS WERE THE SAME SPRITE. Defense, Blitzer and Stalker shipped
+pixel-for-pixel identical -- same five colours, same five rows -- and they are
+the whole game: Defense MIRRORS your press, Blitzer walks DOWN on every press
+but LEFT, and Stalker steps one square toward you whenever it shares your row
+or column. Three completely different threats drawn as one red man. Blitzer is
+now dark-red with a yellow stance, Stalker keeps the red body under a yellow
+head; Defense is untouched, so it still reads as the original.
+
+THE 16-ROW LEVELS RENDER AT 4 PIXELS PER CELL, and _render_frame's 5->4
+decimation keeps rows and columns 0, 1, 3, 4 -- it DROPS the middle row and
+the middle column. Three things lived only there:
+
+  * the Yardline was a single WHITE row across the sprite's middle row, so on
+    levels 4-9 the yard markers -- the thing that tells you how far you have
+    left to run -- rendered as bare turf. The stripe moved to row 1.
+  * the Ball's only pixel outside the 3x3 a body covers was its bottom-middle,
+    so `player carrying the ball` and `player standing on nothing` were the
+    SAME 4x4 cell. That is the game's one hidden state bit (the ball moves only
+    while you are on it, and the win is the BALL in the endzone), so it had to
+    show through. The ball now carries the top-left and bottom-right CORNERS,
+    which every body on the fifth collision layer leaves transparent and which
+    the decimation keeps.
+
+    Only four pixels are both transparent under every body and kept by the
+    decimation -- the four corners -- so the ball and the yardline SPLIT them
+    rather than both claiming all four: the ball took the leading diagonal, the
+    yardline the anti-diagonal (that is what its two extra white pixels are
+    for). Without the split, a yard marker under a ball-carrier was invisible
+    and, on the 16-row boards, so was the endzone under one.
+  * the Lineman differed from the Player in one row of two pixels. It is now
+    a black-shouldered blue block, which no longer collides with the Player at
+    either cell size.
+)
+
+color_palette whitingjp       
+again_interval 1
+text_color LIGHTGREEN
+require_player_movement
+noaction
+noundo
+debug
+
+
+(
+
+TO DO:
+
+ - More levels
+ - Smarter defense
+ - Turn counter
+ - Tackle animation
+ 
+)
+
+========
+OBJECTS
+========
+
+(///////////// Field Objects ////////////////////)
+
+Background 	. (Turf)
+GREEN LIGHTGREEN
+01000
+00001
+01000
+00010
+00000
+
+	Sideline 	# (Out of bounds, can't go through it)
+	WHITE LIGHTGRAY
+	01000
+	00001
+	01000
+	00010
+	00000
+
+	Yardline 	- (Just marks off distance. The more yardlines = higher level)
+	GREEN LIGHTGREEN WHITE
+	00002
+	22222
+	00000
+	00000
+	20000
+
+	Endzone		= (When the player and ball are in the endzone, you win the level)
+	RED DARKRED WHITE
+	00000
+	01000
+	00000
+	00100
+	22222
+    
+    Ball		B (Gotta run the rock to score)
+	BROWN DARKBROWN
+	0....
+	.000.
+	.010.
+	.000.
+	....0
+
+
+(///////////// Player States ////////////////////)
+
+Player 		Q (That's you, pal)
+WHITE BLACK BLUE LIGHTBLUE YELLOW
+.232.
+.232.
+13331
+43334
+.1.1.
+
+	Tackled 	T (When you go down)
+	WHITE BLACK BLUE LIGHTBLUE YELLOW
+	.1.1.
+	.333.
+	13331
+	42424
+	.232.
+
+	Celebrate	C (Your TD dance)
+	WHITE BLACK BLUE LIGHTBLUE YELLOW
+	.232.
+	42424
+	13331
+	.333.
+	.1.1.
+
+
+(///////////// Offensive Players ////////////////////)
+
+Lineman		L (Keeps you from getting hit)
+WHITE BLACK BLUE LIGHTBLUE YELLOW
+.222.
+12221
+12221
+42224
+.4.4.
+
+(We don't use him just yet)
+Reciever	R
+WHITE
+
+
+(///////////// Defensive Players ////////////////////)
+
+
+Defense		D (Standard defense, he just kind of jumps around trying to make a tackle, not too bright)
+WHITE BLACK RED DARKRED YELLOW
+.232.
+.242.
+13331
+43334
+.1.1.
+
+Blitzer		Z (This guy comes after you, you'll have to use your blockers and probably some other defenders, too)
+WHITE BLACK RED DARKRED YELLOW
+.343.
+.343.
+13331
+41114
+.4.4.
+
+Stalker		S (Chases after the ballcarrier. Slightly more intelligent.)
+WHITE BLACK RED DARKRED YELLOW
+.444.
+.242.
+12221
+42224
+.1.1.
+
+
+
+=======
+LEGEND
+=======
+Background = Background or Yardline
+
+
+=======
+SOUNDS
+=======
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Yardline
+Endzone
+Ball
+Sideline, Player, Reciever, Celebrate, Defense, Stalker, Tackled, Lineman, Blitzer
+
+======
+RULES     
+======     
+
+(////////////// PLAYER MOVEMENTS ////////////////)
+(Carrying the ball)
+[ > Player Ball ] -> [ > Player > Ball ]
+
+
+(////////////// OFFENSE MOVEMENTS ////////////////)
+
+
+(////////////// DEFENSE MOVEMENTS ////////////////)
+
+(Defense shuffles around the field mirroring the player - kind of the idiot)
+[ Parallel Player ] [ Defense ] -> [ Parallel Player ] [ Parallel Defense ]
+[ Perpendicular Player ] [ Defense ] -> [ Perpendicular Player ] [ Perpendicular Defense ]
+
+(Blitzer rushes in quickly after the QB)
+[ UP Player ] [ Blitzer ] -> [ UP Player ] [ DOWN Blitzer ]
+[ DOWN Player ] [ Blitzer ] -> [ DOWN Player ] [ DOWN Blitzer ]
+[ LEFT Player ] [ Blitzer ]  -> [ LEFT Player ] [ Blitzer ]
+[ RIGHT Player ] [ Blitzer ] -> [ RIGHT Player ] [ DOWN Blitzer ]  
+
+
+(Defense that stalks the QB when he crosses his line of sight)
+[ Stalker | ... | Player ] -> [ > Stalker | ... | Player ]
+
+
+(////////////// GAME STATES ////////////////)
+late [ Ball Endzone ]	-> [ Celebrate Endzone ] again
+late [ Celebrate Endzone ]  -> WIN
+late [ Player | Defense ] 	-> [ Tackled | Player ] again
+late [ Player | Stalker ]   -> [ Tackled | Player ] again
+late [ Player | Blitzer ]   -> [ Tackled | Player ] again
+late [ Tackled ]	-> RESTART
+
+
+
+==============
+WINCONDITIONS
+==============
+
+=======     
+LEVELS
+=======
+
+(Test area)
+
+(End test area)
+
+message Pick up the ball and run toward the endzone.
+
+#==========#
+#..........#
+#..........#
+#..........#
+#----------#
+#..........#
+#..B.......#
+#..Q.......#
+############
+
+message Aw, yeah! Now try with a linebacker in your way.
+
+#==========#
+#..........#
+#....D.....#
+#..........#
+#----------#
+#..........#
+#..B.......#
+#..Q.......#
+############
+
+message Boom! Smoked him! Don't get tackled or you'll have to start the down over again.
+
+#==========#
+#..........#
+#..S....D..#
+#..........#
+#----------#
+#..........#
+#..B.......#
+#..Q.......#
+############
+
+message They're coming on strong. Let's give you some blockers. They're kind of slow. As in, they don't move.
+
+#==========#
+#..........#
+#..S.D..S..#
+#..........#
+#----------#
+#..L...L...#
+#..B.......#
+#..Q.......#
+############
+
+message But, they're built like tanks!
+
+#==========#
+#.D.L......#
+#..........#
+#.....S....#
+#..........#
+#----------#
+#..L..D....#
+#..........#
+#.....L....#
+#.....S....#
+#----------#
+#..........#
+#.....L....#
+#.....B....#
+#.....Q....#
+############
+
+message Keep at it. You're on your way to becoming a Touchdown Hero.
+
+#==========#
+#..........#
+#.S......L.#
+#..........#
+#..........#
+#----L--S--#
+#..........#
+#.D........#
+#..........#
+#......D...#
+#----L-----#
+#..........#
+#..........#
+#......B...#
+#......Q...#
+############
+
+(Not so hard - needs work)
+#==========#
+#..........#
+#.Z......L.#
+#..S.......#
+#..........#
+#----L--S--#
+#..........#
+#..........#
+#.L........#
+#..........#
+#----------#
+#..........#
+#..........#
+#.B........#
+#.Q........#
+############
+
+
+
+(Super hard)
+#==========#
+#..........#
+#....L..S..#
+#..........#
+#....D.....#
+#----------#
+#Z...L.....#
+#..........#
+#....D.....#
+#..........#
+#----------#
+#..........#
+#....L.....#
+#....B.....#
+#....Q.....#
+############
+
+
+#==========#
+#..........#
+#..........#
+#...L...S..#
+#.........L#
+#L---------#
+#.....Z....#
+#...S...L..#
+#..........#
+#..........#
+#----D-----#
+#....L....L#
+#..........#
+#.......B..#
+#.......Q..#
+############
+
+
+#==========#
+#..........#
+#..........#
+#....Z.....#
+#..D....S..#
+#----------#
+#.......L..#
+#..........#
+#.L........#
+#..........#
+#----------#
+#.D.....S..#
+#....L.....#
+#....B.....#
+#....Q.....#
+############
+
+( Blank Grid
+
+#==========#
+#..........#
+#..........#
+#..........#
+#..........#
+#----------#
+#..........#
+#..........#
+#..........#
+#..........#
+#----------#
+#..........#
+#..........#
+#..........#
+#..........#
+############
+
+)
+
+
+(#==========#
+#.........D#
+#D.........#
+#..........#
+#..........#
+#..........#
+#...S......#
+#..........#
+#..........#
+#......S...#
+#..........#
+#..........#
+#.D........#
+#..........#
+#..........#
+#..B.......#
+#..Q.......#
+############)
+

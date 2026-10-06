@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:aperture_science_sokoban_testing_initiative",
+  "title": "Aperture Science Sokoban Testing Initiative",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Aperture_Science_Sokoban_Testing_Initiative",
+  "local_dir": "games/ps:aperture_science_sokoban_testing_initiative"
+}

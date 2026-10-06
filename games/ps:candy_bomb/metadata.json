@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:candy_bomb",
+  "title": "Candy Bomb",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Candy_Bomb",
+  "local_dir": "games/ps:candy_bomb"
+}

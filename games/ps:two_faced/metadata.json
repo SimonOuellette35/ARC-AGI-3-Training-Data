@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:two_faced",
+  "title": "Two-faced",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Two-faced",
+  "local_dir": "games/ps:two_faced"
+}

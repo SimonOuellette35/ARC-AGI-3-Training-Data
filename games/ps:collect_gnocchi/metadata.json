@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:collect_gnocchi",
+  "title": "Collect Gnocchi",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Collect_Gnocchi",
+  "local_dir": "games/ps:collect_gnocchi"
+}

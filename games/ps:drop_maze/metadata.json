@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:drop_maze",
+  "title": "Drop Maze",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Drop_Maze",
+  "local_dir": "games/ps:drop_maze"
+}

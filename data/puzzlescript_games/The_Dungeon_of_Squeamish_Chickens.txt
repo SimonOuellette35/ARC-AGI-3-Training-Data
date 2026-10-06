@@ -1,0 +1,402 @@
+(ARC-AGI-3 rendering fix, 2026-08-19. ONE COLOUR. The objects, the collision
+layers, every rule, the levels and the win conditions are untouched, so nothing
+mechanical moved: solvers/generate_squeamish_chickens_training.py --selfcheck is
+the measurement of that (a native model of the mechanic fuzzed against this
+interpreter, the whole board compared after every single press) and --audit is
+the check on the fix itself -- every cell stack the game can show, at all seven
+board shapes.
+
+THE CRATE ERASED WHATEVER IT WAS STANDING ON, INCLUDING THE WIN. Crate's sprite
+`01110 / 10101 / 11011 / 10101 / 01110` uses both of its colours and no
+transparency, so it is an opaque 5x5 block. Target is a bare `DarkBlue` with no
+pixel matrix, i.e. a solid square, and one of the two win conditions is
+`All Target on Crate` -- so a crate that was home rendered pixel-for-pixel like
+a crate that was not, at every one of the seven board shapes (4, 5, 6 and 7 px
+cells). The same block also hid a Coin a crate had been shoved onto, which is
+the other win condition and a cell that has to be uncovered again to finish the
+level. The player did not have this problem: its sprite already leaves nine
+pixels transparent and a target reads through them, which is what makes the
+crate the anomaly rather than the convention.
+
+The fix is the crate's FIRST colour, #ad7f5a, replaced by `transparent`. That
+colour is the lattice's light half and it occupies exactly the nine pixels of
+the X -- the four corners, the four diagonal neighbours of the centre, and the
+centre -- so the crate keeps its shape, drawn in its darker #896446 alone, and
+what is underneath shows through the X. Nine pixels rather than a token gap
+because the smallest board is 12x13, i.e. 4 px per cell, where a 5x5 sprite is
+decimated and a one-pixel window is not guaranteed to survive; the audit
+confirms all 32 compositions stay distinct at 4 px too. Corners alone would not
+have been enough either: Coin is itself transparent at its four corners, so a
+crate on a coin would have gone back to looking like a crate on bare floor.
+
+Nothing else needed touching. Spoike (black) and Spoike2 (red) -- two spikes
+drawn as the same five-pixel X whose rules are completely different -- already
+quantise to different palette indices, as do Wall, WallDark, Background and
+BackgroundDark, which is four greys the 16-colour ARC palette happens to keep
+apart. NoCoin stays `transparent` on purpose: it IS a collected coin, and
+--audit checks that as a requirement rather than excusing it as a collision.)
+
+title The Dungeon of Squeamish Chickens
+author Ampersand_S
+homepage www.puzzlescript.net
+background_color #4f4f4f
+text_color black
+again_interval .2
+
+========
+OBJECTS
+========
+
+Background 
+#c1c1c1 Gray 
+00010
+11111
+01000
+11111
+00010
+
+BackgroundDark
+#919191 #6d6d6d
+00010
+11111
+01000
+11111
+00010
+
+Target 
+DarkBlue    
+
+Wall 
+#606060 #444444
+00010
+11111
+01000
+11111
+00010
+
+WallDark
+#4c4c4c #3f3f3f
+00010
+11111
+01000
+11111
+00010
+
+Player 
+#ffdbad black brown
+.000.
+11111
+.111.
+.2.2.
+.2.2.
+
+Crate 
+transparent #896446 
+01110
+10101
+11011
+10101
+01110
+
+Spoike
+#333333
+0.0.0
+.0.0.
+..0..
+.0.0.
+0.0.0
+
+Spoike2
+red
+0.0.0
+.0.0.
+..0..
+.0.0.
+0.0.0
+
+PlayerDead
+red darkred
+.01.0
+..01.
+01...
+....0
+0101.
+
+Coin
+yellow white #e0d326
+.112.
+10002
+10002
+20002
+.222.
+
+NoCoin
+transparent
+
+Background2
+#bababa #727272 #9e9e9e
+00000
+02221
+02221
+02221
+11111
+
+BackgroundTop
+#bababa #727272 #9e9e9e
+00000
+22222
+22222
+22222
+11111
+
+BackgroundSide 
+#bababa #727272 #9e9e9e
+02221
+02221
+02221
+02221
+02221
+
+
+Chicken
+red yellow black brown
+.111.
+11210
+.111.
+.3.3.
+3...3
+
+BossChick1
+red blue black brown
+.111.
+01211
+.111.
+.3.3.
+3...3
+
+BossChick2
+red orange black brown
+.111.
+01211
+.111.
+.3.3.
+3...3
+
+proj
+#9d58e8 #7432bc purple
+..012
+.0012
+0012.
+.0012
+..011
+
+Background3
+#804000 #994d00
+01010
+00000
+10101
+00000
+01010
+
+Wall2
+#00b300 #009900
+01010
+11111
+10101
+11111
+01010
+
+DeadChick
+red darkred	
+.01.0
+..01.
+01...
+....0
+0101.
+
+SpecialCoin
+#30d190 #44ffb4 #1da56e
+.112.
+10002
+10002
+20002
+.222.
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+L = Player and Background2
+* = Crate
+O = Target
+% = Spoike
+$ = Spoike2
+- = Background2
+z = BackgroundTop
+x = BackgroundSide
+& = WallDark
+C = Coin
+0 = NoCoin
+! = Chicken
+@ = BossChick1
+b = Bosschick2
+n = proj
+, = Background3
+a = Wall2
+s = Player and Background3
+d = Spoike and Background3
+f = Spoike2 and Background3
+g = Chicken and Background3
+h = Crate and Background3
+j = DeadChick
+k = SpecialCoin
+i = BackgroundDark
+
+
+
+=======
+SOUNDS
+=======
+
+endlevel 11238506
+player move 97366908
+sfx2 99447100
+sfx0 8240907
+sfx1 48821702
+sfx3 82622302
+sfx4 92272305
+sfx5 7443
+startgame 39256106
+
+================
+COLLISIONLAYERS
+================
+Background
+Target, PlayerDead, DeadChick Background2, BackgroundTop, BackgroundSide, NoCoin, Background3, Coin, SpecialCoin, BackgroundDark
+Player, Wall, WallDark, Crate, Spoike, Spoike2, Chicken, BossChick1, BossChick2, proj, Wall2
+
+
+======
+RULES     
+======     
+
+[ >  Player | Crate ] -> [  >  Player | > Crate  ]
+[ > Player | Spoike] -> [  PlayerDead  | Spoike  ] sfx1
+[ Player | Spoike2] -> [PlayerDead | Spoike2 ] sfx3
+[ > Player | Coin ] -> [ > Player | NoCoin ] sfx2
+[ Chicken | ... | Player ] -> [ > Chicken | ... | Player ] sfx4
+[ Player | Chicken] -> [  PlayerDead  | Chicken ] sfx1
+[ Player | BossChick1 ] -> [  PlayerDead  | BossChick1 ] sfx1
+[ proj ] -> [left proj]
+[ > Player | proj ] -> [  PlayerDead  | proj ] sfx1
+[ > player | BossChick2 ] -> [ Player | up BossChick2  ]
+[ > Player | SpecialCoin ] -> [ > Player | NoCoin ] sfx5
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Crate   
+no Coin
+no SpecialCoin
+
+=======     
+LEVELS
+=======
+
+message Welcome!
+message How to play: Put all boxes on holes and collect all coins!
+message Oh yeah, and avoid the spikes too. Red ones kill you if you get near them and if you touch the black ones you get killed.
+message And you might wanna be careful of those chickens, too...
+message Anyways, good luck!
+message Level One
+
+########&
+#...c..i&
+#......i&
+#.p.*.oi&
+#......i&
+#iiiiiii&
+&&&&&&&&&
+
+message Level Two
+
+#########&
+#p.....ci&
+#..*....i&
+#.....%.i&
+#....%..i&
+#.c....oi&
+#iiiiiiii&
+#&&&&&&&&&
+
+message Level Three
+
+##########&
+#%..%#%..%&
+#c.*.#c.*.&
+#....#....&
+#..p.#..p.&
+#....#....&
+#%..o#%..o&
+#&&&&&&&&&&
+
+message Level Four
+
+##########&
+#$$$$$$$$$&
+#$.......$&
+#$.p.....$&
+#$....*..$&
+#$.......$&
+#$.o...c.$&
+#$.......$&
+#$$$$$$$$$&
+#&&&&&&&&&&
+
+message Level Five
+message Look out for the chicken! He follows you and if you get too close, you will be killed.
+
+#########&
+#.p....!i&
+#.......i&
+#.....o.i&
+#...*...i&
+#.......i&
+#....o..i&
+#.*....ci&
+#iiiiiiii&
+#&&&&&&&&&
+
+message Level Six
+
+##########&
+#......#.i&
+#.#......i&
+#p......*i&
+#.....#..i&
+#........i&
+#...#...!i&
+#........i&
+#.o....#.i&
+#iiiiiicii&
+#&&&&&&&&&&
+
+message Level Seven
+
+############&
+#.....c##.#$&
+#.####.##.#.&
+#....#....#c&
+####.###.##.&
+#.#...#...#.&
+#!#.#.#.#.#.&
+#.#.#.#.#*#.&
+#.#.#c#.#.#.&
+#p#.#.#.#...&
+#...#$#....o&
+#&&&&&&&&&&&&
+

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:opposition",
+  "title": "Opposition",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Opposition",
+  "local_dir": "games/ps:opposition"
+}

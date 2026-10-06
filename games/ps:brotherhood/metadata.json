@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:brotherhood",
+  "title": "Brotherhood",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Brotherhood",
+  "local_dir": "games/ps:brotherhood"
+}

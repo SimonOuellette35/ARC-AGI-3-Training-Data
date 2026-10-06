@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:doktor_lezer",
+  "title": "Doktor Lezer",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Doktor_Lezer",
+  "local_dir": "games/ps:doktor_lezer"
+}

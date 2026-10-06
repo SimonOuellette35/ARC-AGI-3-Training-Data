@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:vext_edit",
+  "title": "VEXT EDIT",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "VEXT_EDIT",
+  "local_dir": "games/ps:vext_edit"
+}

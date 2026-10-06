@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:glue_factory",
+  "title": "Glue Factory",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Glue_Factory",
+  "local_dir": "games/ps:glue_factory"
+}

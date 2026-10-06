@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:match_flow",
+  "title": "Match Flow",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Match_Flow",
+  "local_dir": "games/ps:match_flow"
+}

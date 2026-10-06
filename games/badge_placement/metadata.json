@@ -1,0 +1,15 @@
+{
+    "game_id": "r11l",
+    "title": "Badge Placement",
+    "tags": ["placement", "navigation", "matching", "carry"],
+    "level_tags": [
+        ["2 badges", "easy"],
+        ["3 badges", "easy"],
+        ["4 badges", "medium"],
+        ["4 badges larger", "medium"],
+        ["5 badges", "hard"],
+        ["6 badges", "hard"],
+        ["7 badges", "expert"]
+    ],
+    "baseline_actions": [20, 30, 45, 60, 80, 100, 130]
+}

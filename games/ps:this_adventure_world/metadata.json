@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:this_adventure_world",
+  "title": "This Adventure World",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "This_Adventure_World",
+  "local_dir": "games/ps:this_adventure_world"
+}

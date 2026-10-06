@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:fractured_identity",
+  "title": "Fractured Identity",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Fractured_Identity",
+  "local_dir": "games/ps:fractured_identity"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:baguettes",
+  "title": "Baguettes",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Baguettes",
+  "local_dir": "games/ps:baguettes"
+}

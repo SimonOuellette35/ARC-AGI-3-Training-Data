@@ -1,0 +1,242 @@
+title TwinPush
+author Alex & Michael
+homepage www.puzzlescript.net
+
+(ARC-AGI-3 rendering fix, 2026-08-21. TWO sprites redrawn -- Player and Crate.
+No colour name, object, collision layer, legend entry, rule, level or win
+condition is touched, so the mechanic is bit-for-bit the game it was:
+solvers/generate_twinpush_training.py --selfcheck is the measurement of that (a
+native model fuzzed against this interpreter, the whole board plus the win flag
+compared after every press), and --audit is the check on the fix -- it renders
+every cell stack a board of this game can hold, at every board shape, and
+asserts they are all distinct.
+
+THE CRATE WAS INVISIBLE AND SO WAS THE WIN CONDITION. Every level of this game
+is 15x26, which `_render_frame` draws at cell_px = min(64//15, 64//26) = 2 --
+the smallest cell size in the whole ps: set. A 2x2 cell samples a 5x5 sprite at
+FOUR pixels and no others: `_render_cell_sprite` maps pr -> (2*pr+1)*5//4, so
+rows 1 and 3 and columns 1 and 3, i.e. the four positions marked X below:
+
+    . . . . .
+    . X . X .      <- the only sprite pixels that survive at cell_px 2
+    . . . . .
+    . X . X .
+    . . . . .
+
+The Crate shipped as a hollow 5x5 box -- an orange ring on row/col 0 and 4 with
+a transparent interior -- so all four sampled pixels were transparent and a
+crate rendered as EXACTLY the cell underneath it. A crate on the floor was
+floor; a crate on a Target was a Target. The two crates are the only things in
+this game that move under their own name and the win condition is `All Target
+on Crate`, so the frames showed neither the pieces nor whether the puzzle was
+solved. That is not cosmetic here: it is the entire game.
+
+The Player had the second half of the same bug. Its sampled pixels were
+(1,1) and (1,3) = torso and (3,1) and (3,3) = hips, all four opaque, so a
+player standing on a Target painted over it and `player on target` was the same
+frame as `player on bare floor`. In TwinPush both players spend the whole level
+walking around the one square their crate has to end up on.
+
+The fix, in both sprites, is the same shape and it is forced by the geometry:
+paint three of the four sampled pixels and leave the FOURTH transparent, so
+the piece is visible AND the Target under it still reads.
+
+    Crate (was)  00000     Crate (now)  00000     Player (was)  ..0..
+                 0...0                  00000     Player (now)  ..0..
+                 0...0                  00000                   .111.
+                 0...0                  000.0                   01110
+                 00000                  00000                   022.0
+                                                                .2.2.
+
+  * Crate: the box is filled, so (1,1), (1,3) and (3,1) are orange, and the one
+    pixel (3,3) is left open. At cell_px 2 a crate on floor is three oranges and
+    a green, a crate on a Target is three oranges and a dark blue.
+  * Player: only (3,3) changed, from a hip pixel to transparent -- the right leg
+    is now detached from the pelvis, which at 5x5 reads as a stride. At cell_px 2
+    a player on floor is blue, blue, black, green and a player on a Target is
+    blue, blue, black, dark blue.
+
+The four sampled pixels are a rotation-and-mirror orbit of each other, so which
+one is open is a free choice; (3,3) is used in both sprites so the two pieces
+carry the same tell. The resulting seven cell stacks -- floor, wall, target,
+crate, crate+target, player, player+target -- are pairwise distinct at cell_px
+2 AND no transform of one is another's art, which is what lets the game take
+the full 8-element presentation group (`PuzzleScriptAdapter._FLIP_GAMES`).
+`player + crate` is not among them and is not an omission: they share a
+collision layer, so the engine can never put them in one cell.
+
+Nothing here changes what the 5x5 art means at larger cell sizes -- no level of
+this game renders at one, but an edited level would.)
+
+========
+OBJECTS
+========
+
+Background 
+GREEN lightgreen
+00000
+10000
+00010
+00000
+01000
+
+Target 
+DarkBlue
+.....
+.000.
+.000.
+.000.
+.....
+
+Wall 
+BROWN darkbrown
+00010
+11111
+01000
+11111
+00010
+
+Player
+#F3E2A9 Blue black
+..0..
+.111.
+01110
+022.0
+.2.2.
+
+
+
+Crate 
+Orange
+00000
+00000
+00000
+000.0
+00000
+
+=======
+LEGEND
+=======
+
+. = Background
+
+# = Wall
+P = Player
+
+* = Crate
+@ = Crate and Target
+O = Target
+
+=======
+SOUNDS
+=======
+
+sfx0 72252907 (player move)
+sfx1 84079106 (push)
+
+
+
+EndLevel 31191508
+
+Restart 65079302
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Player, Wall, Crate
+
+======
+RULES     
+======     
+
+[ > Player | Crate ] -> [ > Player | > Crate ] sfx1
+[ > Player ] -> [ > Player ] sfx0
+
+
+
+
+
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Crate     
+
+=======     
+LEVELS
+=======
+
+##########################
+####.o.############...####
+####...############...####
+####...############...####
+####.*.############...####
+####...############...####
+####...############...####
+####.p.############.p.####
+####...############...####
+####...############...####
+####...############.*.####
+####...############...####
+####...############...####
+####...############.o.####
+##########################
+
+
+
+##########################
+#...........##...........#
+#...######..##...........#
+#...#....#..##..######...#
+#...#....#..##..#p.....*.#
+#...#..*....##..###......#
+#...####....##....#......#
+#......#....##....#......#
+#......#....##....#......#
+###p####....##....#......#
+#o###.......##....#.######
+#...........##....####o..#
+#...........##...........#
+#...........##...........#
+##########################
+
+
+
+##########################
+#...........##...........#
+#...........##...........#
+#...........##...###.....#
+#..#####....##.....#.....#
+#.o#...#....##...*.#.#####
+####...#....##.....#p#o..#
+#......###..##....####...#
+#......#.#..##..#.#......#
+#......#.#..##..###......#
+#.####p#....##....###....#
+#.#..###....##...........#
+#.#.*.......##...........#
+#...........##...........#
+##########################
+
+
+
+##########################
+#..#.#..#...##...........#
+##p#.#..#.#.##...##..##..#
+#....#......##.*#..##....#
+#.###...#.#.##...........#
+#.....#.#.#.##..##########
+###.##....#.##..#........#
+#o........#.##..#..o###..#
+#####.##..#.##..#........#
+#.........#.##..#..#..#..#
+#.........#.##..#..#.#...#
+#...###.###.##..#..#.#.###
+#.......*...##.....#.#...#
+#....#...##.##.#.....#.#p#
+##########################

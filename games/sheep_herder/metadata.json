@@ -1,0 +1,15 @@
+{
+    "game_id": "sheep_herder",
+    "title": "Sheep Herder",
+    "tags": ["puzzle", "push", "planning", "keys", "obstacles"],
+    "level_tags": [
+        ["2-sheep", "open-gates", "easy"],
+        ["3-sheep", "locked-gates", "keys", "medium"],
+        ["4-sheep", "locked-gates", "keys", "trees", "hard"],
+        ["5-sheep", "locked-gates", "keys", "trees", "expert"],
+        ["5-sheep", "locked-gates", "keys", "trees", "19x17", "extra-hard"],
+        ["5-sheep", "locked-gates", "keys", "trees", "21x19", "master"],
+        ["5-sheep", "locked-gates", "keys", "trees", "21x19-dense", "grandmaster"]
+    ],
+    "baseline_actions": [40, 100, 160, 220, 290, 365, 460]
+}

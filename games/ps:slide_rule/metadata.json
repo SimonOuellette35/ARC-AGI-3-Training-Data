@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:slide_rule",
+  "title": "Slide Rule",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Slide_Rule",
+  "local_dir": "games/ps:slide_rule"
+}

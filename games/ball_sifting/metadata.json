@@ -1,0 +1,9 @@
+{
+    "game_id": "ball_sifting",
+    "title": "Ball Sifting",
+    "description": "Slide the movable paddles to line each falling ball up with the hole in the wall below it, then press ACTION5 to open a paddle and sift the balls down tier by tier into the basin.",
+    "default_fps": 12,
+    "baseline_actions": [12, 18, 30, 40, 55, 70],
+    "tags": ["static", "puzzle", "gravity", "mouse", "64-grid"],
+    "local_dir": "games/ball_sifting"
+}

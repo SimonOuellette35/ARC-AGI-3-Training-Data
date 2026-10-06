@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:entrepotphage_demake",
+  "title": "EntrepotPhage Demake",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "EntrepotPhage_Demake",
+  "local_dir": "games/ps:entrepotphage_demake"
+}

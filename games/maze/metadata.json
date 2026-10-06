@@ -1,0 +1,15 @@
+{
+    "game_id": "maze",
+    "title": "Maze Navigation",
+    "tags": ["navigation", "pathfinding", "maze", "exploration"],
+    "level_tags": [
+        ["9x9", "easy"],
+        ["13x13", "medium"],
+        ["17x17", "hard"],
+        ["21x21", "expert"],
+        ["25x25", "extra-hard"],
+        ["29x29", "master"],
+        ["33x33", "grandmaster"]
+    ],
+    "baseline_actions": [8, 16, 28, 40, 60, 90, 125]
+}

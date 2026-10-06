@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:weird_dave",
+  "title": "Weird Dave",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Weird_Dave",
+  "local_dir": "games/ps:weird_dave"
+}

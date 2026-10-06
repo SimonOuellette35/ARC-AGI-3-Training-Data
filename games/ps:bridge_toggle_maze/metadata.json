@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:bridge_toggle_maze",
+  "title": "Bridge-toggle Maze",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Bridge-toggle_Maze",
+  "local_dir": "games/ps:bridge_toggle_maze"
+}

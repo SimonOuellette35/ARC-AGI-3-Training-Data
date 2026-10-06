@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:undertale_x_o_puzzle",
+  "title": "Undertale X O Puzzle",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Undertale_X_O_Puzzle",
+  "local_dir": "games/ps:undertale_x_o_puzzle"
+}

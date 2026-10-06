@@ -1,0 +1,15 @@
+{
+    "game_id": "aquarium_sorter",
+    "title": "Aquarium Sorter",
+    "tags": ["puzzle", "sorting", "timing", "gates"],
+    "level_tags": [
+        ["2-compartments-2-species", "easy"],
+        ["3-compartments-2-species", "medium"],
+        ["4-compartments-2-species", "hard"],
+        ["4-compartments-3-species", "expert"],
+        ["4-compartments-4-species-18wide", "extra-hard"],
+        ["4-compartments-4-species-20wide", "master"],
+        ["4-compartments-5-species-20wide", "grandmaster"]
+    ],
+    "baseline_actions": [10, 20, 35, 55, 75, 95, 120]
+}

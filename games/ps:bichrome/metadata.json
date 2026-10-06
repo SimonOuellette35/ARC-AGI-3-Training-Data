@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:bichrome",
+  "title": "Bichrome",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Bichrome",
+  "local_dir": "games/ps:bichrome"
+}

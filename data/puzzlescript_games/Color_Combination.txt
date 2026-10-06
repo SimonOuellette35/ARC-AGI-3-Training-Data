@@ -1,0 +1,306 @@
+title Color Combination
+author Pancake Robot
+homepage crouton.net
+
+========
+OBJECTS
+========
+
+( ---------------------------------------------------------------------------
+  ARC ADAPTATION NOTE (colours and sprite shapes only -- no rule was touched).
+
+  The original art does not survive `PuzzleScriptAdapter`'s quantization onto
+  the 16-colour ARC palette, which is what a learning agent actually sees:
+
+    * Green (#00ff00/#009900) and Yellow (#ffff00/#999900) BOTH landed mostly on
+      ARC index 14 -- the palette has exactly one green -- so the two blocks were
+      near-identical, and the whole game is telling colours apart.
+    * Cyan (#00ffff/#009999) collapsed to a uniform index 9, the same index as
+      the DARKBLUE speckles in the background texture and the bright half of the
+      Blue block (9 over 4).
+    * Every block used the WALL's brick sprite, so blocks and walls differed by
+      colour alone.
+    * Blocks were opaque full-cell sprites on the layer above the targets, so a
+      block parked on a target ERASED it from the frame.
+
+  Fixed by giving each object a hex that quantizes to its own ARC index, and by
+  splitting the cell geometry between the two collision layers: a TARGET is the
+  1px cell border (a ring), a BLOCK is the solid interior. They never overlap,
+  so a block sitting on an unmatched target leaves that target fully visible.
+
+    background 5   wall 2/3   player 15   filled target 1
+    red 8   green 14   blue 9   cyan 10   magenta 6   yellow 11   white 0
+
+  Each target keeps its block's exact colour, so "which block fills this ring"
+  is readable straight off the frame.
+--------------------------------------------------------------------------- )
+
+Background
+#000000
+00000
+00000
+00000
+00000
+00000
+
+
+RedTarget
+#f93c31
+00000
+0...0
+0...0
+0...0
+00000
+
+GreenTarget
+#4fcc30
+00000
+0...0
+0...0
+0...0
+00000
+
+BlueTarget
+#1e93ff
+00000
+0...0
+0...0
+0...0
+00000
+
+CyanTarget
+#88d8f1
+00000
+0...0
+0...0
+0...0
+00000
+
+MagentaTarget
+#e53aa3
+00000
+0...0
+0...0
+0...0
+00000
+
+YellowTarget
+#ffdc00
+00000
+0...0
+0...0
+0...0
+00000
+
+WhiteTarget
+#ffffff
+00000
+0...0
+0...0
+0...0
+00000
+
+Wall
+#999999 #666666
+00010
+11111
+01000
+11111
+00010
+
+Player
+#a356d6
+.....
+..0..
+.000.
+..0..
+.....
+
+Red
+#f93c31
+.....
+.000.
+.000.
+.000.
+.....
+
+Green
+#4fcc30
+.....
+.000.
+.000.
+.000.
+.....
+
+Blue
+#1e93ff
+.....
+.000.
+.000.
+.000.
+.....
+
+Cyan
+#88d8f1
+.....
+.000.
+.000.
+.000.
+.....
+
+Magenta
+#e53aa3
+.....
+.000.
+.000.
+.000.
+.....
+
+Yellow
+#ffdc00
+.....
+.000.
+.000.
+.000.
+.....
+
+White
+#ffffff
+.....
+.000.
+.000.
+.000.
+.....
+
+FilledTarget
+#cccccc
+00000
+0...0
+0...0
+0...0
+00000
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+R = Red
+G = Green
+B = Blue
+C = Cyan
+M = Magenta
+Y = Yellow
+W = White
+@ = FilledTarget
+1 = RedTarget
+2 = GreenTarget
+3 = BlueTarget
+4 = CyanTarget
+5 = MagentaTarget
+6 = YellowTarget
+0 = WhiteTarget
+ColoredTargets = RedTarget or GreenTarget or BlueTarget or CyanTarget or MagentaTarget or YellowTarget or WhiteTarget
+Block = Red or Green or Blue or Cyan or Magenta or Yellow or White
+=======
+SOUNDS
+=======
+ 
+Block MOVE 10958307
+sfx0  63019702
+sfx1 71103704
+
+================
+COLLISIONLAYERS
+================
+
+Background
+ColoredTargets, FilledTarget
+Player, Wall, Block
+
+======
+RULES
+======
+
+[ >  Player | Block ] -> [  >  Player | > Block  ]
+
+[ > Red | RedTarget ] -> [ | FilledTarget ] sfx1
+[ > Green | GreenTarget] -> [ | FilledTarget ] sfx1
+[ > Blue | BlueTarget] -> [ | FilledTarget ] sfx1
+[ > Cyan | CyanTarget] -> [ | FilledTarget ] sfx1
+[ > Magenta | MagentaTarget] -> [ | FilledTarget ] sfx1
+[ > Yellow | YellowTarget] -> [ | FilledTarget ] sfx1
+[ > White | WhiteTarget] -> [ | FilledTarget ] sfx1
+
+[ > Red | Green ] -> [ | Yellow ] sfx0
+[ > Green | Red ] -> [ | Yellow ] sfx0
+[ > Red | Blue ] -> [ | Magenta ] sfx0
+[ > Blue | Red ] -> [ | Magenta ] sfx0
+[ > Green | Blue ] -> [ | Cyan ] sfx0
+[ > Blue | Green ] -> [ | Cyan ] sfx0
+
+[ > Red | Cyan ] -> [ | White ] sfx0
+[ > Cyan | Red ] -> [ | White ] sfx0
+[ > Green | Magenta ] -> [ | White ] sfx0
+[ > Magenta | Green ] -> [ | White ] sfx0
+[ > Blue | Yellow ] -> [ | White ] sfx0
+[ > Yellow | Blue ] -> [ | White ] sfx0
+
+==============
+WINCONDITIONS
+==============
+
+No ColoredTargets
+
+=======
+LEVELS
+=======
+
+
+##########
+#........#
+#........#
+#..R..P..#
+#..1.....#
+#........#
+#........#
+##########
+
+message Push a block into another block to combine them RGB-style.
+
+##########
+#1.6.....#
+#........#
+#.....P..#
+#.R.R..G.#
+#........#
+#........#
+##########
+
+message Try combining all three!
+
+##########
+#0.......#
+#........#
+#.R.G....#
+#..P.....#
+#..B.....#
+#........#
+##########
+
+
+########
+#....6.#
+#.wr...#
+#..w.g.#
+#...p..#
+########
+
+#########
+#....g..#
+#..p.g..#
+#.r..g.1#
+#....g..#
+#########

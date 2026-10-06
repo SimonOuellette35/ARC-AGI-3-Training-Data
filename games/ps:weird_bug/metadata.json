@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:weird_bug",
+  "title": "Weird Bug",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Weird_Bug",
+  "local_dir": "games/ps:weird_bug"
+}

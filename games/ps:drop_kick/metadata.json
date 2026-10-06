@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:drop_kick",
+  "title": "Drop Kick",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Drop_Kick",
+  "local_dir": "games/ps:drop_kick"
+}

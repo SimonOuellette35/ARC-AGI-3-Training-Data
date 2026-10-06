@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:futuristic_block_pushing_game",
+  "title": "Futuristic Block Pushing Game",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Futuristic_Block_Pushing_Game",
+  "local_dir": "games/ps:futuristic_block_pushing_game"
+}

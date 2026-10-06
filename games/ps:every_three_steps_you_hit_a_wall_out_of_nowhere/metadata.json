@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:every_three_steps_you_hit_a_wall_out_of_nowhere",
+  "title": "Every Three Steps You Hit a Wall Out of Nowhere",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Every_Three_Steps_You_Hit_a_Wall_Out_of_Nowhere",
+  "local_dir": "games/ps:every_three_steps_you_hit_a_wall_out_of_nowhere"
+}

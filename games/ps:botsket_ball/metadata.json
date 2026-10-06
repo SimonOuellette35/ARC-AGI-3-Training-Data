@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:botsket_ball",
+  "title": "Botsket Ball",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Botsket_Ball",
+  "local_dir": "games/ps:botsket_ball"
+}

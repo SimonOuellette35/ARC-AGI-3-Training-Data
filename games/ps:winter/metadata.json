@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:winter",
+  "title": "Winter",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Winter",
+  "local_dir": "games/ps:winter"
+}

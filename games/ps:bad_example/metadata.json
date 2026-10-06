@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:bad_example",
+  "title": "Bad Example",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Bad_Example",
+  "local_dir": "games/ps:bad_example"
+}

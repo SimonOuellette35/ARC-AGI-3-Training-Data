@@ -1,0 +1,247 @@
+title Futuristic Block Pushing Game
+author Jazzy Williams
+homepage www.puzzlescript.net
+
+========
+OBJECTS
+========
+
+Background
+white lightgray
+00000
+01110
+01110
+01110
+00000
+
+
+(Target was `blue` -- the same ARC palette index as Wall's blue/darkblue -- drawn
+as a hollow 3x3 ring. Both halves of that were bugs after adaptation: a target
+sitting beside a wall was the wall's own colour, and the Player sprite is opaque
+across exactly the ring's eight cells, so a player standing on a target rendered
+pixel-identical to a player standing on bare floor. Now a SOLID red square: it
+shows through the Crate's open middle and through the Player's transparent
+corners, so every stack in the game stays readable. It is FRAMED rather than one
+flat colour for the same reason Background is: level 11 stands three targets in a
+row, and three flat squares render as one 3x1 bar with no cell boundary in it.
+Both colours are outside the rest of the game's palette. Nothing else was
+changed.)
+Target
+darkred red
+00000
+01110
+01110
+01110
+00000
+
+Wall
+blue darkblue
+00010
+11111
+01000
+11111
+00010
+
+Player
+Black white Blue gray orange
+.444.
+.040.
+22222
+.333.
+.0.0.
+
+Crate
+black
+00000
+0...0
+0...0
+0...0
+00000
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+* = Crate
+@ = Crate and Target
+O = Target
+
+
+=======
+SOUNDS
+=======
+
+Crate MOVE 36772507
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Player, Wall, Crate
+
+======
+RULES
+======
+
+[ >  Player | Crate ] -> [  >  Player | > Crate  ]
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Crate
+
+=======
+LEVELS
+=======
+
+(The game shipped with ONE board -- level 9 below, the 43-move original. One
+level is not a corpus: with no colour augmentation the whole game would be 16
+presentations (1 level x 4 rotations x 4 flips), so a policy would be memorising
+one board rather than learning what a push is. Twelve more are authored around
+it, ordered by expert plan length; every one is proved solvable AND proved
+shortest by the exact reverse-BFS field in
+solvers/generate_futuristic_block_pushing_game_training.py, which also replays
+each plan through this interpreter to certify it.)
+
+(level 0 -- one crate, one push per axis)
+#########
+#.......#
+#.P*....#
+#.......#
+#.......#
+#......O#
+#########
+
+(level 1 -- two crates around a pillar)
+#########
+#.......#
+#.*...*.#
+#...#...#
+#.O...O.#
+#...P...#
+#########
+
+(level 2 -- two crates, L-shaped room)
+#########
+#...#...#
+#.*.#.O.#
+#...#...#
+#.......#
+#.P...*.#
+#..O....#
+#########
+
+(level 3 -- the crate is behind a wall)
+########
+#......#
+#..#*..#
+#.P#...#
+#..#...#
+#.....O#
+########
+
+(level 4 -- a comb of four crates, pushed up one rank)
+##########
+#.O.O.O.O#
+#........#
+#.*.*.*.*#
+#........#
+#...P....#
+##########
+
+(level 5 -- open room, two crates, opposite corners)
+###########
+#O.......O#
+#.........#
+#....#....#
+#..*...*..#
+#....#....#
+#....P....#
+#.........#
+###########
+
+(level 6 -- zigzag)
+###########
+#.........#
+#.###.###.#
+#.....*...#
+#.#.###.#.#
+#O..*.....#
+#.###.###O#
+#...P.....#
+###########
+
+(level 7 -- staircase)
+##########
+#...#....#
+#.*.#.O..#
+#...#....#
+#.#....#.#
+#....#...#
+#..O.#.*.#
+#.P..#...#
+##########
+
+(level 8 -- open room, three crates, targets on the far side)
+#########
+#.......#
+#.*.*.*.#
+#.......#
+#..#.#..#
+#.......#
+#.O.O.O.#
+#...P...#
+#########
+
+(level 9 -- THE SHIPPED BOARD)
+#########
+###...###
+###.#.###
+#P#..*..#
+#.#.*@..#
+#O*...#.#
+###...#.#
+#O....#O#
+#########
+
+(level 10 -- one gap in a full-width wall: everything funnels)
+##########
+#........#
+#.*.*.*..#
+#........#
+####.#####
+#........#
+#.O.O.O..#
+#...P....#
+##########
+
+(level 11 -- two rooms, one door)
+############
+#......#...#
+#..*...#...#
+#......#...#
+#..*.......#
+#......#.O.#
+#..*...#.O.#
+#.P....#.O.#
+#......#...#
+############
+
+(level 12 -- a diagonal barrier)
+##########
+#........#
+#.*......#
+#..#.....#
+#.*.#..O.#
+#....#.O.#
+#.*...#O.#
+#.P....#.#
+##########
+

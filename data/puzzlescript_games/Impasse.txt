@@ -1,0 +1,343 @@
+title Impasse
+author RatoLibre1 [Wanderlands's Impasse demake]
+homepage https://www.facebook.com/RatoLibre1Games
+noaction
+
+========
+OBJECTS
+========
+
+Background
+GREY
+
+Border
+BLACK
+
+(--------------------------------------------------------------------
+ SPRITE / COLOUR CONTRACT (rewritten for the ARC adaptation, 2026-08-14)
+
+ The 16-colour ARC quantisation and the 6 px cells these 5x10 boards
+ render at made the shipped art unreadable in three ways, so the whole
+ OBJECTS block is redrawn to one rule:
+
+   * every BODY (the player and the four movers) is a hollow RING with a
+     transparent 3x3 middle, and every GROUND tile (goal, switch, the two
+     walls, the armed vanisher/blocker) is a SOLID square. So whatever a
+     body stands on reads out of its middle -- including the frame the
+     whole game is about, the player on the Goal, which in the shipped
+     art was pixel-identical to the player on bare floor (both sprites
+     are transparent at exactly the same four corners and nowhere else).
+   * Goal and Switch were BOTH `BLACK LIGHTGREEN` / `BLACK GREEN`, i.e.
+     both ARC 14, on sprites differing in two pixels. Switch is now PINK.
+   * a mover's DIRECTION is drawn as an orbit of the full 8-element
+     symmetry group -- the leading edge is a black bar and the two
+     corners on that side are the only corners it paints -- so a
+     rotation or a flip maps direction art onto direction art exactly as
+     it maps the motion. That is what lets this game take the mandatory
+     rotation augmentation AND the flips: the SHAPE says which way a
+     piece travels on screen at all 16 presentations, and the COLOUR
+     says which axis of the player's own move triggers it (orange =
+     the same axis, yellow = the perpendicular one). Deliberately ONE
+     colour per family: "orange means up" would be true in exactly one
+     of the four rotations.
+   * PerpUp / PerpDown paint no corners at all, and they are the only
+     movers that are ever rendered on top of another mover (Upper and
+     Lower sit below them in the collision order), so the mover
+     underneath still shows its two direction corners.
+--------------------------------------------------------------------)
+
+Player
+WHITE
+00000
+0...0
+0...0
+0...0
+00000
+
+Fixed
+DARKGREY
+
+Goal
+LIGHTGREEN
+
+Upper
+ORANGE BLACK
+01110
+0...0
+0...0
+0...0
+.000.
+
+Lower
+ORANGE BLACK
+.000.
+0...0
+0...0
+0...0
+01110
+
+Vanisher1
+LIGHTBLUE
+
+VanisherTemp
+LIGHTBLUE
+
+Vanisher2
+LIGHTBLUE
+.....
+.0.0.
+..0..
+.0.0.
+.....
+
+PerpUp
+YELLOW BLACK
+.111.
+0...0
+0...0
+0...0
+.000.
+
+PerpDown
+YELLOW BLACK
+.000.
+0...0
+0...0
+0...0
+.111.
+
+Blocker1
+RED
+
+BlockerTemp
+RED
+
+Blocker2
+RED
+.....
+.0.0.
+..0..
+.0.0.
+.....
+
+Switch
+PINK
+
+=======
+LEGEND
+=======
+
+Obstacle = Fixed or Upper or Lower or Vanisher1 or VanisherTemp or PerpUp or PerpDown or Blocker1 or BlockerTemp
+Mover = Player or Upper or Lower or PerpUp or PerpDown
+
+.=Background
++=Border
+P=Player
+*=Fixed
+U=Upper
+L=Lower
+G=Goal
+Q=Vanisher1
+W=Vanisher2
+Y=PerpUp
+S=PerpDown
+B=Blocker1
+N=Blocker2
+/=Switch
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Border
+Fixed
+Goal
+Vanisher1, Vanisher2, VanisherTemp
+Blocker1, Blocker2, BlockerTemp
+Switch
+Upper
+Lower
+PerpUp
+PerpDown
+Player
+
+======
+RULES
+======
+
+[ vertical Player ][ Upper ] -> [ vertical Player ][ up Upper ]
+[ vertical Player ][ Lower ] -> [ vertical Player ][ down Lower ]
+[ vertical Player ][ Vanisher1 ] -> [ vertical Player ][ VanisherTemp ]
+[ vertical Player ][ Vanisher2 ] -> [ vertical Player ][ Vanisher1 ]
+[ horizontal Player ][ PerpUp ] -> [ horizontal Player ][ up PerpUp ]
+[ horizontal Player ][ PerpDown ] -> [ horizontal Player ][ down PerpDown ]
+
+(scroll border)
+late [Border Mover | ... | | Border ] -> [Border | ... | Mover | Border ]
+
+
+(post-movement changes)
+late [ Player Switch ][ Blocker1 ] -> [ Player Switch ][ BlockerTemp ]
+late [ Player Switch ][ Blocker2 ] -> [ Player Switch ][ Blocker1 ]
+late [ VanisherTemp ] -> [ Vanisher2 ]
+late [ BlockerTemp ] -> [ Blocker2 ]
+
+(death)
+late [ Player Obstacle ] -> restart
+
+([action Player] -> win)
+
+==============
+WINCONDITIONS
+==============
+
+All Player on Goal
+
+=======
+LEVELS
+=======
+
+message Demake of the Flash game 'Impasse', by Wanderlands
+
+++++++++++
+..*.......
+p.*....*.g
+.......*..
+++++++++++
+
+++++++++++
+****...***
+p.*..*.*.g
+*...**...*
+++++++++++
+
+++++++++++
+..*....*..
+p.******.g
+....**....
+++++++++++
+
+++++++++++
+....uu.u..
+p.u....u.g
+..u.uu....
+++++++++++
+
+++++++++++
+.*...*...*
+p*u*u..*ug
+..u*u***u*
+++++++++++
+
+++++++++++
+....u*....
+p.u*u..u*g
+.*u...uu**
+++++++++++
+
+++++++++++
+..l.l.*.l.
+pul*lu*ulg
+.u.*.u.u..
+++++++++++
+
+++++++++++
+*l..u*l..*
+p.ulull*ug
+***l...uu*
+++++++++++
+
+++++++++++
+.l.u**l.u.
+pluuulllug
+..*....*..
+++++++++++
+
+++++++++++
+..*.*.q..*
+p.q.*.*qqg
+..*.q.*..*
+++++++++++
+
+++++++++++
+.*.q.u.*.*
+pqu*lu*qlg
+.*.ql*qql*
+++++++++++
+
+++++++++++
+*uq*uqu*.*
+pq..q.q.lg
+.uq*uq.*l*
+++++++++++
+
+++++++++++
+...wq.qw..
+p.qw.wq..g
+..q.qw.w..
+++++++++++
+
+++++++++++
+.w.q.*...*
+p*lqu*lu*g
+.*l*w.w*q.
+++++++++++
+
+++++++++++
+.*qq.*.u.q
+p*u*wul**g
+.ww*wuwu.q
+++++++++++
+
+++++++++++
+...*.y*..*
+p*y.ly...g
+.*..l.*yy*
+++++++++++
+
+++++++++++
+.*yyyyyyy*
+p......u.g
+.*.q.l.u.*
+++++++++++
+
+++++++++++
+...**.yq..
+p*y*.lyuyg
+.*.q.l.uy*
+++++++++++
+
+++++++++++
+..ysulys..
+p........g
+..ysulys..
+++++++++++
+
+++++++++++
+.qs.lwy.u*
+p*syl*ysug
+.w.y.q.s.*
+++++++++++
+
+++++++++++
+u.l.u.l.u.
+p*ly**ly*g
+usq.usq.us
+++++++++++
+
+++++++++++
+../b.uw*..
+p..b./ssbg
+../b.u./*.
+++++++++++
+
+++++++++++
+..wsu./**.
+p*ysuys/bg
+..y/by.**.
+++++++++++

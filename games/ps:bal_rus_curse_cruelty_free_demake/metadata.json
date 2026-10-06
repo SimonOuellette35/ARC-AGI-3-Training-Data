@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:bal_rus_curse_cruelty_free_demake",
+  "title": "Bal Ru's Curse cruelty-free demake",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Bal_Ru's_Curse_cruelty-free_demake",
+  "local_dir": "games/ps:bal_rus_curse_cruelty_free_demake"
+}

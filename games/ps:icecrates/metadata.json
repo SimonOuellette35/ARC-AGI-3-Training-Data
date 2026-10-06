@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:icecrates",
+  "title": "IceCrates",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "IceCrates",
+  "local_dir": "games/ps:icecrates"
+}

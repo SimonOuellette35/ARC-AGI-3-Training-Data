@@ -1,0 +1,466 @@
+title Smother
+author Team Borse
+
+background_color #333333
+text_color #FFFFFF
+
+(ARC-AGI-3 rendering fixes, 2026-08-17. Sprites and ONE collision-layer line;
+the objects, the rules, the levels and the win conditions are untouched, and
+solvers/generate_smother_training.py --selfcheck (38k presses of a native model
+against this interpreter, whole grid compared after every one) is the proof that
+nothing mechanical moved. --audit is the check on what follows.
+
+1. THE BEAM WAS UNDER EVERYTHING. `Laser` shipped as the SECOND collision layer,
+   so it was composited below Wall, pushBlock and PlayerDead -- and those three
+   are solid 5x5 sprites, so a beam terminating on a wall, a beam CUTTING a
+   pushBlock (the block turns into a Wall on the next turn -- that is the whole
+   third chapter) and a beam falling on a corpse were all pixel-identical to the
+   bare object. The layer is now LAST. It is a pure render-order change: an
+   object alone on its own collision layer blocks nothing and is matched by no
+   rule differently, which --selfcheck measures rather than assumes.
+
+   The player sprites still draw over the beam -- _render_frame appends the
+   player objects last unconditionally -- so the Protector, whose whole job is
+   to STAND IN the beam and shield the victim, needed the sprite holes below.
+
+2. THE BEAM VANISHED AT SMALL CELL SIZES. `_render_cell_sprite` POINT-SAMPLES
+   the 5x5 sprite, and the levels here render at cell_px 6, 5, 4 (level 4),
+   3 (levels 8-9) and 2 (level 13). The sampled sprite rows/cols are {0..4},
+   {0,1,3,4}, {0,2,4} and {1,3} respectively -- and the one-pixel-wide LaserV
+   (column 2) and LaserH (row 2) survive only the first and third of those. On
+   level 4 and level 13 the lasers, which are instant death, rendered as BARE
+   FLOOR. LaserV is now columns 1-2, LaserH rows 1-2 and LaserB their union:
+   two-pixel bands hit every one of the four sampling grids, and they still read
+   as continuous lines because neighbouring cells line up.
+
+3. THE EXIT VANISHED UNDER THE PLAYER, AND ON LEVEL 13 ENTIRELY. Exit was a
+   hollow ring on columns 0 and 4, which no cell_px=2 sample touches, so on
+   level 13 (12x24) the goal was invisible and a victim standing on it was
+   pixel-identical to a victim standing on floor -- i.e. the win condition was
+   not drawn. Exit gains one "handle" pixel at (3,1), the only one of the four
+   pixels cell_px=2 samples that no player body needs, and PlayerFull /
+   Protector / ProtectorSolo / victimSolo each gain a transparent notch at
+   (3,1) for it to show through. At every cell size the levels use, all 21
+   REACHABLE cell compositions now render distinctly -- see --audit, which
+   enumerates the compositions off the solved state space rather than guessing
+   them.)
+
+run_rules_on_level_start
+
+========
+OBJECTS
+========
+
+Background
+#333333
+
+LaserGV
+#FFFFFF #FFFFFF #FFFFFF #F93C31
+22222
+.222.
+..3..
+..3..
+.....
+
+LaserGH
+#FFFFFF #FFFFFF #FFFFFF #F93C31
+2....
+22...
+2233.
+22...
+2....
+
+LaserV
+#F93C31 #F93C31 #F93C31 #F93C31
+.33..
+.33..
+.33..
+.33..
+.33..
+
+LaserH
+#F93C31 #F93C31 #F93C31 #F93C31
+.....
+33333
+33333
+.....
+.....
+
+LaserB
+#F93C31 #F93C31 #F93C31 #F93C31
+.33..
+33333
+33333
+.33..
+.33..
+
+Exit
+#FFDC00 #FFDC00 #FFDC00 #FFDC00
+2...2
+2...2
+2...2
+22..2
+2.2.2
+
+Wall
+#999999 #CCCCCC #999999 #666666
+33333
+31223
+32123
+32223
+33333
+
+Heart
+#E53AA3 #E53AA3 #E53AA3 #E53AA3
+.2.2.
+22222
+.222.
+..2..
+.....
+
+
+PlayerFull
+#1E93FF #1E93FF #1E93FF #000000
+.222.
+.323.
+.222.
+..22.
+.2.2.
+
+Protector
+#A356D6 #A356D6 #000000 #A356D6
+.333.
+.232.
+.333.
+..33.
+.3.3.
+
+ProtectorSolo
+#4FCC30 #4FCC30 #000000 #4FCC30
+.333.
+.232.
+.333.
+..33.
+.3.3.
+
+victimSolo
+#88D8F1 #88D8F1 #88D8F1 #000000
+.222.
+.323.
+.222.
+..22.
+.2.2.
+
+
+PlayerDead
+#921231 #921231 #921231 #921231
+.222.
+22222
+2.2.2
+.222.
+.222.
+
+pushBlock
+#FF851B #FF7BCC #FF851B #FF851B
+33333
+31113
+31113
+31113
+33333
+
+=======
+LEGEND
+=======
+
+Player = PlayerFull or Protector or ProtectorSolo or victimSolo
+PlayerWin = PlayerFull or PlayerDead or Protector or victimSolo
+Laser = LaserV or LaserH or LaserB
+LaserBlock = Wall or Player or PlayerDead or Exit
+. = Background
+# = Wall
+g = LaserGV
+h = LaserGH
+P = PlayerFull
+n = Protector
+q = ProtectorSolo
+k = victimSolo
+O = Exit
+l = Heart
+b = pushBlock
+
+=======
+SOUNDS
+=======
+
+startgame 83279102 (sound at start of game)
+CloseMessage 123434 (close message noise)
+ShowMessage 123434 (show message noise)
+sfx0 8545502 (death)
+sfx1 26 (heart)
+
+
+================
+COLLISIONLAYERS
+================
+Background
+Exit
+ProtectorSolo, Heart, Wall
+Player, Wall, PlayerDead, LaserGV, LaserGH, Protector, victimSolo, pushBlock
+Laser
+
+======
+RULES
+======
+
+(clear lasers)
+late [Laser] -> []
+
+(zip the lasers out of the guns and through the levels)
+late down [LaserGV | no Laser] -> [LaserGV | LaserV]
+late right [LaserGH | no Laser] -> [LaserGH | LaserH]
+
+late down [LaserV no LaserBlock | ] -> [LaserV | LaserV]
+late right [LaserH no LaserBlock | ] -> [LaserH | LaserH]
+
+(generate overlapping lasers)
+late down [LaserV no LaserBlock | LaserH] -> [LaserV | LaserB]
+late down [LaserGV no LaserBlock | LaserH] -> [LaserGV | LaserB]
+late right [LaserH no LaserBlock | LaserV] -> [LaserH | LaserB]
+late right [LaserGH no LaserBlock | LaserV] -> [LaserGH | LaserB]
+
+(deal with overlapping lasers)
+late right [LaserB no LaserBlock | no Laser] -> [LaserB | LaserH]
+late right [LaserH no LaserBlock | no Laser] -> [LaserH | LaserH]
+late down [LaserB no LaserBlock | no Laser] -> [LaserB | LaserV]
+late down [LaserV no LaserBlock | no Laser] -> [LaserV | LaserV]
+
+(solo Victim can push a block)
+ [ > victimSolo | pushBlock ] -> [ > victimSolo| > pushBlock]
+
+(pushing block to switch breaks laser)
+[pushBlock  laser] -> [ wall]
+
+
+(if a player is over a laser, then cause them harm)
+late [ PlayerFull Laser ] -> [PlayerDead Laser] sfx0
+
+(victim solo dies in the laser)
+late [ victimSolo Laser ] -> [PlayerDead Laser] sfx0
+
+(protector levels)
+[ > ProtectorSolo | ... | Heart ] -> [ | ... | ProtectorSolo ] sfx1
+[ > ProtectorSolo ] -> [ ProtectorSolo]
+
+
+==============
+WINCONDITIONS
+==============
+All PlayerWin on Exit
+No Heart
+
+=======
+LEVELS
+=======
+
+message then...
+
+message I PROTECT YOU
+
+###g###g###
+#.........#
+#n.......o#
+#........o#
+#p...#....#
+#.........#
+###########
+
+message YOU SMOTHER ME
+
+###########
+#n........#
+#......#..#
+h..#h..#..#
+#p.....#..#
+#......#oo#
+###########
+
+message I DEFEND YOU
+
+#####g#####
+#.P.....n.#
+#.........#
+#..#...#..#
+#.........#
+#......oo.#
+###########
+
+message YOU SPEAK FOR ME
+
+#####g#####
+#n.......o#
+#....#h...#
+h....g....#
+#.....#..o#
+#p......#.#
+###########
+
+message WE ARE CARE FREE
+
+#P####g##g###
+#.#..#.#....#
+#..........o#
+h...........#
+#.#h..#..#.o#
+#.....#....n#
+#############
+
+message I CARRY OUR BURDENS
+
+message before...
+
+message I AM ALWAYS SEARCHING
+
+###########
+#l...l....#
+#....l....#
+#.........#
+#q..l.....#
+#l..l.....#
+###########
+
+
+message I NEVER SEE A FUTURE
+
+###########
+#.........#
+#..l..q.l.#
+#.l....l..#
+#.ll...l.l#
+#l.l...l..#
+###########
+
+message I NEVER FEEL COMFORTABLE
+
+###########
+#....l....#
+#lq..l..l.#
+#.l..l....#
+#.l.....l.#
+#....l....#
+###########
+
+
+message NO ONE GETS ME
+
+###########l##l#####
+#l.l...............#
+#.....ll...........#
+#l..l..............#
+#..q..l.......l....#
+#..ll..l......l....#
+###########........#
+###########l....l..#
+###########........#
+###########.l.l.l..#
+####################
+
+message I NEED CONTACT
+
+###################
+#.l...l############
+#......############
+#l.l..l##########l#
+#l.......l.....l#.#
+#....l............#
+#ll..q.........l.l#
+#..l.....l.......l#
+#.l..l............#
+###################
+
+message I NEED VALIDATION
+
+message before...
+
+message I AM INDEPENDENT
+
+###########
+#.k.g.....#
+#.......b.#
+#.b...###.#
+#.#.......#
+#...h.....#
+#...#...O.#
+###########
+
+
+message I AM STRONG
+
+
+###g##g##
+#.......#
+#kb.b...#
+#.......#
+h.....#.#
+#..#b#h.#
+#....#..#
+h....#o.#
+#.......#
+#########
+
+message I NEED NO ONE
+
+###g#######
+#.o.......#
+#...#.##..#
+#.#..bkb.##
+h...#.#.b.#
+#.......#.#
+#.....#...#
+###########
+
+message I ENJOY MY COMPANY
+
+#####g#####g#####g######
+#.k.....b...........o..#
+#..b....#.#.......##...#
+#.........b...#b..#g...#
+h..........#......#....#
+##.###.#######.####.#.##
+h..............#h......#
+####.#####.###.##.#.#.##
+###.b.#....#........#..#
+###.#....#b#.........b.#
+##.........#.......#...#
+########################
+
+message I AM FEARLESS
+
+##g##g#g####
+#o..#.#....#
+#...#.#.#..#
+#..........#
+#.....#..b.#
+#........b.#
+#..#.##.#b.#
+#..#......k#
+############
+
+message I AM ALONE
+
+
+message now...
+
+###########
+#...o.o...#
+#.........#
+#.........#
+#.........#
+#...n.p...#
+###########
+
+message WE DON'T SEE THINGS AS THEY ARE, WE SEE THEM AS WE ARE
+message Credits
+message Concept/Design/Programming/Graphics - Steven McStravog
+message Design/Programming/Graphics - Darragh McLernon
+message Porting/Design/Programming - Rachel Gawley
+message Artwork - Ricky Woodside

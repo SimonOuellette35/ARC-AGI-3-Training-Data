@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:swap_sokoban",
+  "title": "Swap Sokoban",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Swap_Sokoban",
+  "local_dir": "games/ps:swap_sokoban"
+}

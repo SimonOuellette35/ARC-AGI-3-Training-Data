@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:ad_infinitum_v0_4_2_implemented_highfloor_finished",
+  "title": "Ad Infinitum v0.4.2 [Implemented HighFloor, finished]",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Ad_Infinitum_v0.4.2_[Implemented_HighFloor,_finished]",
+  "local_dir": "games/ps:ad_infinitum_v0_4_2_implemented_highfloor_finished"
+}

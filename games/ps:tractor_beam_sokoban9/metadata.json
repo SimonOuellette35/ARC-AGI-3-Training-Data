@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:tractor_beam_sokoban9",
+  "title": "Tractor Beam Sokoban9",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Tractor_Beam_Sokoban9",
+  "local_dir": "games/ps:tractor_beam_sokoban9"
+}

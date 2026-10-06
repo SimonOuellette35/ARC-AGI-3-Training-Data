@@ -1,0 +1,15 @@
+{
+    "game_id": "dungeon_key_hunt",
+    "title": "Dungeon Key Hunt",
+    "tags": ["puzzle", "navigation", "keys", "planning"],
+    "level_tags": [
+        ["2-keys-11x9", "easy"],
+        ["3-keys-13x11", "medium"],
+        ["4-keys-15x13", "hard"],
+        ["5-keys-17x15", "expert"],
+        ["5-keys-19x17", "extra-hard"],
+        ["5-keys-21x19", "master"],
+        ["5-keys-21x19-dense", "grandmaster"]
+    ],
+    "baseline_actions": [18, 35, 60, 90, 120, 165, 215]
+}

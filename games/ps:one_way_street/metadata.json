@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:one_way_street",
+  "title": "One Way Street",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "One_Way_Street",
+  "local_dir": "games/ps:one_way_street"
+}

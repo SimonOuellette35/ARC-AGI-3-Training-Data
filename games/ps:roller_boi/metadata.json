@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:roller_boi",
+  "title": "Roller Boi",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Roller_Boi",
+  "local_dir": "games/ps:roller_boi"
+}

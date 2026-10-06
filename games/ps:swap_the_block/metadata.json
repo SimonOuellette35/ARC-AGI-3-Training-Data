@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:swap_the_block",
+  "title": " Swap the block!",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "_Swap_the_block!",
+  "local_dir": "games/ps:swap_the_block"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:modality",
+  "title": "Modality",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Modality",
+  "local_dir": "games/ps:modality"
+}

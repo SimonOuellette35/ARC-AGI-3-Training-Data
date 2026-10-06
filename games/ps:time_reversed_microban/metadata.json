@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:time_reversed_microban",
+  "title": "Time-reversed Microban",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Time-reversed_Microban",
+  "local_dir": "games/ps:time_reversed_microban"
+}

@@ -1,0 +1,319 @@
+(
+================================================================================
+ADAPTED FOR THE ARC-AGI-3 PUZZLESCRIPT ADAPTER. Original: arrogant.gamer,
+www.arrogantgamer.com. Two classes of edit, documented here; the LEVELS and the
+puzzle itself are untouched.
+
+1. THE REMOTE-CONTROL RULE DID NOT FIRE AT ALL -- mechanics.
+   The author's rule is "push one square and every square of the same kind moves
+   with it", written as a two-bracket rule whose second bracket names the same
+   object as the first. That is the whole game.
+   _apply_multi_group_rule_forces in the adapter has an "overlap preference"
+   heuristic: when a later bracket has several matches and any of them share a
+   cell with an earlier bracket's match, it keeps ONLY the overlapping ones -- it
+   is there to serve colocated-legend patterns such as a door drawn on top of a
+   target. The pushed square matches BOTH brackets, so bracket 2 was restricted
+   to that same square and no other square of its kind ever received the force.
+   Measured before the fix: levels 2-6 were unwinnable, and levels 0 and 1 --
+   which differ only in whether the two squares share a kind -- enumerated to
+   byte-identical state graphs, the tell that the coupling did nothing at all.
+   Fixed HERE rather than in the adapter, which 28+ corpus games rely on, by
+   asking bracket 2 for a `stationary` square: the already-forced square no
+   longer matches it, the overlap never arises, and the tuple product forces
+   every remaining square of that kind. This is the same fixpoint reference
+   PuzzleScript reaches by looping the original rule, so the mechanic is still
+   the author's.
+
+2. THE BOARD WAS UNREADABLE -- rendering.
+   All original art was black-on-white, and the adapter maps black to ARC 5,
+   which is also the colour _render_frame letterboxes with, so the walls were the
+   picture frame. Worse, Player and the four squares were 5x5 sprites with NO
+   transparent pixel, and Omega -- the goal, and the game's entire win condition
+   "all A on Z" -- was a white square carrying one dark pixel at row/col 2. So a
+   square standing on a goal was pixel-identical to a square standing on floor;
+   and on the 17-wide level, which renders at cell_px 3 and therefore samples
+   sprite rows/cols 0, 2 and 4 only, all four square kinds, the player and the
+   walls rendered as the SAME solid block.
+   Now: Background white 0, W Gray 2, Omega solid Green 14, Player Red 8,
+   squares Purple 15 with a Yellow 11 kind mark. Player and all four squares are
+   transparent at the four EDGE MIDPOINTS -- a rotation-invariant window -- so
+   the green goal shows through whatever stands on it at every cell size the
+   nine levels use: 3, 5, 6, 7 and 9.
+
+   THE FOUR SQUARES ARE STILL A ROTATION ORBIT, DELIBERATELY. A_2's art is A_1's
+   turned 90 degrees, and so on round the cycle -- exactly the cycle the ACTION
+   key walks. The adapter rotates the rendered frame per seed, and that is what
+   makes a turned board a board this game can actually produce. The kind mark
+   therefore lives on the CORNER orbit, the only 4-cycle that survives cell_px 3
+   alongside the goal window. For the same reason the game must take NO flip
+   augmentation: a mirror reverses the cycle, so ACTION would appear to turn the
+   squares the other way on half the frames.
+================================================================================
+)
+
+title Variations
+author arrogant.gamer
+homepage www.arrogantgamer.com
+
+========
+OBJECTS
+========
+
+Background
+white
+00000
+00000
+00000
+00000
+00000
+
+( The four squares. 0 = Purple body, 1 = Yellow kind mark, . = the goal window.
+  Each is the previous one turned 90 degrees clockwise, matching the cycle the
+  ACTION key walks; the mark rides the CORNER orbit and the window the
+  EDGE-MIDPOINT orbit, which is rotation-invariant. See note 2 in the header. )
+
+A_1
+purple yellow
+10.00
+01000
+.000.
+00000
+00.00
+
+A_2
+purple yellow
+00.01
+00010
+.000.
+00000
+00.00
+
+A_3
+purple yellow
+00.00
+00000
+.000.
+00010
+00.01
+
+A_4
+purple yellow
+00.00
+00000
+.000.
+01000
+10.00
+
+Player
+red
+00.00
+00000
+.000.
+00000
+00.00
+
+( Solid, so it reads on bare floor and shows through the window of whatever
+  stands on it -- which is exactly the win condition. )
+
+Omega
+green
+00000
+00000
+00000
+00000
+00000
+
+W
+gray
+00000
+00000
+00000
+00000
+00000
+
+=======
+LEGEND
+=======
+
+. = Background
+z = Omega
+P = Player
+1 = A_1
+2 = A_2
+3 = A_3
+4 = A_4
+
+
+A = A_1 or A_2 or A_3 or A_4
+
+! = Omega and A_1
+@ = Omega and A_2
+# = Omega and A_3
+$ = Omega and A_4
+
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Z
+Player, A_1, A_2, A_3, A_4, W
+
+======
+RULES
+======
+
+[ > player | A ] -> [ > player | > A ]
+
+( mark squares as "wanting to move" )
+
+[ action player | A_1 ] -> [ action player | action A_1 ]
+[ action player | A_2 ] -> [ action player | action A_2 ] 
+[ action player | A_3 ] -> [ action player | action A_3 ]
+[ action player | A_4 ] -> [ action player | action A_4 ]
+
+( rotate squares that want to move )
+
+[ action A_4 ] -> [ A_1 ]
+[ action A_1 ] -> [ A_2 ]
+[ action A_2 ] -> [ A_3 ]
+[ action A_3 ] -> [ A_4 ]
+
+( when pushing a square, push all similar squares.
+  `stationary` in the second bracket is an ADAPTER WORKAROUND, not a change of
+  meaning -- see note 1 in the header. Without it the adapter's overlap
+  preference binds both brackets to the one square already being pushed and the
+  remote-control mechanic never fires at all. )
+
+[ > A_4 ] [ stationary A_4 ] -> [ > A_4 ] [ > A_4 ]
+[ > A_1 ] [ stationary A_1 ] -> [ > A_1 ] [ > A_1 ]
+[ > A_2 ] [ stationary A_2 ] -> [ > A_2 ] [ > A_2 ]
+[ > A_3 ] [ stationary A_3 ] -> [ > A_3 ] [ > A_3 ]
+
+==============
+WINCONDITIONS
+==============
+
+all A on Z
+
+=======
+LEVELS
+=======
+
+
+
+
+( sokoban 0 -- this is a traversal game )
+
+wwww..
+w.zw..
+w..www
+w@P..w
+w..1.w
+w..www
+wwww..
+
+( sokoban 1 -- blocks of the same type move together )
+
+wwww..
+w.zw..
+w..www
+w!P..w
+w..1.w
+w..www
+wwww..
+
+
+( sokoban 2 -- you can push a stationary block to move a neighbour )
+
+wwww..
+w.zwww
+w..w1w
+w!P..w
+w....w
+w..www
+wwww..
+
+( sokoban 3 -- trivial remote contro example )
+
+....wwww..
+.$..w.zw..
+....w..www
+....w!...w
+....w..3.w
+.p..w..www
+....wwww..
+
+( sokoban 4 -- remote control challenge )
+
+....wwww..
+.$..w.zw..
+....w..www
+....w!...w
+....w..1.w
+.p..w..www
+....wwww..
+
+( sokoban 5 -- double reverse sokoba! )
+
+..wwww.....wwww..
+..wz.w..$..w.zw..
+www..w.....w..www
+w...!w.....w!...w
+w.3..w.....w..1.w
+www..w..p..w..www
+..wwww.....wwww..
+
+( sokoban 6 -- remote control with jama )
+
+....wwww..
+.$..w.zw..
+....w..www
+....w!p..w
+....w..1.w
+.p..w..www
+....wwww..
+
+
+( remote controlling puzzles )
+( single ) ( double ) ( quad )
+
+( sokoban puzzles )
+
+
+
+
+( RC quad )
+
+z....w....z
+.3...w...1.
+.....w.....
+...4.w.4...
+....zwz....
+wwwwwwwwwww
+....zwz....
+...1.w.2...
+..p..w.....
+.1...w...3.
+z....w....z
+
+
+( RC double )
+
+z.4.w..z
+....w...
+....w.2.
+....w...
+..p.w...
+....w...
+....w.1.
+...4w...
+z...w..z
+
+message "fin"
+

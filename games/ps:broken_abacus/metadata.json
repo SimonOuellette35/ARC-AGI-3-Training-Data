@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:broken_abacus",
+  "title": "Broken Abacus",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Broken_Abacus",
+  "local_dir": "games/ps:broken_abacus"
+}

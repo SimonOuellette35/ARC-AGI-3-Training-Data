@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:lime_richard",
+  "title": "Lime Richard",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Lime_Richard",
+  "local_dir": "games/ps:lime_richard"
+}

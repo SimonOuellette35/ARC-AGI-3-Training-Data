@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:variations",
+  "title": "Variations",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Variations",
+  "local_dir": "games/ps:variations"
+}

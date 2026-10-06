@@ -1,0 +1,355 @@
+title Together Alone
+author Qwok Games
+homepage www.qwokgames.com
+
+(ARC-AGI-3 rendering fix, 2026-08-21. Every sprite in the OBJECTS section below
+was repainted and Background was recoloured; not one rule, legend entry,
+collision layer, win condition or level was touched, so the mechanic is
+bit-for-bit the shipped game.
+solvers/generate_together_alone_training.py --audit is the check, and
+--plans / --selfcheck / --engine / --fuzz / --symmetry all run against this file.
+
+ WHY IT HAD TO CHANGE. Measured on the shipped art at the 8px cell all four
+ levels render at, 43 cell compositions produced 174 IDENTICAL pairs. Three
+ separate causes, and each of them erased something the win condition names:
+
+  * THE GROUND VANISHED UNDER A CHARACTER. Ben's and Isabelle's sprites were
+    opaque over sprite rows 0-3 and the active-player marker (BenActive /
+    IsaActive, "White / ..... x4 / 00000") painted the whole of row 4 white.
+    Between them they covered all 25 pixels, so `browntile+ben+benactive`,
+    `bluetile+ben+benactive`, `graytile+ben+benactive`, `brownexit+ben+
+    benactive` and `blueexit+ben+benactive` were the SAME PICTURE. Two thirds
+    of the win condition is "All Ben on BrownExit / All Isabelle on BlueExit",
+    so the winning frame was indistinguishable from the two of them standing
+    on any other square.
+  * CO-OCCUPANCY VANISHED. Isabelle is one collision layer above Ben and her
+    sprite was opaque too, so `ben+isabelle` rendered exactly as `isabelle`.
+    Standing on the same tile is a MECHANIC here -- the tile does not break, it
+    changes colour (the level-4 message says so) -- and it could not be seen.
+  * WHO IS ACTIVE VANISHED. BenActive and IsaActive had the same sprite (a
+    white bar). Normally the character under the bar says which one it is, but
+    when both share a cell there is no such tell, so the two states that differ
+    only in whose turn it is drew the same frame. And BenTile/BlueTile/GrayTile
+    all shared the bevel outline, differing only in colours the players hid.
+
+ THE SCHEME. Each COLLISION LAYER gets a disjoint region of the 5x5 sprite, so
+ no object can ever hide another and every composition is the sum of its parts.
+ At cell_px=8 the renderer samples sprite rows/cols to screen widths 2,1,2,1,2,
+ so the regions were chosen to land on the FAT indices:
+
+    sprite rows 0 and 4     layer 2  Ground   32 of the cell's 64 screen px
+    rows 1-3, cols 0-1      layer 3  Ben      12 px
+    rows 1-3, col 2         layer 5  Helper    8 px   (which character is active)
+    rows 1-3, cols 3-4      layer 4  Isabelle 12 px
+
+ Ground is two horizontal bands, and every ground is drawn with a band that is
+ symmetric left-right and top-bottom, so the six of them are mutually distinct
+ under the whole dihedral group by construction:
+
+    BrownTile   yellow   brown brown brown   yellow      (accent at the seam,
+    BlueTile    ltblue   blue  blue  blue    ltblue        so adjacent tiles
+    GrayTile    ltgray   gray  gray  gray    ltgray        do not merge)
+    BrownExit   brown  white brown white brown           (dashed = a door)
+    BlueExit    blue   white blue  white blue
+    TwoColTile  brown  blue  brown blue  brown           (unused by any level)
+
+ Ben is a brown block on the left with a yellow pip on its inner edge, Isabelle
+ the mirror in blue with a light-blue pip, and the active marker is a single
+ centre bar in that character's own accent colour -- yellow for BenActive,
+ light blue for IsaActive -- which is the whole answer to the third bug above.
+ BenWillBeActive / IsaWillBeActive are painted the same as their Active
+ counterparts; they exist for one rule-application only and never reach a
+ frame, which --fuzz asserts on every state of every level.
+
+ BACKGROUND IS NO LONGER BLACK. It was `Black`, which is ARC palette 5, which
+ is also `_render_frame`'s letterbox pad. The levels are 8 wide (so the frame
+ fills horizontally) but 5-7 tall, so the pad rows above and below the board
+ ran seamlessly into the board's own empty cells and the play area had no
+ edge. It is now #333333 (palette 4), which is the void Ben jumps over and
+ nothing else. --audit asserts no composition renders as the pad.
+)
+
+(
+Simplified version of our free game Together Alone.
+
+A puzzle game where you can switch between two characters.
+Each character breaks tiles of their own color. 
+You must break all tiles and guide both to the exit.
+)
+
+========
+OBJECTS
+========
+
+(The void. NOT black: black is the letterbox pad, so a black background gave
+ the play area no edge. See the header.)
+Background .
+#333333
+
+(Brown tiles, broken by Ben)
+BrownTile 1
+Brown Yellow
+10001
+.....
+.....
+.....
+10001
+
+(Blue tiles, broken by Isabelle)
+BlueTile 2
+Blue LightBlue
+10001
+.....
+.....
+.....
+10001
+
+(Gray tiles, cannot be broken)
+GrayTile g
+Gray LightGray
+10001
+.....
+.....
+.....
+10001
+
+(Two-color tiles, broken by both. No shipped level places one.)
+TwoColTile +
+Brown Blue
+01010
+.....
+.....
+.....
+01010
+
+(Isabelle's Exit)
+BlueExit 5
+Blue White
+01010
+.....
+.....
+.....
+01010
+
+(Ben's Exit)
+BrownExit 6
+Brown White
+01010
+.....
+.....
+.....
+01010
+
+(Jump orbs
+Orb
+White Black
+.....
+..1..
+.101.
+..1..
+.....
+)
+
+(Character 1, Ben -- the LEFT block of the character zone, rows 1-3 cols 0-1)
+Ben
+Brown Yellow
+.....
+00...
+01...
+00...
+.....
+
+(Character 2, Isabelle -- the RIGHT block, the exact mirror of Ben)
+Isabelle
+Blue LightBlue
+.....
+...00
+...10
+...00
+.....
+
+(Helper object to indicate Ben is active -- the centre bar, in Ben's accent)
+BenActive
+Yellow
+.....
+..0..
+..0..
+..0..
+.....
+
+(Helper object to indicate Isabelle is active -- the centre bar, in hers)
+IsaActive
+LightBlue
+.....
+..0..
+..0..
+..0..
+.....
+
+(Helper object to indicate Isabelle will become active. Lives for one rule
+ application inside a single turn and never reaches a frame; --fuzz asserts it.)
+IsaWillBeActive
+LightBlue
+.....
+..0..
+..0..
+..0..
+.....
+
+(Helper object to indicate Ben will become active. Same: never rendered.)
+BenWillBeActive
+Yellow
+.....
+..0..
+..0..
+..0..
+.....
+
+
+=======
+LEGEND
+=======
+
+(The characters we can switch between)
+Player = Ben or Isabelle
+
+(Tiles that contain a certain color)
+TileWithBrown = BrownTile or TwoColTile
+TileWithBlue = BlueTile or TwoColTile
+
+(Any tile)
+BreakableTile = TileWithBrown or TileWithBlue
+Tile = BreakableTile or GrayTile
+
+(Any exit)
+Exit = BlueExit or BrownExit
+
+(Helper objects)
+HelperObjects = BenActive or IsaActive or BenWillBeActive or IsaWillBeActive
+
+(Any square characters can stand on)
+Ground = Tile or Exit
+
+(Character starting positions)
+B = Ben and BrownTile and BenActive
+I = Isabelle and BlueTile
+
+(Tile with orb
+3 = Orb and BrownTile
+4 = Orb and BlueTile
+)
+
+=========
+SOUNDS
+=========
+endlevel 97728103
+endgame 45301503
+Tile destroy 93051107
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Ground
+Ben
+Isabelle (, Orb)
+HelperObjects
+
+======
+RULES
+======
+
+(Action button switches active players; some helper object trickery is needed 
+ to prevent both rules firing at once)
+[ Action Ben BenActive ] [ Isabelle ] -> [ Ben ] [ Isabelle IsaWillBeActive ]
+[ Action Isabelle IsaActive ] [ Ben ] -> [ Isabelle ] [ Ben BenWillBeActive ]
+[ IsaWillBeActive ] -> [ IsaActive ]
+[ BenWillBeActive ] -> [ BenActive ]
+
+(Stop inactive player before movement rules fire)
+[ > Ben ] [ IsaActive ] -> [ Ben ] [ IsaActive ]
+[ > Isabelle ] [ BenActive ] -> [ Isabelle ] [ BenActive ]
+
+(Only active player moves; Ben breaks the brown tiles, Isabelle the blue ones
+ Note that Ben and Isa can occupy the same tile, and if this is so, the tile cannot
+ be broken. In the original game, the tile would crack in this case and break later;
+ here we just flip the color to get the same effect)
+[ > Ben Isabelle BenActive TileWithBrown | Ground ] -> [ Isabelle BlueTile | Ben BenActive Ground ]
+[ > Ben TileWithBrown BenActive | Ground ] -> [ | Ben BenActive Ground ]
+[ > Ben BenActive | Ground ] -> [ | Ben BenActive Ground ]
+[ > Isabelle Ben IsaActive TileWithBlue | Ground ] -> [ Ben BrownTile | Isabelle IsaActive Ground ]
+[ > Isabelle IsaActive TileWithBlue | Ground ] -> [ | Isabelle IsaActive Ground ]
+[ > Isabelle IsaActive | Ground ] -> [ | Isabelle IsaActive Ground ]
+
+(Ben can jump over 1-square gaps)
+[ > Ben Isabelle BenActive TileWithBrown | No Tile | Ground ] -> [ Isabelle BlueTile | | Ben BenActive Ground ]
+[ > Ben BenActive TileWithBrown | No Tile | Ground ] -> [ | | Ben BenActive Ground ]
+[ > Ben BenActive | No Tile | Ground ] -> [ | | Ben BenActive Ground ]
+
+(NOTE: Isa could originally step diagonally, but this isn't easy (possible?) to implement 
+ in PuzzleScript)
+
+(Stop moving player)
+[ > Player ] -> [ Player]
+
+
+==============
+WINCONDITIONS
+==============
+No BreakableTile
+All Ben on BrownExit
+All Isabelle on BlueExit
+
+=======
+LEVELS
+=======
+
+(
+message Orbs allow a character to jump a 1-square gap.
+
+........
+........
+........
+.b13.11.
+........
+........
+)
+
+message X to switch chars. Each must break all tiles of their color and end at their exit (+).
+........
+.B111...
+.1111...
+...56I..
+...222..
+...222..
+...222..
+
+message They can stand on the same tile.
+
+........
+..i.....
+.b121...
+..2125..
+....6...
+
+message Gray tiles cannot be broken.
+message Ben (Brown) can jump over gaps.
+
+...6....
+...2....
+b11g115.
+...2....
+...i....
+
+message A tile won't break with a character standing on it.
+
+..i.....
+.b1221..
+..1..g..
+..2..1..
+..1115..
+.....6..
+
+message congratulations!

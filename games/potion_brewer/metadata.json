@@ -1,0 +1,15 @@
+{
+    "game_id": "potion_brewer",
+    "title": "Potion Brewer",
+    "tags": ["puzzle", "sequence", "collection", "planning"],
+    "level_tags": [
+        ["3-step-recipe-11x9", "easy"],
+        ["4-step-recipe-13x10", "medium"],
+        ["5-step-recipe-15x11", "hard"],
+        ["6-step-recipe-17x12", "expert"],
+        ["7-step-recipe-19x13", "extra-hard"],
+        ["8-step-recipe-21x14", "master"],
+        ["9-step-recipe-21x14-6jars", "grandmaster"]
+    ],
+    "baseline_actions": [18, 35, 55, 80, 110, 150, 200]
+}

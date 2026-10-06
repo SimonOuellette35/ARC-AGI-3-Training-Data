@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sorx_aubi",
+  "title": "Sorx-Aubi",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sorx-Aubi",
+  "local_dir": "games/ps:sorx_aubi"
+}

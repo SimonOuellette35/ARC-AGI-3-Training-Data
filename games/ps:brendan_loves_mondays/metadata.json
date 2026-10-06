@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:brendan_loves_mondays",
+  "title": "Brendan loves mondays",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Brendan_loves_mondays",
+  "local_dir": "games/ps:brendan_loves_mondays"
+}

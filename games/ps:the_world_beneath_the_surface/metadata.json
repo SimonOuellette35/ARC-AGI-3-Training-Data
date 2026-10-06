@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:the_world_beneath_the_surface",
+  "title": "The World Beneath the Surface",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "The_World_Beneath_the_Surface",
+  "local_dir": "games/ps:the_world_beneath_the_surface"
+}

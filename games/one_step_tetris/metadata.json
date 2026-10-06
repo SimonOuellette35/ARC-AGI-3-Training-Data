@@ -1,0 +1,9 @@
+{
+    "game_id": "one_step_tetris",
+    "title": "One Step Tetris",
+    "description": "Slide the suspended polyominoes with arrows or mouse clicks so that a single drop (ACTION5) completes the required number of full rows; a wrong placement loses the level.",
+    "default_fps": 6,
+    "baseline_actions": [7, 9, 15, 11, 11],
+    "tags": ["static", "puzzle", "tetris", "mouse", "16-grid"],
+    "local_dir": "games/one_step_tetris"
+}

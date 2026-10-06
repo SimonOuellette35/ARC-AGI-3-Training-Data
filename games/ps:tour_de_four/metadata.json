@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:tour_de_four",
+  "title": "Tour de Four",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "_Tour_de_Four",
+  "local_dir": "games/ps:tour_de_four"
+}

@@ -1,0 +1,195 @@
+title Little Girl, Big World
+author Franklin P. Dyer
+run_rules_on_level_start on
+require_player_movement off
+
+(ARC-AGI-3 rendering fix, 2026-08-14. Mechanics, levels and win condition are
+untouched -- the one thing the game is ABOUT was not drawn at all -- and
+solvers/generate_little_girl_big_world_training.py --audit is the check.
+
+ 1. THE GOAL WAS INVISIBLE. `Goal` shipped as `Transparent` with no sprite, so
+    the single square the win condition names ("No Goal") painted nothing: the
+    frame showed a gap in the barrier ring and no way to tell it from any other
+    stretch of wall.  It is a solid PINK square now (ARC 6, used by nothing
+    else in this game).
+
+ 2. BOTH WALLS WERE SOLID 5x5 BLOCKS, and a wall CAN be shoved onto the goal --
+    the goal sits in the barrier ring on its own collision layer, and `[ > Wall
+    | Barrier ] -> cancel` does not stop a wall entering the one ring cell that
+    holds no barrier.  It is not a corner case either: `goal+wall2` turns up in
+    the enumerated state spaces of levels 2-4, and on the last level walking
+    right and then pushing up plugs the gap with `goal+wall1` in twelve presses.
+    The state is recoverable (shove the wall back off), so where the goal is has
+    to stay readable underneath one.  All three walls now have TRANSPARENT
+    CORNERS, so the pink shows through.
+
+    Corners specifically: `_render_cell_sprite` takes centred nearest samples,
+    and the last level is 14 cells tall, i.e. cell_px 4, where a 5x5 sprite is
+    read at rows/cols {0,1,3,4} only.  The four corners are the holes that
+    survive that (and every larger cell size the other levels use); a hole in
+    the middle would not.
+
+ 3. Wall3's second colour was `Lightbrown`, which `_COLOR_NAME_TO_ARC` does not
+    know, so `_color_name_to_arc` silently returned its fallback index 2.  It is
+    `Orange` now.  Wall3 appears in no shipped level, so this changes no frame;
+    it is fixed so the file holds no colour that is a coin flip.)
+
+========
+OBJECTS
+========
+
+Background .
+White
+
+Player @
+#d2b48c Brown Blue Lightgreen Darkblue
+.111.
+10001
+32323
+.444.
+.4.4.
+
+Wall1 1
+Lightblue Blue Darkblue
+.000.
+01112
+01112
+01112
+.222.
+
+Wall2 2
+Lightred Red Darkred
+.111.
+10201
+12021
+10201
+.111.
+
+Wall3 3
+Yellow Orange
+.001.
+01001
+00100
+10010
+.100.
+
+Barrier /
+Black Darkgrey
+00000
+01010
+00100
+01010
+00000
+
+Goal #
+Pink
+
+=======
+LEGEND
+=======
+
+Wall = Wall1 or Wall2 or Wall3
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Goal
+Player, Wall, Barrier
+
+======
+RULES
+======
+
+[ > Player | Wall ] -> [ > Player | > Wall ]
+
+startloop
+
+[ moving Wall1 | Wall1 ] -> [ moving Wall1 | moving Wall1 ]
+[ moving Wall2 | Wall2 ] -> [ moving Wall2 | moving Wall2 ]
+[ moving Wall3 | Wall3 ] -> [ moving Wall3 | moving Wall3 ]
+
+[ > Wall | Wall ] -> [ > Wall | > Wall ]
+
+endloop
+
+[ > Wall | Barrier ] -> cancel
+
+[> Player|Goal] -> [|Player]
+
+==============
+WINCONDITIONS
+==============
+
+No goal
+
+=======
+LEVELS
+=======
+
+message Dedicated to Ada, my little sister.
+
+////#//
+/.111./
+//221./
+/...1./
+/..11./
+/@..../
+///////
+
+/////#//
+/....2./
+/22222./
+/...2../
+/11121//
+/..1.../
+/@.1.../
+////////
+
+//#///////
+//.///.../
+//.1.11/./
+/1.1...../
+/111..@.//
+/.1.....//
+/..2.2..//
+/..22222//
+/.....2.//
+///...////
+//////////
+
+/////////#/
+/....../../
+/11111..../
+/1..2111../
+/1..21@1../
+/1..2..1../
+/1..2..1../
+/..22..1../
+/1..1..1../
+/1111111../
+/......1../
+///////////
+
+/////////#/
+/........./
+/11121...1/
+/1..21...1/
+/1..21...1/
+/111211..1/
+/1..21.1.1/
+/1..21.1.1/
+/1..21..11/
+/1..21...1/
+/1..21...1/
+/1..21...1/
+/@......../
+///////////
+
+
+message You win!

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:savior",
+  "title": "Savior",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Savior",
+  "local_dir": "games/ps:savior"
+}

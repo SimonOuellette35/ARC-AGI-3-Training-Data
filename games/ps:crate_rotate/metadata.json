@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:crate_rotate",
+  "title": "Crate Rotate",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Crate_Rotate",
+  "local_dir": "games/ps:crate_rotate"
+}

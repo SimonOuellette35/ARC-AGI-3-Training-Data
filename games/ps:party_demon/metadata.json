@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:party_demon",
+  "title": "Party Demon",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Party_Demon",
+  "local_dir": "games/ps:party_demon"
+}

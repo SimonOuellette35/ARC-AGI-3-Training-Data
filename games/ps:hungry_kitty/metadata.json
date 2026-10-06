@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:hungry_kitty",
+  "title": "Hungry Kitty",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Hungry_Kitty",
+  "local_dir": "games/ps:hungry_kitty"
+}

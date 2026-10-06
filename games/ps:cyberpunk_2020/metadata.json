@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:cyberpunk_2020",
+  "title": "Cyberpunk 2020",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Cyberpunk_2020",
+  "local_dir": "games/ps:cyberpunk_2020"
+}

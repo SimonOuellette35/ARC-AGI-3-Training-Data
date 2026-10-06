@@ -1,0 +1,344 @@
+title Slidyyyyyyy
+author mokesmoe
+homepage www.puzzlescript.net
+
+(ARC-AGI-3 rendering fix, 2026-08-17. ONE sprite redrawn -- Target. No colour
+name, object, collision layer, rule, legend entry, level or win condition is
+touched, so the mechanic is bit-for-bit the game it was. The check is
+solvers/generate_slidyyyyyyy_training.py --audit.
+
+THE WIN WAS NOT DRAWN, AND ON LEVEL 5 THE GOAL WAS NOT DRAWN EITHER. Target
+shipped as a small dark-blue ring on rows/cols 1-3 with a hole at the centre --
+which is exactly the footprint the Player's 5x5 paints over, Player being the
+higher collision layer. So `player on target`, the winning board, rendered as
+the same red blob as a player standing anywhere else: the one frame the agent
+has to recognise looked like every other frame. Worse, level 5 is 8x17, which
+`_render_frame` draws at cell_px=3, and the centred nearest-neighbour sampling
+at that size reads sprite rows/cols {0,2,4} only -- every pixel of the old ring
+lived on rows/cols 1-3, so the target rendered as bare floor and the goal of
+the level was invisible.
+
+The fix is one idea, the silver_lungs one: give Target the nine pixels the
+Player leaves TRANSPARENT, so nothing can occlude it, and put five of them on
+rows/cols {0,2,4} so it survives the cell_px=3 sampling as well as the 5 and 6
+this game's other boards use.
+
+    Player transparent   (0,0) (0,4) (1,0) (1,4) (3,0) (3,4) (4,0) (4,2) (4,4)
+    Target drawn on      the same nine
+    survives cell_px=3   (0,0) (0,4) (4,0) (4,2) (4,4)
+
+marker keeps its blank sprite: it is the slide animation's invisible plumbing,
+it exists only between two frames of one press, and no settled board contains
+one. The animation part sprites -- pl1..pd4 -- are untouched for the same
+reason. Background, Wall and Player are unchanged.)
+
+again_interval 0.02
+
+========
+OBJECTS
+========
+
+Background
+white lightblue
+11111
+01111
+11101
+11111
+10111
+
+marker
+black
+.....
+.....
+.....
+.....
+.....
+
+Target
+DarkBlue
+0...0
+0...0
+.....
+0...0
+0.0.0
+
+Wall
+BROWN DARKBROWN
+00010
+11111
+01000
+11111
+00010
+
+Player
+red orange black
+.000.
+.010.
+20002
+.000.
+.2.2.
+
+pl1
+red orange black
+..000
+.2010
+..000
+..000
+...22
+
+pl2
+red orange black
+...00
+...01
+..200
+...00
+..2..
+
+pl3
+red orange black
+....0
+....0
+....0
+...20
+....2
+
+pl4
+red orange black
+.....
+....2
+.....
+.....
+....2
+
+pr1
+red orange black
+000..
+010..
+000..
+0002.
+.2...
+
+pr2
+red orange black
+00...
+102..
+00...
+00...
+..2..
+
+pr3
+red orange black
+0....
+0....
+02...
+0....
+.....
+
+pr4
+red orange black
+.....
+.....
+.....
+2....
+.....
+
+pu1
+red orange black
+.....
+.000.
+2010.
+.000.
+.0002
+
+pu2
+red orange black
+.....
+.....
+.000.
+.010.
+20002
+
+pu3
+red orange black
+.....
+.....
+.....
+.000.
+.0102
+
+pu4
+red orange black
+.....
+.....
+.....
+.....
+.000.
+
+pd1
+red orange black
+2010.
+.000.
+.0002
+2.2..
+.....
+
+pd2
+red orange black
+.000.
+2000.
+.2..2
+.....
+.....
+
+pd3
+red orange black
+.000.
+2..2.
+.....
+.....
+.....
+
+pd4
+red orange black
+..22.
+.....
+.....
+.....
+.....
+
+=======
+LEGEND
+=======
+
+right = pr1 or pr2 or pr3 or pr4
+left  = pl1 or pl2 or pl3 or pl4
+up    = pu1 or pu2 or pu3 or pu4
+down  = pd1 or pd2 or pd3 or pd4
+part = right or left or up or down
+
+
+. = Background
+# = Wall
+P = Player
+O = Target
+
+
+=======
+SOUNDS
+=======
+
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Player, Wall, part
+marker
+
+======
+RULES
+======
+
+[player | marker] -> [> player | marker]
+
+right[pl4 | pr1 marker | ] -> [ | player | marker] again
+left [pr4 | pl1 marker | ] -> [ | player | marker] again
+up   [pd4 | pu1 marker | ] -> [ | player | marker] again
+down [pu4 | pd1 marker | ] -> [ | player | marker] again
+
+right[pl3 | pr2 marker] -> [pl4 | pr1 marker] again
+left [pr3 | pl2 marker] -> [pr4 | pl1 marker] again
+up   [pd3 | pu2 marker] -> [pd4 | pu1 marker] again
+down [pu3 | pd2 marker] -> [pu4 | pd1 marker] again
+
+right[pl2 | pr3 marker] -> [pl3 | pr2 marker] again
+left [pr2 | pl3 marker] -> [pr3 | pl2 marker] again
+up   [pd2 | pu3 marker] -> [pd3 | pu2 marker] again
+down [pu2 | pd3 marker] -> [pu3 | pd2 marker] again
+
+right[pl1 | pr4 marker] -> [pl2 | pr3 marker] again
+left [pr1 | pl4 marker] -> [pr2 | pl3 marker] again
+up   [pd1 | pu4 marker] -> [pd2 | pu3 marker] again
+down [pu1 | pd4 marker] -> [pu2 | pd3 marker] again
+
+right[> player | no wall] -> [pl1 | pr4 marker] again
+left [> player | no wall] -> [pr1 | pl4 marker] again
+up   [> player | no wall] -> [pd1 | pu4 marker] again
+down [> player | no wall] -> [pu1 | pd4 marker] again
+
+[marker wall] -> [wall]
+
+==============
+WINCONDITIONS
+==============
+
+All player on target
+no marker
+
+=======
+LEVELS
+=======
+
+
+##########
+#..o.....#
+#....#...#
+#.......##
+#...#....#
+#.#......#
+#..#.....#
+#.p....#.#
+#........#
+##########
+
+
+###########
+#o..#.....#
+###.#.###.#
+#.........#
+#...###.#.#
+#.......#.#
+###.....#.#
+#.........#
+#...#.###.#
+#...#....p#
+###########
+
+
+###########
+#....#....#
+#..###..###
+#.........#
+##.###..#o#
+#.......###
+#....#....#
+##...##...#
+#.........#
+#..#.p#.#.#
+###########
+
+
+###########
+#..#..#...#
+#.......#.#
+##.#......#
+#...#....##
+#........o#
+#.#..p...##
+#...##....#
+#.#.......#
+#.......#.#
+###########
+
+
+#################
+#.....#..o..#...#
+#.....#.........#
+#.............#.#
+##..#........#..#
+#p...#....#..#..#
+#......###......#
+#################

@@ -1,0 +1,222 @@
+title Miner To Miner Empire
+author Savage
+homepage www.tinyurl.com/vcscodeclub
+
+(
+a basic game to show engine's mechanics
+)
+
+(ARC-AGI-3 rendering fix, 2026-08-14. One sprite, two pixels moved; the
+mechanics, the levels and the win condition are untouched, and
+solvers/generate_miner_to_miner_empire_training.py --audit is the check.
+
+THE WIN WAS INVISIBLE ON HALF THE GAME. The last four levels ("Industrial",
+11x24) render at cell_px 2, where `_render_cell_sprite` takes centred nearest
+samples and reads a 5x5 sprite at rows/cols {1,3} ONLY -- four pixels per cell.
+The Player was opaque at all four ((1,1) and (1,3) body, (3,1) and (3,3) leg),
+so a miner standing on a Target painted exactly the same block as a miner
+standing on floor. The win condition is `All Player on Target`, so on those
+levels nothing on screen distinguished a solved board from an unsolved one.
+
+The legs moved from columns 1 and 3 out to columns 0 and 4, which are not
+sampled at cell_px 2. The block is now the miner's blue shoulders over whatever
+he is standing on: lightblue+darkgray on a Target, white floor otherwise. Both
+halves of the pair stay legible -- Player-vs-floor and Player+Target-vs-Player
+each differ in two of the four sampled pixels, and no two cell compositions
+render alike at any of the five cell sizes this game uses (9, 7, 5, 4, 2).
+Columns 0 and 4 also survive the cell_px 4 sample set {0,1,3,4}, so the figure
+is unchanged in silhouette on level 4 and above it.)
+
+========
+OBJECTS
+========
+
+Background
+white grey
+10101
+01010
+10101
+10001
+01101
+
+Wall
+darkgray black
+10101
+00010
+01101
+10011
+01100
+
+
+Target
+darkgray grey lightblue blue
+11111
+11231
+02231
+02301
+00000
+
+
+Player
+blue purple yellow
+..2..
+00000
+.000.
+1...1
+1...1
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+o = Target
+P = Player
+
+
+=========
+SOUNDS
+=========
+
+player move 19748107
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Player, Wall
+
+======
+RULES
+======
+
+
+==============
+WINCONDITIONS
+==============
+
+All Player on Target 
+
+=======
+LEVELS
+=======
+
+message level 1
+
+message Starting The Quest
+
+...###p
+.#.....
+.######
+....#..
+###.##.
+o......
+
+message level 2
+message Your First Partner
+
+....#.#pp
+#.###.#.#
+#.#.....#
+....#####
+###....#o
+....#.##.
+.##...#..
+.o#.#...#
+
+message level 3
+message An Ordinary Job
+
+p#..#......#
+p##.#.####.o
+....#.#..###
+##.##.......
+...#..###.#.
+.#....#.###.
+.####....#..
+.#..#.##.###
+.##.#.#...#o
+....#.#.#.#.
+.##...#.#...
+
+message level 4
+message Another Member
+
+
+p#..#..#...###
+p##.#.##.#...#
+p...#.#..###..
+##.##........#
+......###.#..#
+.#.#..#.###.##
+.####........#
+##o.#.##.###..
+.##.###...#..#
+....#...#.#.##
+.##...#o#...#.
+..#.#.###.#...
+#.#.#..#..#.#o
+
+message Final Level
+message Industrial
+
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+########################
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+########################
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+
+message $100,000
+
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+########################
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+########################
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+
+message $1,000,000
+
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+########################
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+########################
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+
+message $999,999,999
+
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+########################
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+########################
+o.#.o.#...#...#...#p..#p
+#.#.#.#.#.#.#.#.#.#.#.#.
+#...#...#...#...#...#...
+
+message $5,942,183,352
+message YOU BECAME A BILLIONARE!!!
+message YOU WIN!!!

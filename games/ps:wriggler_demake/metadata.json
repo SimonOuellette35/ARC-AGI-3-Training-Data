@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:wriggler_demake",
+  "title": "Wriggler demake",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Wriggler_demake",
+  "local_dir": "games/ps:wriggler_demake"
+}

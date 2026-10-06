@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:time_reversed_minicosmos",
+  "title": "Time-Reversed Minicosmos",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Time-Reversed_Minicosmos",
+  "local_dir": "games/ps:time_reversed_minicosmos"
+}

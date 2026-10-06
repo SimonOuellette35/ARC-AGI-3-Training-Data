@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:tumblin",
+  "title": "Tumblin'",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Tumblin'",
+  "local_dir": "games/ps:tumblin"
+}

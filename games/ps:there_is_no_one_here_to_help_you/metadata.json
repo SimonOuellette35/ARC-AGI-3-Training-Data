@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:there_is_no_one_here_to_help_you",
+  "title": "There is no-one here to help you",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "There_is_no-one_here_to_help_you",
+  "local_dir": "games/ps:there_is_no_one_here_to_help_you"
+}

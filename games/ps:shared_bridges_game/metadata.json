@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:shared_bridges_game",
+  "title": "Shared Bridges Game",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Shared_Bridges_Game",
+  "local_dir": "games/ps:shared_bridges_game"
+}

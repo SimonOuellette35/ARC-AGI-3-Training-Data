@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:silver_lungs",
+  "title": "silver lungs",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "silver_lungs",
+  "local_dir": "games/ps:silver_lungs"
+}

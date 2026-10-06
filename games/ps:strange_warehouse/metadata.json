@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:strange_warehouse",
+  "title": "Strange Warehouse",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Strange_Warehouse",
+  "local_dir": "games/ps:strange_warehouse"
+}

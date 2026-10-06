@@ -1,0 +1,15 @@
+{
+    "game_id": "balloon_festival",
+    "title": "Balloon Festival",
+    "tags": ["puzzle", "planning", "routing", "deflectors"],
+    "level_tags": [
+        ["2-balloons-10x10-deflectors", "easy"],
+        ["3-balloons-12x12-deflectors", "medium"],
+        ["4-balloons-14x12-deflectors", "hard"],
+        ["4-balloons-16x14-deflectors", "expert"],
+        ["4-balloons-16x14-dx3", "extra-hard"],
+        ["4-balloons-16x14-dx4", "master"],
+        ["4-balloons-16x14-dx5", "grandmaster"]
+    ],
+    "baseline_actions": [15, 25, 40, 55, 70, 95, 120]
+}

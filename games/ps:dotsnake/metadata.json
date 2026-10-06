@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:dotsnake",
+  "title": "Dotsnake",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Dotsnake",
+  "local_dir": "games/ps:dotsnake"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:the_nuevo_asylum",
+  "title": "The Nuevo Asylum",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "The_Nuevo_Asylum",
+  "local_dir": "games/ps:the_nuevo_asylum"
+}

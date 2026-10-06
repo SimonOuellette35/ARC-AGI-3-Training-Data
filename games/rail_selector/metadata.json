@@ -1,0 +1,15 @@
+{
+    "game_id": "rail_selector",
+    "title": "Rail Selector",
+    "tags": ["rails", "sliding", "selection", "positioning"],
+    "level_tags": [
+        ["3 rails", "easy"],
+        ["4 rails", "easy"],
+        ["5 rails", "medium"],
+        ["5 rails longer", "medium"],
+        ["6 rails", "hard"],
+        ["7 rails", "hard"],
+        ["8 rails", "expert"]
+    ],
+    "baseline_actions": [12, 18, 24, 30, 38, 48, 58]
+}

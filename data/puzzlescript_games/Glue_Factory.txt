@@ -1,0 +1,158 @@
+title Glue Factory
+author Cale Bradbury
+homepage www.netgrindgames.com
+
+run_rules_on_level_start
+
+========
+OBJECTS
+========
+
+Background
+Gray
+
+Glue
+White
+
+( Wall and Shooter are RINGS with a hollow 3x3 middle. Glue sits on a LOWER )
+( collision layer than both, so a solid sprite would hide it completely -- and a )
+( glue blob duplicated onto a wall rule `[< Glue|Wall]`, the game's only glue )
+( source is a real object the win condition must see disposed of. The hollow )
+( middle is where that glue shows through; the ring's four CORNERS are where the )
+( Guide's crosshair dots land, so the two never overwrite each other. )
+Wall
+BROWN
+00000
+0...0
+0...0
+0...0
+00000
+
+( Transparent corners so the Guide crosshair reads through the player, which the )
+( renderer always composites last on top of every layer. )
+Player
+Blue
+.000.
+00000
+00000
+00000
+.000.
+
+( Purple, not Orange: `brown` and `orange` both quantize to ARC index 12, so an )
+( orange Shooter was pixel-identical to the brown Wall -- and the Shooter's )
+( position is what the entire crosshair mechanic is aimed by. )
+Shooter
+Purple
+00000
+0...0
+0...0
+0...0
+00000
+
+Hole
+Black
+
+( The crosshair. Authored as #808080 which quantizes to ARC 2 -- the exact colour )
+( of the Gray Background, so it was invisible on every floor cell it marked; the )
+( author's own unused palette entries were #ff0000, which is what it now draws in. )
+Guide
+Red
+0...0
+.....
+.....
+.....
+0...0
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+* = Shooter
+O = Glue
+- = Hole
+g = Guide
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Glue
+Hole
+Player, Wall, Shooter
+Guide
+
+======
+RULES     
+======     
+
+late [player Glue] -> cancel
+late [player Hole] -> cancel
+late [Glue Hole] ->[]
+
+[ >  Player | Shooter|no wall ] -> [  >  Player | > Shooter| ]  
+
+[MOVING Shooter|...|Glue] ->[MOVING Shooter|...|MOVING Glue]
+[> Glue|Wall] -> [|Wall]
+[< Glue|Wall] -> [< Glue |< Glue wall]
+[Guide]->[]
+late [Shooter|...|no Guide]->[Shooter|...|guide]
+
+
+==============
+WINCONDITIONS
+==============
+
+No Hole
+No Glue
+
+=======     
+LEVELS
+=======
+
+#########
+#-#.....#
+#.#..p..#
+#.#.....#
+#.#..*..#
+#.#.....#
+#O#.....#
+#.#.....#
+#########
+
+#########
+#-......#
+#-...o..#
+#-......#
+#########
+#.......#
+#.......#
+#..p*...#
+#.......#
+#########
+
+#########
+#-..o...#
+#-......#
+#...*o.##
+#.p.....#
+#.......#
+#########
+
+#########
+#-..o...#
+##..P...#
+#...*...#
+##......#
+#...o...#
+#.....###
+#-......#
+#########

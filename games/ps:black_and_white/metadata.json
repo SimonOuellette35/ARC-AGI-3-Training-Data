@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:black_and_white",
+  "title": "Black & White",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Black_&_White",
+  "local_dir": "games/ps:black_and_white"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:a_knights_tour",
+  "title": "A Knight's Tour",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "A_Knight's_Tour",
+  "local_dir": "games/ps:a_knights_tour"
+}

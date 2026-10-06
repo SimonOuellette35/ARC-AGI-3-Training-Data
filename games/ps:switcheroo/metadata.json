@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:switcheroo",
+  "title": "Switcheroo",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Switcheroo",
+  "local_dir": "games/ps:switcheroo"
+}

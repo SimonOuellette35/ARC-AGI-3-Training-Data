@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:rainbow_apples",
+  "title": "Rainbow Apples",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Rainbow_Apples",
+  "local_dir": "games/ps:rainbow_apples"
+}

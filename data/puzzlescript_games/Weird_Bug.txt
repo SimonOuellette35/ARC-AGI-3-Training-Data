@@ -1,0 +1,342 @@
+title Weird Bug
+author Jonah Ostroff (Hey you should add yourself as a co-author once you've fixed everything.)
+text_color #F0F
+color_palette amiga
+background_color Black 
+noaction (Disables X key; for testing early levels.)
+
+(For help understanding how PuzzleScript works, check out the DOCS link at the top. The "Bird's-eye view" section is especially useful.)
+
+========
+OBJECTS
+========
+
+Goal 
+Red LightGreen
+(0: Red, 1: Green, .: Blank)
+(ARC render fix: the shipped sprite was five blank rows, so the GOAL -- the
+ win condition -- was invisible in every frame. It now paints only pixels the
+ things that can stand on it leave transparent: (0,0) is a hole in Player,
+ Pebble, Gem, Ant AND Web, so the goal reads through any of them at every cell
+ size the levels use; (0,2) is a Player hole sampled at cell_px 3; (1,0)/(3,0)
+ survive Player+Web at cell_px >= 4; (4,0) is a Pebble/Gem/Ant hole.)
+0.0..
+1....
+.....
+1....
+0....
+
+Player
+#F0F #F8F #80F
+.1.1.
+.000.
+10201
+.000.
+11.11
+
+DeadBug
+#D8D #FCF #A5C
+.1.1.
+.000.
+10201
+.000.
+11.11
+
+Ant
+Red #F75
+..1..
+.101.
+..0..
+.101.
+.....
+
+Background
+(ARC render fix: all four shades are near-black and collapse to palette index
+ 5, which is also the colour the renderer letterboxes the frame with -- so the
+ floor was indistinguishable from out-of-bounds. The third shade is lifted to
+ #333333 (index 4) to give the play area a texture the pad does not have.)
+#0B1104 #101804 #333333 #0D1D06
+30222
+31100
+22223
+00111
+03330
+
+Web
+#F8FFFF
+(ARC render fix: the shipped checkerboard is opaque at exactly the even/even
+ pixels, which are the ONLY ones cell_px 3 samples -- so a web hid the goal and
+ the switch under it completely. Two corners are punched out; the web still
+ paints 7 of the 9 pixels a 3px cell samples. Row 3's parity is flipped for a
+ second reason: Player and DeadBug are opaque at exactly the even/even pixels a
+ cell_px 4 cell samples, so with the plain checkerboard a web UNDER the player
+ was invisible on the four 4px boards. (3,0) and (3,4) are the two show-through
+ slots the player leaves it there, and they are disjoint from the two the Goal
+ and the Switch use at that size, (1,0) and (1,4).)
+..0..
+.0.0.
+0.0.0
+0.0.0
+0.0.0
+
+Wall
+#BA9 #A98 #876 #987
+01203
+01201
+21210
+20113
+20213
+
+Pebble
+#B84 #642
+.111.
+10001
+10001
+10001
+.111.
+
+Switch
+#555 Yellow
+(ARC render fix: the shipped ring occupied rows/cols 1-3 only, which is exactly
+ where Player, Pebble and Gem are opaque -- so "this switch is weighed down"
+ rendered identically to "this floor is bare", and the switches ARE the puzzle.
+ The added Yellow pixels are the show-through slots: (0,4) is a hole in every
+ cover including Web, (1,4)/(3,4) survive Player+Web, (4,2) is a Player hole and
+ (4,4) a Pebble/Gem hole. They are disjoint from the Goal's.)
+....1
+.0001
+.010.
+.0001
+..1.1
+
+Door
+Yellow #A83 #555
+22222
+21012
+20102
+21012
+22222
+
+Gem
+#08F #8FF
+..0..
+.010.
+01110
+.010.
+..0..
+
+Temp
+White
+.....
+.....
+.....
+.....
+.....
+
+=======
+LEGEND
+=======
+
+Blockable = Player or Pebble or Web or Ant or Gem (Objects that can be moved around and shouldn't overlap a wall.)
+Blocking = Door or Wall (Objects that block movement.)
+Weight = Player or Pebble or Gem (Objects that weigh down switches.)
+Sticky = Pebble or Ant or Gem (Objects that stick to webs.)
+Pushable = Pebble or Ant or Gem (Objects that can be pushed.)
+
+(Character equivalences for level creation.)
+@ = Player
+. = Background
+# = Wall
+* = Pebble
+O = Pebble and Web
+~ = Web
++ = Door
+! = Switch
+G = Goal
+A = Ant
+? = Gem
+
+=======
+SOUNDS
+=======
+
+Pushable Move 80095707
+Sfx1 73155703 (Web creation sound.)
+Sfx2 56169902 (Web destruction sound.)
+Sfx3 11025308 (Door open sound. Pretty awful; generate new sounds with black-and-white buttons to the right.)
+Sfx4 85050702 (Death sound.)
+EndLevel 47272300
+
+================
+COLLISIONLAYERS
+================
+
+Background (Background.)
+Goal (Level features you can step on.)
+Switch (Switches you can step on.)
+Web (Webbing only.)
+Door Wall Player Pebble Ant Gem DeadBug (Foreground: yourself, and other things you cannot step on.)
+Temp (Invisible technical stuff for unlocking doors.)
+
+======
+RULES
+======
+(There are no bugs in this section, but the magic gem rules are missing, so you should add those somewhere.)
+
+(Player creates or destroys webs by pressing Action.)
+[Action Player no Web] -> [Player Web] Sfx1
+[Action Player Web] -> [Player] Sfx2
+
+(Player pushes pushable objects.)
+[> Player | Pushable] -> [> Player | > Pushable]
+
+(Code for propagating movement between webs and pushed objects. The + signs indicate that these rules are "grouped": they'll all keep happening, even out of order, until none of them can happen anymore. That means you can transfer movement from one pebble to another pebble, then from the second pebble to a web, then from that web to some adjacent web, then from THAT web to another pebble, etc.)
+[> Sticky Web] -> [> Sticky > Web]
++[> Web Sticky] -> [> Web > Sticky]
++[> Pushable|Pushable] -> [> Pushable|> Pushable]
++[Moving Web|Web] -> [Moving Web|Moving Web]
+
+(If a moving object hits an immovable object, cancel all movement.)
+[> Blockable|Blocking] -> Cancel
+
+(At end of turn, should we open doors? Put "Temp" on each door, then remove "Temp" if some switch is uncovered, then delete all switches and doors if Temp still remains.)
+late[Door] -> [Temp Door]
+late[Switch no Weight][Temp Door] -> [Switch][Door]
+late[Temp Door][Switch] -> [Temp Door][]
+late[Temp Door] -> [] Sfx3
+
+(At end of turn, kill player if adjacent to ant.)
+late[Player|Ant] -> [DeadBug|Ant] Sfx4
+
+==============
+WINCONDITIONS
+==============
+
+All Player on Goal (Needs some editing for later levels: if the player dies, then this condition is satisfied, because there aren't any players that aren't on the goal.)
+
+=======
+LEVELS
+=======
+
+(Helpful reminder: you can command-click any level in the editor to immediately skip to that level.)
+
+Message Please fix any bugs you find with the HACK link at the bottom of the page. Thank you so much!
+(Remove this message after bugs have been fixed.)
+
+Message Make your way to the goal (the red and green thing).
+
+#####################
+#@#.#...............#
+#.#...#######.#.###.#
+#.###.#.....#.#.#.#.#
+#..#..#.#.#.#.#.#.#.#
+#*.##.#.#.#.......#.#
+#..#..######.#.####.#
+#.###.#...#..#....#.#
+#.#...#.#.####.#.##.#
+#...#.#.#......#.G#.#
+#####################
+
+Message Weigh down switches to open doors.
+
+############
+#...!..!...#
+#..........#
+##*##..##+##
+#...#..#...#
+#.@.#..#.G.#
+#...#..#...#
+############
+
+Message Webs stick to pebbles.
+
+###########
+#.......###
+#...!..*###
+###....~~O#
+#G+.@.....#
+###.......#
+#...!.!.###
+#.......###
+###########
+
+Message Press X to create or remove webs.
+
+#########
+#....*..#
+#.!...!.#
+#...@..*#
+#.......#
+##+#..!.#
+#G.#....#
+#########
+
+##############
+#...*.....!#.#
+#.#.#.#..#.#+#
+#...........!#
+#.#..#.#.#.#.# (Missing goal.)
+#...@........#
+#.#.#.#.#.#..#
+#*!..........#
+##############
+
+#########
+#.#.....#
+#.##O!!.#
+#..O.!!.# (Not sure where the player should start.)
+#.##*.#+#
+#.#...#G#
+#########
+
+Message Don't touch fire ants!
+
+#########
+#.....#G#
+#.!.*.#+#
+#..@..#.#
+#.!.!.#.#
+#.....A.#
+#########
+
+(Difficulty ramps up pretty quickly here. Maybe another level in between these two?)
+
+###########
+#.....#...#
+#.*.@.+.G.#
+#.....#...#
+#.*.#######
+#...AAAAAA#
+#........!#
+#.AAAAAAAA#
+###########
+
+Message Use the magic gem to get past the ants!
+
+#############
+#.....#.#.#G#
+#.###.#.#.#.#
+#.#.....A.A.#
+#.###########
+#...........#
+#.#.#.#.#.#.#
+#....@.?....#
+#.#.#.#.#.#.#
+#...........#
+#############
+
+#############
+#G.A..#...+?#
+###.###!*.#+#
+#!#.........#
+#.#####...@!#
+#*..........#
+#############
+
+(Needs one more final level to really show off the magic gem mechanics?)
+
+Message You win! Thanks for all your help!
+
+(Once you've made all the necessary changes, send me your fixed version!)
+
+(Email to [firstname].[lastname][classified punctuation]gmail.com)

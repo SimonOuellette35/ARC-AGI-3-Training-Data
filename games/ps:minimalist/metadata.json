@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:minimalist",
+  "title": "Minimalist",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Minimalist",
+  "local_dir": "games/ps:minimalist"
+}

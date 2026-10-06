@@ -1,0 +1,15 @@
+{
+    "game_id": "tu93",
+    "title": "Projectile Dodge",
+    "tags": ["avoidance", "movement", "timing", "grid"],
+    "level_tags": [
+        ["1 player 1 projectile", "easy"],
+        ["1 player 2 projectiles", "easy"],
+        ["2 players 2 projectiles", "medium"],
+        ["2 players 3 projectiles", "medium"],
+        ["2 players 3 projectiles large", "hard"],
+        ["3 players 4 projectiles", "hard"],
+        ["3 players 5 projectiles", "expert"]
+    ],
+    "baseline_actions": [15, 25, 35, 45, 60, 80, 110]
+}

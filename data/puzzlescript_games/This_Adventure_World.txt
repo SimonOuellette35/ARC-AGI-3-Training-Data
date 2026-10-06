@@ -1,0 +1,329 @@
+title This Adventure World
+author Orange_Nitro
+homepage www.puzzlescript.net
+
+(ARC-AGI-3 rendering fix, 2026-08-21. THREE sprites redrawn -- Crate,
+StickyCrate and TargetLock. No colour name, object, collision layer, legend
+entry, rule, level or win condition is touched, so the mechanic is bit-for-bit
+the game it was. The check is
+solvers/generate_this_adventure_world_training.py --audit, which renders every
+cell stack a board of this game can hold, at every board shape, and requires
+the pairs that still collide to be provably unreachable.
+
+1. THE WIN CONDITION WAS INVISIBLE ON LEVEL 4 ("Is that end?"). Crate and
+StickyCrate carried all their transparency in the MIDDLE, on sprite row and
+column 2:
+
+    Crate (was)  00000     StickyCrate (was)  01100
+                 00.00                        10.00
+                 0...0                        1...1
+                 00.00                        11.00
+                 00000                        11100
+
+That level is 9x13, which _render_frame draws at cell_px 4, and the centred
+nearest-neighbour sampler picks sprite rows/cols {0,1,3,4} at that size -- row
+and column 2 are DROPPED. Both crates therefore rendered as solid blocks, so a
+crate standing on its blue Target was the same picture as a crate on bare
+grass. On the one level where a crate has to be pushed onto a Target that is
+not cosmetic: it is the win condition erased from the frame.
+
+Both sprites now give their four CORNERS up instead. Corners survive at every
+cell size this game draws (9, 7 and 4 px), and the Player leaves its own
+corners transparent too, so the Target also shows through a player standing on
+it:
+
+    Crate (now)  .000.     StickyCrate (now)  .110.
+                 00.00                        10.00
+                 0...0                        1...1
+                 00.00                        11.00
+                 .000.                        .110.
+
+2. AN OPEN GOAL AND A LOCKED ONE WERE THE SAME SQUARE UNDER THE PLAYER.
+TargetLock is blue with a black keyhole on rows 1-3, which is exactly where the
+Player's 5x5 paints -- and Target is plain blue with no sprite at all -- so
+`player on TargetLock` and `player on Target` rendered identically at every
+board shape. Whether the lock has been opened is the difference between a level
+that can still be won and one that cannot, and the player crosses those squares
+constantly. The keyhole is unchanged; four black CORNERS are added, in the
+pixels the Player, the Crate and the Key all leave transparent:
+
+    TargetLock (was)  00000        TargetLock (now)  10001
+                      00100                          00100
+                      00100                          00100
+                      01110                          01110
+                      00000                          10001
+)
+
+========
+OBJECTS
+========
+
+Background
+lightgreen
+
+PlayerNothing
+black white green orange yellow
+.000.
+.333.
+11111
+.242.
+.2.2.
+
+PlayerKey
+black white green orange yellow
+.000.
+.3334
+11114
+.242.
+.2.2.
+
+PlayerSword
+black white green orange yellow gray darkbrown
+.0005
+.3335
+11116
+.242.
+.2.2.
+
+Tombstone
+lightgray darkgray
+.000.
+00100
+01110
+00100
+00000
+
+
+Wall
+brown lightbrown
+11101
+00000
+10111
+00000
+11101
+
+Crate
+lightred
+.000.
+00.00
+0...0
+00.00
+.000.
+
+StickyCrate
+lightred yellow
+.110.
+10.00
+1...1
+11.00
+.110.
+
+Key
+yellow
+.0...
+0.000
+0.0.0
+0.0.0
+.0...
+
+Father
+black white
+..1..
+00000
+00000
+10.01
+.0.0.
+
+Target
+blue
+
+TargetLock
+blue black
+10001
+00100
+00100
+01110
+10001
+
+TorchRight
+brown yellow orange
+...2.
+..212
+..22.
+.0...
+0....
+
+TorchLeft
+brown yellow orange
+.2...
+212..
+.22..
+...0.
+....0
+
+Sword
+gray darkbrown
+..0..
+..0..
+..0..
+.111.
+..1..
+
+Lady
+black white orange blue
+.000.
+02220
+01110
+11111
+.3.3.
+
+=======
+LEGEND
+=======
+
+. = Background
+P = PlayerNothing
+# = Wall
+C = Crate
+S = StickyCrate
+Q = Target
+K = Key
+L = TargetLock
+F = Father
+E = TorchLeft
+R = TorchRight
+T = Sword
+O = Lady
+
+Crates = Crate or StickyCrate
+player = PlayerNothing or PlayerKey or PlayerSword
+Torches = TorchRight or TorchLeft
+
+=======
+SOUNDS
+=======
+
+sfx0 89864108
+sfx1 57040300
+player move 33069507
+Crates move 63410307
+Key destroy 5860110
+Sword destroy 80091103
+Father create 1980478
+Father destroy 58663908
+Tombstone destroy 12515702
+endgame 8986410
+endlevel 77677623
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target, TargetLock, Sword, Father, Lady
+player, Wall, Crate, StickyCrate, Key, Torches, Tombstone
+
+======
+RULES
+======
+
+[> Player | Crate] -> [> Player | > Crate]
+[< Player | StickyCrate] -> [< Player | < StickyCrate]
+[> Player | StickyCrate] -> [> Player | > StickyCrate]
+[> PlayerNothing | Key] -> [> PlayerKey | ] message You got a Key!
+[action PlayerKey | ] -> [action PlayerNothing | Key] message You dropped a Key.
+[> PlayerNothing | Sword] -> [> PlayerSword | ] message You got a Sword!
+[action PlayerSword | ] -> [action PlayerNothing | Sword] message You dropped a Sword.
+[> PlayerKey | TargetLock] -> [> PlayerNothing | Target]
+[> PlayerNothing | Father] -> [ Tombstone | Father] sfx0
+[> PlayerKey | Father ] -> [ Tombstone | Father ] sfx0
+[> PlayerSword | Father] -> [> PlayerSword | Tombstone] message I will be bacckkkk!...
+[> Player | Tombstone ] -> [> Player | ]
+[> PlayerNothing | Lady] -> [< PlayerNothing | Lady] sfx1 Win
+
+==============
+WINCONDITIONS
+==============
+
+all Crates on Target
+
+=======
+LEVELS
+=======
+
+message The only level
+
+#######
+#.....#
+#..P..#
+#.....#
+#...C.#
+#.Q...#
+#######
+
+message The sticky crates are around here
+
+#######
+#.....#
+#S....#
+#...P.#
+###...#
+#..Q..#
+#######
+
+message The key is truth
+
+#######
+#L...P#
+#..C..#
+#...K.#
+#######
+
+message Is that end?
+message Nope
+
+#############
+#...S.......#
+#........C..#
+###.##.##..##
+#......K...##
+#...........#
+#.P.####...L#
+#Q....#.....#
+#############
+
+message He is close to you
+
+.#####.
+.#.P.#.
+##...##
+##.S.##
+##.K.##
+.#.L.#.
+.#####.
+.#.F.#.
+.#...#.
+
+message He sees you
+
+#########
+#E..F..R#
+#.......#
+###.P.###
+..#...#..
+###.S.###
+#.......#
+#...Q...#
+#########
+
+message Crossroads
+
+#########
+#.F.#..S#
+#...#...#
+##.....##
+.##.P.##.
+.#Q...Q#.
+.#######.
+
+message WHAT?! YOU?!!... I am proud of YOU.

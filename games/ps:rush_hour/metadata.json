@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:rush_hour",
+  "title": "Rush Hour",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Rush_Hour",
+  "local_dir": "games/ps:rush_hour"
+}

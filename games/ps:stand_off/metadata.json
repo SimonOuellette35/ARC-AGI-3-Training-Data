@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:stand_off",
+  "title": "Stand Off",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Stand_Off",
+  "local_dir": "games/ps:stand_off"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:straighten_up",
+  "title": "Straighten Up",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Straighten_Up",
+  "local_dir": "games/ps:straighten_up"
+}

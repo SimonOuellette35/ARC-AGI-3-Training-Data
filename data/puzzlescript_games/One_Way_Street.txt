@@ -1,0 +1,256 @@
+title One Way Street
+author Franklin P. Dyer
+text_color Purple
+
+========
+OBJECTS
+========
+
+Background .
+White Lightgray
+10001
+00000
+00000
+00000
+10001
+
+Wall /
+Gray Darkgray
+10001
+00000
+00000
+00000
+10001
+
+(The Player sprite was opaque everywhere except its four outer corners, where the
+Goal has nothing to show and all four one-way tiles are the same blue. So a
+player standing on a goal rendered pixel-identical to a player on bare floor, and
+a player standing on a tile did not show which way the tile pointed -- seven
+indistinguishable compositions in all, which is every rendering bug this game
+had. Four pixels were punched out at rows/cols 1 and 3, which is exactly where
+the tile sprites differ from one another: an object standing on a LeftTile now
+reads white/blue/white/blue there, on a RightTile blue/white/blue/white, on an
+UpTile white/white/blue/blue, on a DownTile blue/blue/white/white and on bare
+floor white/white/white/white. The Goal's ring sits in those same four cells.)
+Player @
+Purple Pink
+.000.
+0.0.0
+01010
+0.0.0
+.000.
+
+Box a
+Brown
+00000
+0...0
+0.0.0
+0...0
+00000
+
+(Goal was `darkblue`, which quantizes to the SAME ARC palette index as the tiles'
+`blue` -- so the goal was drawn in the arrows' own colour and told apart from one
+only by shape. That is not a pixel-identity, so no whole-frame audit catches it;
+it is now `red`, which nothing else in the game uses. It also gained the four
+CELL CORNERS beside its ring, so it reads under the Player from its own art
+rather than only through the holes punched in the Player above. The ring is what
+shows through the Box's open middle.)
+Goal b
+Red
+0...0
+.000.
+.0.0.
+.000.
+0...0
+
+LeftTile <
+Blue White
+00100
+01000
+11111
+01000
+00100
+
+RightTile >
+Blue White
+00100
+00010
+11111
+00010
+00100
+
+UpTile ^
+Blue White
+00100
+01110
+10101
+00100
+00100
+
+DownTile v
+Blue White
+00100
+00100
+10101
+01110
+00100
+
+=======
+LEGEND
+=======
+
+Tile = Uptile or Downtile or Lefttile or Righttile
+Movable = Box or Player
+Obstacle = Box or Wall or Tile or Player
+
+=======
+SOUNDS
+=======
+
+Box Move 96335707
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Goal, Tile
+Player, Box, Wall
+
+======
+RULES
+======
+
+[> Player|Box] -> [> Player|> Box]
+[> Box|Box] -> [> Box|> Box]
+
+VERTICAL[> Movable|Lefttile] -> [Movable|Lefttile]
+RIGHT[> Movable|Lefttile] -> [Movable|Lefttile]
+VERTICAL[> Movable|Righttile] -> [Movable|Righttile]
+LEFT[> Movable|Righttile] -> [Movable|Righttile]
+HORIZONTAL[> Movable|Uptile] -> [Movable|Uptile]
+DOWN[> Movable|Uptile] -> [Movable|Uptile]
+HORIZONTAL[> Movable|Downtile] -> [Movable|Downtile]
+UP[> Movable|Downtile] -> [Movable|Downtile]
+
+==============
+WINCONDITIONS
+==============
+
+All goal on box
+
+=======
+LEVELS
+=======
+
+(The file shipped five levels -- now indices 3, 4, 7, 8 and 9 below, unchanged
+except that two of them carried three or four rows of solid wall padding under
+the board, which is dead space in a 64x64 render and nothing else. Five more were
+authored for this corpus and the whole set is ordered by shortest-solution
+length: 10, 10, 18, 22, 23, 27, 33, 36, 37, 59 presses. Every board is proved
+solvable and every plan proved shortest by the exact field in
+solvers/generate_one_way_street_training.py --plans.)
+
+message Push the crates into their proper spots. All goals must have a crate.
+
+(Two rooms and one rightward door. The box goes through it and then has to be
+turned down the far wall, and the player can only ever re-enter the door cell
+from the left.)
+/////////
+/@../.../
+/.../.../
+/.a.>.../
+/.../.../
+/.../.b./
+/////////
+
+(The box has to LEAVE an up-tile sideways, and no press that would put the player
+on that tile going left is allowed -- so the only way to move it is to stand
+beside it and press into the tile: the player's own force is cancelled and the
+box's is not.)
+/////////
+/////.../
+/b..^.../
+////..../
+/...a.../
+/...@.../
+/////////
+
+(A ring corridor whose shortcut is closed by a pair of tiles, so the box and the
+player each have to go the long way round.)
+/////////
+/....b../
+/.a///../
+/..///../
+/>v///../
+/.....@./
+/////////
+
+/////////
+/......./
+/......./
+/^^////./
+/..////b/
+/..//////
+/.a<..../
+/b.<..a@/
+/////////
+
+/////////
+////...//
+//...a../
+//.//v/v/
+/b..<..@/
+/////////
+
+(Two boxes through one door: the first has to be parked past the door and then
+shoved on again as the SECOND box arrives, which is the game's only chain push.)
+///////////
+/@.../..../
+/.a../.b../
+/..../..../
+/....>..../
+/.a../.b../
+/..../..../
+///////////
+
+///////////
+/....//////
+/..a./...b/
+/..../..../
+/@.a.>..b./
+/..../..../
+/..a./.b../
+/....//////
+///////////
+
+/////////
+/.....b./
+/......./
+/^^////./
+/../../b/
+/.a//////
+/...<.a./
+/...>..@/
+/////////
+
+/////////
+/....>.@/
+/....>../
+/^^/./a./
+/a./b/.a/
+/..///vv/
+/..<..../
+/..<a.../
+/////////
+
+(The long one: two boxes through a single door into a room built around a solid
+block, so each of them has to be walked round it to reach a goal.)
+////////////
+/..../...../
+/.a.././/b./
+/...././/../
+/....>...../
+/.a.././/../
+/@..././/b./
+////////////

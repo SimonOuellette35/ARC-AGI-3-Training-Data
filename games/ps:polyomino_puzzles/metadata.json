@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:polyomino_puzzles",
+  "title": "Polyomino Puzzles",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Polyomino_Puzzles",
+  "local_dir": "games/ps:polyomino_puzzles"
+}

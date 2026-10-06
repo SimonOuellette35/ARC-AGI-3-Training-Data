@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:color_totems",
+  "title": "Color Totems",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Color_Totems",
+  "local_dir": "games/ps:color_totems"
+}

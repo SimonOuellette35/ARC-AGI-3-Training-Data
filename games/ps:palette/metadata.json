@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:palette",
+  "title": "Palette",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Palette",
+  "local_dir": "games/ps:palette"
+}

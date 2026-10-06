@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:tornado_tamer",
+  "title": "Tornado Tamer",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Tornado_Tamer",
+  "local_dir": "games/ps:tornado_tamer"
+}

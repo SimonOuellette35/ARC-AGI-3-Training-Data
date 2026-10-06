@@ -1,0 +1,665 @@
+title Sokobaiogenesis
+author Bagenzo
+homepage twitter.com/bagenzo
+
+color_palette 4
+require_player_movement
+
+========
+OBJECTS
+========
+
+(ART NOTE, 2026-08-18 -- the sprites below were REDRAWN for the 64x64 ARC
+render; the mechanics, the legend, the rules and the levels are the author's
+and are untouched.  The thirteen levels are 7x13 .. 9x17, which
+`_render_frame` draws at cell_px 3 and 4, and those two sizes sample sprite
+rows/cols {0,2,4} and {0,1,3,4} respectively.  Under the shipped art that made
+FIVE things invisible, every one of them load-bearing:
+
+  * a Crate is an opaque 5x5 block and every Target draws only on the inner
+    rows, so a crate ON its target was pixel-identical to a crate anywhere
+    else -- i.e. the winning board could not be seen at all.  Same for the
+    Lab under a crate, and for a player standing on a target.
+  * the player's COLOUR -- which is the whole mechanic, it says which
+    nucleotide the player drags -- lived at sprite row 1, which cell_px 3
+    does not sample, so Red/Blue/Yellow/Green were one picture on the two
+    17-wide levels.  Level 12 turns Blue into Green mid-level.
+  * PlayerSmall and FrankenSmall differed only on row 1 as well.
+  * GCrate, GTarget, GNucleo and Growdestin were all `blue`/`darkblue`, which
+    collapses to ARC index 9 -- the same index as the Background.  A GCrate
+    on the floor was invisible.
+  * Background `darkblue` and the Void's `black` also collided with the
+    letterbox border the frame is padded with.
+
+The redraw is one scheme: the top-left 2x2 of every cell is a WINDOW that
+every layer-4 occupant (players, crates, nucleotides) leaves transparent, and
+every ground object -- Target, Lab, Growdestin, Eye -- paints its identity
+there.  So whatever is standing on a cell, what it is standing ON is still
+readable, at both cell sizes, in the four pixels both of them sample.
+`solvers/generate_sokobaiogenesis_training.py --audit` is the check: it renders
+every composition the thirteen levels can produce and requires them pairwise
+distinct at every cell size they render at.)
+
+Background
+#333333
+
+Void
+#666666 black
+00000
+00001
+00000
+01000
+00010
+
+(Targets: the 2x2 window mark, plus a bottom-right block so a BARE target
+still reads as a big shape.  The window is what survives under a crate.)
+WhiteTarget
+white
+00...
+00...
+.....
+...00
+...00
+
+CGTarget
+pink
+00...
+00...
+.....
+...00
+...00
+
+TATarget
+orange
+00...
+00...
+.....
+...00
+...00
+
+GTarget
+blue
+00...
+00...
+.....
+...00
+...00
+
+Wall
+white gray lightgray
+11111
+12021
+10201
+12021
+11111
+
+VoidWall
+gray white black
+11111
+12021
+10201
+12021
+11111
+
+(The four alive players differ ONLY by colour, so the colour is the body --
+seven of the nine pixels cell_px 3 samples -- and the black face marks are
+what separates a player from a crate of the same hue.)
+PlayerRed
+red black
+..000
+..010
+01110
+01010
+00000
+
+PlayerBlue
+blue black
+..000
+..010
+01110
+01010
+00000
+
+PlayerYellow
+yellow black
+..000
+..010
+01110
+01010
+00000
+
+PlayerGreen
+green black
+..000
+..010
+01110
+01010
+00000
+
+FrankenPlayer
+(It's actually FrankenPlayer's MONSTER, but whatever.)
+black green
+..000
+..010
+01110
+01010
+00000
+
+PlayerSmall
+white
+.....
+..00.
+.000.
+.000.
+.....
+
+FrankenSmall
+green
+.....
+..00.
+.000.
+.000.
+.....
+
+CGCrate
+pink
+..000
+..000
+00000
+00000
+00000
+
+TACrate
+orange
+..000
+..000
+00000
+00000
+00000
+
+GCrate
+blue
+..000
+..000
+00000
+00000
+00000
+
+DNArb
+red blue yellow black darkblue
+02221
+40213
+44033
+41203
+12220
+
+
+DNAbr
+blue red yellow black darkblue
+02221
+40213
+44033
+41203
+12220
+
+Shrink
+red blue yellow black darkblue gray lightblue
+62225
+66555
+66666
+66555
+62225
+
+Grow
+red blue yellow black darkblue gray lightred
+52226
+55566
+66666
+55566
+52226
+
+Growdestin
+#FF7BCC
+00...
+00...
+.....
+...00
+...00
+
+CNucleo
+red
+.000.
+0....
+0....
+0....
+.000.
+
+GNucleo
+blue
+.000.
+0....
+0..00
+0...0
+.000.
+
+TNucleo
+yellow
+00000
+..0..
+..0..
+..0..
+..0..
+
+ANucleo
+green
+.000.
+0...0
+00000
+0...0
+0...0
+
+Lab
+red lightgray blue yellow green purple
+55331
+55103
+31413
+30123
+13331
+
+(The four LabAni frames replace the Lab for the two `again` ticks after a
+synthesis.  They paint the Lab's WINDOW and nothing else, so a cell holding
+the new crate mid-animation renders exactly like the settled Lab+crate -- which
+matters because a press that both delivers the last crate and pairs a base
+wins, and `PSEngine.step` breaks out of the again loop the moment it does,
+leaving the animation frame on the board for good.)
+LabAni
+purple
+00...
+00...
+.....
+.....
+.....
+
+LabAni2
+purple
+00...
+00...
+.....
+.....
+.....
+
+LabAni4
+purple
+00...
+00...
+.....
+.....
+.....
+
+LabAni5
+purple
+00...
+00...
+.....
+.....
+.....
+
+EyeYellow
+yellow white black
+00...
+00...
+.222.
+21112
+.222.
+
+EyeRed
+red white black
+00...
+00...
+.222.
+21112
+.222.
+
+EyeGreenClosed
+darkred white black
+00...
+00...
+.....
+22222
+.....
+
+EyeGreen
+green white black
+00...
+00...
+.222.
+21112
+.222.
+
+Splitter
+red blue yellow black darkblue gray #ca2c92
+52225
+65156
+66666
+65156
+52225
+
+=======
+LEGEND
+=======
+Player = PlayerRed or PlayerBlue or PlayerYellow or PlayerGreen or PlayerSmall or FrankenPlayer or FrankenSmall
+PlayerAlive = PlayerRed or PlayerBlue or PlayerYellow or PlayerGreen
+PlayerBig = PlayerRed or PlayerBlue or PlayerYellow or PlayerGreen or FrankenPlayer
+TinyVariant = FrankenSmall or PlayerSmall
+Targets = WhiteTarget or CGTarget or TATarget or GTarget
+Crate = CGCrate or TACrate or Gcrate
+Nucleo = CNucleo or GNucleo or TNucleo or ANucleo
+Tech = Grow or Shrink
+DNAWall = DNArb or DNAbr
+NonGuanine = CNucleo or ANucleo or TNucleo
+Anis = LabAni or LabAni2 or Labani4 or LabAni5
+
+. = Background
+I = Void
+# = Wall
+@ = VoidWall
+P = PlayerRed
+$ = PlayerBlue
+% = PlayerYellow
+O = WhiteTarget
+9 = CGTarget
+K = TATarget
+7 = GTarget
+Z = CNucleo and Void
+X = GNucleo and Void
+C = TNucleo and Void
+B = ANucleo and Void
+1 = DNArb
+2 = DNAbr
+L = Lab
+- = Shrink
++ = Grow
+\ = Growdestin
+f = EyeYellow
+g = EyeRed
+y = EyeGreenClosed
+S = Splitter
+=======
+SOUNDS
+=======
+
+Crate MOVE 87129507
+endlevel 19985908
+sfx0 24677903
+sfx1 64721103
+sfx2 58275908 (frankenplayer)
+sfx3 17479308 (shrink)
+sfx4 27058708 (grow)
+sfx5 99803708 (nuc push)
+sfx6 42119108 (eyes)
+sfx7 74328108 (split)
+================
+COLLISIONLAYERS
+================
+
+Background
+Void, Growdestin
+Lab, Shrink, Grow, Splitter, EyeYellow, EyeRed, EyeGreenClosed, EyeGreen
+Targets
+Player, Wall, Crate, DNArb, DNAbr, Nucleo, VoidWall
+Anis
+
+======
+RULES
+======
+
+
+(Players don't bump into each other)
+[ > Player | Player] -> [ Player | Player]
+
+(Crates stay where they should)
+[> Player|Crate|Tech] -> [Player|Crate| Tech]
+[> Player|TACrate|Splitter] -> [Player|TACrate|Splitter]
+
+(Sokoban rules)
+[> Player | Crate] -> [> Player | > Crate]
+
+(Sokoban rules, but for nucleotide sized players)
+[> Player | Nucleo] -> [> Player | > Nucleo] sfx5
+
+
+(Crate synthesis)
+late [CNucleo|GNucleo] [Lab no Crate] -> [|] [CGCrate LabAni4] sfx0
+late [TNucleo|ANucleo] [Lab no Crate] -> [|] [TACrate LabAni] sfx0
+
+(Player synthesis) (It's... ALIVE!!)
+late [CNucleo|GNucleo] [Lab TACrate] -> [|] [FrankenPlayer Lab] sfx2
+late [TNucleo|ANucleo] [Lab CGCrate] -> [|] [FrankenPlayer Lab] sfx2
+
+(Player / DNA connection)
+[moving PlayerRed] [stationary CNucleo] -> [moving PlayerRed] [moving CNucleo]
+
+[moving PlayerBlue] [stationary GNucleo] -> [moving PlayerBlue] [moving GNucleo]
+
+[moving PlayerYellow] [stationary TNucleo] -> [moving PlayerYellow] [moving TNucleo]
+
+[moving PlayerGreen] [stationary ANucleo] -> [moving PlayerGreen] [moving ANucleo]
+
+(Eye change)
+late [PlayerAlive EyeYellow] -> [PlayerYellow] sfx6
+late [PlayerAlive EyeRed] -> [PlayerRed] sfx6
+late [PlayerAlive EyeGreen] -> [PlayerGreen] sfx6
+
+(Frankeneye spawn)
+late [FrankenPlayer Lab] [EyeGreenClosed] -> [FrankenPlayer Lab] [EyeGreen]
+
+(shrink workaround for tiny frankenplayers)
+late[FrankenSmall Shrink|Void] -> [Shrink|Void FrankenSmall]
+
+(Shrinking)
+late [FrankenPlayer Shrink] [FrankenPlayer Shrink|Void] -> [Shrink] [Shrink|Void FrankenSmall] sfx3
+late [Player Shrink] [Player Shrink|Void] -> [Shrink] [Shrink|Void Playersmall] sfx3
+
+(Growing)
+late [FrankenSmall Grow] [Growdestin|Grow] -> [Grow] [FrankenPlayer Growdestin|Grow] sfx4
+late [PlayerSmall Grow] [Growdestin|Grow] -> [Grow] [PlayerBlue Growdestin|Grow] sfx4
+
+(Make sure big players can't get any larger)
+late[Growdestin] [PlayerBig Grow] -> [Growdestin PlayerBig] [Grow]
+
+(Nucleotides can't escape tiny zone)
+[ > Nucleo | Tech] -> [Nucleo | Tech]
+
+(Splitter Crate -> Nucleo)
+late [CGCrate Splitter] [CGcrate Splitter|Void] -> [Splitter] [Splitter|Void GNucleo]
+late [Gcrate Splitter] [Gcrate Splitter|Void] -> [Splitter] [Splitter|Void GNucleo] sfx7
+
+(Splitter Nucelo -> Crate)
+late [GNucleo Splitter] [GNucleo Splitter| Background no DNAwall] -> [Splitter] [Splitter| Background Gcrate] sfx7
+
+(prevent others from using splitter)
+[> NonGuanine |Splitter] -> [NonGuanine |Splitter] 
+[> Player |Splitter] -> [Player |Splitter] 
+
+(tiny lab animation)
+late [LabAni2] -> [Lab]
+late [LabAni] -> [LabAni2] again
+
+late [LabAni5] -> [Lab]
+late [LabAni4] -> [LabAni5] again
+==============
+WINCONDITIONS
+==============
+
+All WhiteTarget on Crate
+All TATarget on TACrate
+All CGTarget on CGCrate
+All GTarget on GCrate
+Some Player
+
+=======
+LEVELS
+=======
+(test)
+
+(
+......2iiiiii
+......1iiiiii
+......2iiiiii
+......1iiiiii
+......2iiiiii
+......1iiiiii
+......2iiiiii
+
+......2iixiii
+.9...\+iiiiic
+.k.o..2iziixi
+..$...1iibiii
+....l.2iiiizi
+..o...-iciibi
+......2iiiiii
+
+#######2i@b@ii
+######\+iii@ix
+######k2@@i@@b
+y......siiiixi
+..#.##72@@czcz
+###l..#1i@iizi
+$...#..-iciiii
+#######1@@@@@@
+
+)
+
+(REAL LEVELS)
+message Welcome to SOKOBAN LABS! Unfortunately, due to a total lack of crates, warehouse keepers/scientists/warehouse scientists will be required to synthesize their own crates from base pairs.
+
+######2iiiiii
+.l..o#1iziiii
+.....#2iiiiii
+.##..#1iiiiii
+..####2iiiiii
+#.####1iiiixi
+$.####2iiiiii
+
+message Yes, the crates are alive. Don't worry too much about it.
+
+#####.2iiiiii
+#$####1izicci
+....o#2iibiii
+.#.###1bbiiii
+..l..#2ixbiii
+#....#1iibbic
+..#..#2iiiiii
+
+
+message Lab personnel may be required to shrink down to manually manipulate nucleotides
+##....-iiiiii
+##.###2i@@i@i
+#.l..\+iiii@i
+##o###2@z@i@i
+######1@@@c@i
+......2iiii@i
+......-xi@i@i
+..$...2ii@iii
+
+
+######2iiiiii
+######1iiz@ii
+##k#o#2@@@@xi
+..$...-iiiiii
+#9l...2iii@c@
+##.###1iii@i@
+##...\+iiz@bx
+
+
+
+
+message An outbreak of red and yellow eye has been spotted at the facility. Side effects may include itchiness and the ability to manipulate different nucleotides.
+#.....2iiiiii
+#.f...1ibii@@
+####k.2ii@iii
+....l.1iii@xx
+..##9.2i@i@ci
+..#.g.1i@i@ix
+$##...2z@x@ii
+
+message Side effects of shrinking may include: dizziness, a blue hue in the iris, and the ability to only manipulate guanine afterwards.
+######2iiiiii
+%ool.o1iiiizi
+.###.#2@ii@ii
+..##.#1iixzii
+..##.#2iiii@i
+#.....-iixiii
+#####\+iiz@xi
+
+message Lab memo: Creating a C-G Crate on a A-T Crate may have... unintended consequences.
+..####1iicibz
+..#...-i@@@@@
+.l#...1iiiiii
+..###.2ii@i@i
+..9.#.1ibxiii
+.k..#\+i@xiii
+######1@@@c@z
+####$.-iiii@@
+
+##9..\+iiiiii
+###.##2iibiii
+###.##1i@@@@i
+###.##2i@ci@i
+###l##1i@@iii
+###.#.-iiii@@
+..%...1iii@xz
+......2iii@zx
+
+.o.2iiiiiiii@@@@@
+...-iizzixii@@@@@
+#l#2ic@@@@ii@iiib
+...1iiixii@i@@i@@
+.k\+ii@@@bii@@iii
+###1@@@ziiiii@c@i
+%..-iiiiiiiiiiiii
+
+...#.\+ii@iiib@
+o.o#..1ibi@i@@@
+...#..2ii@@i@xz
+...l..1iicci@zx
+...#..2ii@@i@@@
+...#..1iii@i@zx
+...#.$-iiiii@xz
+
+message Experiment SB-04: By manipulating Frankenstein DNA, we might find a way to control adenine...
+$...##2xiii@ib
+###.##1@@@i@ii
+....#k2ziii@ii
+.####.1iiic@ii
+..#fl.2@@@i@ii
+.y....1ii@i@@i
+######2ii@b@ci
+
+
+
+message Good news - we can now turn Guanine into Crates and Crates with Guanine into Guanine!
+#######2ii@iz@@
+###$##f1ii@ii@@
+....#9\+ibbi@c@
+.####..-ii@x@c@
+.####k.2@@x@@i@
+.##k.l.siiiiiz@
+.##.#..2@@@@@b@
+......71iiiiiz@
+#####..siiii@b@
+
+
+
+message Last experiment of the day!
+#....7-iiiizbic@@
+##...71i@i@@@@@@@
+#####.2i@i@xi@iii
+#####\+iii@bi@iii
+.y###.2@@i@@iciii
+......siibbxi@iii
+.##.#.2zzi@@z@cii
+#..l..1@@iiii@x@i
+$...#.-iiii@c@cii
+
+message THE END

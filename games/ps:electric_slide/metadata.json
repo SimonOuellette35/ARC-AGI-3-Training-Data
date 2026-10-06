@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:electric_slide",
+  "title": "Electric Slide",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Electric_Slide",
+  "local_dir": "games/ps:electric_slide"
+}

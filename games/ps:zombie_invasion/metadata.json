@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:zombie_invasion",
+  "title": "Zombie Invasion",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Zombie_Invasion",
+  "local_dir": "games/ps:zombie_invasion"
+}

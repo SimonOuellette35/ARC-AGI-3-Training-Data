@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:veggie_jam",
+  "title": "Veggie Jam",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Veggie_Jam",
+  "local_dir": "games/ps:veggie_jam"
+}

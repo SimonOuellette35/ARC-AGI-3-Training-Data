@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:alcazar",
+  "title": "Alcazar",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Alcazar",
+  "local_dir": "games/ps:alcazar"
+}

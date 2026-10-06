@@ -1,0 +1,15 @@
+{
+    "game_id": "paired_pieces",
+    "title": "Paired Piece Mover",
+    "tags": ["movement", "coupling", "planning", "grid"],
+    "level_tags": [
+        ["2 singles", "easy"],
+        ["2 singles 1 pair", "easy"],
+        ["1 single 2 pairs", "medium"],
+        ["2 singles 2 pairs", "medium"],
+        ["1 single 3 pairs", "hard"],
+        ["2 singles 3 pairs large", "hard"],
+        ["2 singles 4 pairs large", "expert"]
+    ],
+    "baseline_actions": [20, 30, 40, 55, 70, 90, 120]
+}

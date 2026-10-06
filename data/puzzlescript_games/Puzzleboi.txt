@@ -1,0 +1,364 @@
+title Puzzleboi
+author Tristan Shawn Den Ouden
+homepage tristanshawn.itch.io
+youtube 5wqZi1smZOg
+background_color darkgreen
+
+(ARC-AGI-3 rendering fix, 2026-08-15. Two objects recoloured and four sprites
+opened up; the object list, the collision layers, every rule, the levels and the
+win condition are untouched, and
+solvers/generate_puzzleboi_training.py --audit is the check.
+
+TWO PAIRS OF OBJECTS WITH OPPOSITE MEANINGS SHIPPED AS THE SAME PICTURE.
+
+  * LWall and LDoor were byte-identical -- the same four colour names in the
+    same order and the same 5x5 sprite. They are the two things a Key can be
+    shoved into and the outcomes are opposite: `[ > Key | LWall ] -> [ | ]`
+    spends the key to open a hole, `[ > Key | LDoor ] -> [ | Door ]` spends it
+    to create the cell the win condition names. The fourth level ships one of
+    each and one loose key besides the craftable one, so choosing wrong is fatal
+    and nothing in the frame said which was which. LWall is now stone (the
+    Wall's own greys) with the keyhole kept, so it reads as "a wall with a
+    lock" against the Door's brown wood.
+
+  * Bridge and BridgeA were likewise byte-identical. Bridge is a loose plank on
+    the pushable layer; BridgeA is the plank already laid over water, on the
+    Target/Door layer, i.e. FLOOR YOU CAN WALK ON. Telling a wall from a floor
+    is the whole of the bridging half of this game. BridgeA now carries the
+    water it covers -- blue along its top and bottom edge, lightblue showing
+    between its planks. Both halves are needed: the first attempt kept the
+    plank colours and changed only the edges, and a Bridge parked ON a BridgeA
+    then still rendered as a bare BridgeA (the plank's transparent edges let
+    the blue through and its middle rows matched). --audit caught that.
+
+  * Bridge1, Bridge2, Bridge3 and Bridge were fully opaque, so a plank standing
+    on a laid crossing erased it from the frame. Their top and bottom rows are
+    now transparent; the left/right end caps that distinguish the three pieces
+    from each other are untouched, and the BridgeA under them shows through as
+    a blue band.
+)
+
+
+========
+OBJECTS
+========
+
+Background
+lightgreen green
+11111
+11111
+11101
+10101
+11111
+
+
+EvilSneevil
+purple yellow
+1...1
+00000
+01010
+00000
+.0.0.
+
+
+Target
+DarkBlue
+.....
+.000.
+.0.0.
+.000.
+.....
+
+Wall
+darkgray gray LIGHTGRAY
+22222
+21111
+21111
+21111
+20000
+
+LWall
+DARKGRAY GRAY YELLOW LIGHTGRAY
+30003
+01110
+01210
+01210
+01110
+
+
+
+Water
+BLUE LIGHTBLUE
+00000
+01010
+00000
+01010
+00000
+
+
+
+Player
+WHITE BROWN
+..0..
+.000.
+0.0.0
+..0..
+.0.0.
+
+Crate
+YELLOW WHITE ORANGE
+.0002
+0...0
+0...0
+0...0
+.0002
+
+Crate2
+YELLOW WHITE ORANGE
+.....
+20000
+20000
+20000
+.....
+
+
+Crate3
+YELLOW WHITE
+.....
+00000
+00000
+00000
+.0..0
+
+Key
+YELLOW
+.....
+000..
+0.000
+000.0
+.....
+
+Bridge1
+BROWN DARKBROWN
+.....
+01111
+01111
+01111
+.....
+
+Bridge2
+BROWN DARKBROWN
+.....
+11111
+11111
+11111
+.....
+
+Bridge3
+BROWN DARKBROWN
+.....
+11110
+11110
+11110
+.....
+
+Bridge
+LIGHTBROWN BROWN DARKBROWN
+.....
+21212
+21212
+21212
+.....
+
+BridgeA
+BLUE BROWN LIGHTBLUE
+00000
+21212
+21212
+21212
+00000
+
+LDoor
+BROWN DARKBROWN YELLOW DARKGRAY	
+30003
+01110
+01210
+01210
+01110
+
+Door
+Brown Black DARKGRAY
+20002
+01110
+01110
+01110
+01110
+
+Block
+LIGHTBROWN BROWN
+00000
+01110
+01.10
+01110
+00000
+
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+* = Crate
+@ = Crate and Target
+O = Target
+K = Key
+D = Crate2
+E = Crate3
+L = LDoor
+G = Door
+C = Player and Door
+W = Water
+B = Bridge1
+R = Bridge2
+I = Bridge3
+S = Bridge
+A = BridgeA
+- = EvilSneevil
+! = LWall
+% = Block
+
+=======
+SOUNDS
+=======
+sfx0 2005507
+
+sfx1 19877502
+
+sfx2 32162303
+
+sfx3 8066706
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target, Door, BridgeA
+Player, Wall, Crate, Key, Crate2, Crate3, LDoor, Water, Bridge1, Bridge2, Bridge3, Bridge, EvilSneevil, LWall, Block
+
+======
+RULES
+======
+
+[ >  Player | Crate ] -> [ > Player | > Crate ] sfx3
+[ >  Player | Crate2 ] -> [ > Player | > Crate2 ] sfx3
+[ >  Player | Crate3 ] -> [ > Player | > Crate3 ] sfx3
+[ >  Player | Key ] -> [ > Player | > Key ] sfx3
+
+right [ Crate | Crate2 | Crate3 ] -> [ | Key |] sfx1
+
+[ > Key | LDoor ] -> [ | Door ] sfx2
+[ > Key | LWall ] -> [ |  ] sfx2
+
+[ >  Player | Block ] -> [ > Player | > Block ] sfx0
+
+[ >  Player | Bridge1 ] -> [ > Player | > Bridge1 ] sfx0
+[ >  Player | Bridge2 ] -> [ > Player | > Bridge2 ] sfx0
+[ >  Player | Bridge3 ] -> [ > Player | > Bridge3 ] sfx0
+[ >  Player | Bridge ] -> [ > Player | > Bridge ] sfx0
+
+right [ Bridge1 | Bridge2 | Bridge3 ] -> [ | Bridge |] sfx1
+
+
+[ stationary EvilSneevil ] -> [DOWN EvilSneevil]
+
+[ >  EvilSneevil | Key ] -> [ < EvilSneevil | > Key ] sfx0
+[ > EvilSneevil | Bridge ] -> [ < EvilSneevil | > Bridge ] sfx0
+
+
+[ > EvilSneevil | Door ] -> [ | LDoor ]
+
+[ > Key | EvilSneevil ] -> [ > Key | UP EvilSneevil ]
+
+[ > Bridge | Water ] -> [ > BridgeA | ] sfx2
+
+==============
+WINCONDITIONS
+==============
+
+All Player on Door
+
+=======
+LEVELS
+=======
+
+message There is a locked door, there might be a key somewhere..
+
+.......#
+..d....#
+.......#
+.....e.#
+.......#
+.*...p.l
+.......#
+
+
+message Hm, how will we cross the water?
+
+########
+#...w..l
+#..iw..#
+#.r.w.k#
+#b..w..#
+p...w..#
+########
+
+##########
+p....w...#
+#.*.sw.e.#
+#b..dwi..#
+#.r..w...#
+#wwwwwwww#
+#........#
+##l#######
+
+##p#######
+#....w...#
+#..i.w.k.#
+#.b..w...#
+#..r.w...#
+#...###!##
+#www#.s..#
+#.d.#....l
+#*.e#....#
+#...######
+
+###.#######
+#.%.%...w.#
+p%.s.%..w.g
+#.%.%..%w.#
+###.#######
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

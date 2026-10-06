@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:mimic_translation",
+  "title": "Mimic Translation",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Mimic_Translation",
+  "local_dir": "games/ps:mimic_translation"
+}

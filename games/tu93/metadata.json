@@ -1,0 +1,21 @@
+{
+  "game_id": "tu93-2b534c15",
+  "title": "TU93",
+  "default_fps": 30,
+  "tags": [
+    "keyboard_click"
+  ],
+  "baseline_actions": [
+    19,
+    15,
+    34,
+    42,
+    76,
+    91,
+    47,
+    23,
+    31
+  ],
+  "local_dir": "environment_files/tu93/2b534c15",
+  "date_downloaded": "2026-04-01T18:20:15.152501+00:00"
+}

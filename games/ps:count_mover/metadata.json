@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:count_mover",
+  "title": "Count Mover",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Count_Mover",
+  "local_dir": "games/ps:count_mover"
+}

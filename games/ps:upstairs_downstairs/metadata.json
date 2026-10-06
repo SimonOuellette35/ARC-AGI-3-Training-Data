@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:upstairs_downstairs",
+  "title": "Upstairs Downstairs",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Upstairs_Downstairs",
+  "local_dir": "games/ps:upstairs_downstairs"
+}

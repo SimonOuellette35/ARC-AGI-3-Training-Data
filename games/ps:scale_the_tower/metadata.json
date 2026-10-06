@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:scale_the_tower",
+  "title": "Scale the Tower",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Scale_the_Tower",
+  "local_dir": "games/ps:scale_the_tower"
+}

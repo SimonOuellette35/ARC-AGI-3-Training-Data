@@ -1,0 +1,206 @@
+title Mimic Translation
+author CNIAngel
+homepage www.cniangel.net
+
+(ARC-AGI-3 rendering fix, 2026-08-14. Mechanics are untouched -- one square the
+win conditions name could be hidden and now shows through -- and
+solvers/generate_mimic_translation_training.py --audit is the check.
+
+ THE CRATE WAS A SOLID 5x5 BLOCK. Crate sits on the Player/Wall/Doppler layer,
+ Target and MimicTarget on the layer below, so a crate parked on either goal
+ square painted over the whole thing and the board no longer showed where the
+ puzzle wanted you to stand. That is not a corner case: over the complete
+ reachable space of the three crate levels 120 / 118 / 119786 states have a
+ crate on a goal, and the RESET exploration prefix pushes one there routinely.
+
+ Its middle 3x3 is transparent now, so the goal reads through the gap. At the
+ 7px cells every level in this game renders at, that gap is a 4x4 block of the
+ sprite underneath -- not the one-pixel sliver a centred hole would leave (the
+ trap ps:explod's fuse and ps:goblin_hooblob's facing pips hit at 4px). The
+ brown/dark-grey bars that made the crate a crate survive on its border.
+
+ THE BODIES NOW HAVE FOUR TRANSPARENT CORNERS instead of two. "A body is home"
+ is the only thing either win condition says, and it is shown by the colour in
+ the corners the body does not paint -- blue Target, dark-red MimicTarget or
+ green floor. The shipped sprite left the two TOP corners clear, which at the
+ 7px cells this game renders at is a TWO-pixel difference between having won
+ and not; the bottom pair doubles it, and four corners is the same idiom
+ ps:escape and ps:goblin_hooblob use for the same job. Both bodies ship as the
+ same picture either way and are
+ told apart by the colour showing inside it -- lightblue against red, the same
+ pairing as their blue and red goals.)
+
+text_color DarkGreen
+background_color LightGrey
+========
+OBJECTS
+========
+
+Background 
+Green LightGreen
+11101
+11111
+10111
+11011
+11111
+
+Target 
+Blue DarkBlue
+11111
+10101
+10101
+10001
+11111
+
+MimicTarget
+Red DarkRed
+11111
+10001
+10101
+10101
+11111
+
+Wall 
+Green Black LightGrey
+22222
+20002
+20002
+21112
+22222
+
+
+Player
+LightBlue White
+.111.
+11011
+10001
+10001
+.111.
+
+Doppler
+LightRed White
+.111.
+11011
+10001
+10001
+.111.
+
+Crate
+DarkGrey Brown
+10101
+1...1
+1...1
+1...1
+10101
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+D = Doppler
+O = Target
+I = MimicTarget
+C = Crate
+
+=======
+SOUNDS
+=======
+
+sfx0 52762700
+sfx1 59191903
+sfx2 29566900
+sfx3 96551307
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target, MimicTarget
+Player, Wall, Doppler, Crate
+
+======
+RULES     
+======     
+
+[ >  Player ] [ Doppler ] -> [  >  Player ] [ < Doppler  ]
+[ Action Player ] [ Doppler] -> [ Doppler ] [ Player ] sfx1
+[ > Player | Crate ] -> [ > Player | > Crate ] sfx3
++[ > Doppler | Crate ] -> [ > Doppler | > Crate ] sfx3
++[ > Crate | Crate ] -> [ > Crate | > Crate ] sfx3
+
+[ > Player | Target ] -> [ > Player | Target ] 
++[ > Doppler | MimicTarget ] -> [ > Doppler | MimicTarget ]
+
+late [ Player Target ] -> [ Player Target ] sfx0
+late [ Doppler MimicTarget ] -> [ Doppler MimicTarget ] sfx2
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Player
+All MimicTarget on Doppler
+
+=======     
+LEVELS
+=======
+
+#########
+#P.....I#
+#########
+#.#.#.#.#
+#########
+#O.....D#
+#########
+
+#########
+#.......#
+#.P..#I.#
+#.......#
+#.D...O.#
+#.......#
+#########
+
+#########
+#P.#...O#
+##.#.####
+#..#....#
+##.#.####
+#I.#...D#
+#########
+
+#########
+#P..#I..#
+#D......#
+#.......#
+#.......#
+#..O#...#
+#########
+
+#########
+#......P#
+#.I.....#
+#..C....#
+#.....O.#
+#.D.....#
+#########
+
+#########
+##O.C.P.#
+##..C...#
+####C####
+#...C..##
+#.D.C.I##
+#########
+
+#########
+#OC.....#
+#.CCPCC.#
+#.CCCCC.#
+#.CCDCC.#
+#.....CI#
+#########

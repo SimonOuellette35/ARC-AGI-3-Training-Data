@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:back_home",
+  "title": "Back home",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Back_home",
+  "local_dir": "games/ps:back_home"
+}

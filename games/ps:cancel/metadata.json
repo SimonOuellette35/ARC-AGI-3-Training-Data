@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:cancel",
+  "title": "Cancel",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Cancel",
+  "local_dir": "games/ps:cancel"
+}

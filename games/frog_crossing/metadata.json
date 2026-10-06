@@ -1,0 +1,15 @@
+{
+    "game_id": "frog_crossing",
+    "title": "Frog Crossing",
+    "tags": ["puzzle", "navigation", "planning", "multi-agent"],
+    "level_tags": [
+        ["3-frogs-10x10", "easy"],
+        ["4-frogs-12x12", "medium"],
+        ["5-frogs-14x14", "hard"],
+        ["6-frogs-16x16", "expert"],
+        ["7-frogs-14x14", "extra-hard"],
+        ["8-frogs-16x16", "master"],
+        ["9-frogs-16x16", "grandmaster"]
+    ],
+    "baseline_actions": [12, 24, 40, 60, 80, 105, 130]
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sokoban_sanity",
+  "title": "sokoban sanity",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "sokoban_sanity",
+  "local_dir": "games/ps:sokoban_sanity"
+}

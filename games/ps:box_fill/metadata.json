@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:box_fill",
+  "title": "Box Fill",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Box_Fill",
+  "local_dir": "games/ps:box_fill"
+}

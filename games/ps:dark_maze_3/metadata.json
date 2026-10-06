@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:dark_maze_3",
+  "title": "Dark Maze 3",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Dark_Maze_3",
+  "local_dir": "games/ps:dark_maze_3"
+}

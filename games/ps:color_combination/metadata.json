@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:color_combination",
+  "title": "Color Combination",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Color_Combination",
+  "local_dir": "games/ps:color_combination"
+}

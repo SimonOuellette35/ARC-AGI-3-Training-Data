@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:flying_kick",
+  "title": "Flying Kick",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Flying_Kick",
+  "local_dir": "games/ps:flying_kick"
+}

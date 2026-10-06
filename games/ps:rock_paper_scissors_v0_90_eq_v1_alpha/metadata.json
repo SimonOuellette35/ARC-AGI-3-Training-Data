@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:rock_paper_scissors_v0_90_eq_v1_alpha",
+  "title": "Rock, Paper, Scissors (v0.90 = v1.alpha)",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Rock,_Paper,_Scissors_(v0.90_=_v1.alpha)",
+  "local_dir": "games/ps:rock_paper_scissors_v0_90_eq_v1_alpha"
+}

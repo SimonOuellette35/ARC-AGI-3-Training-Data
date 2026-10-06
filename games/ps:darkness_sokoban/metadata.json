@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:darkness_sokoban",
+  "title": "Darkness Sokoban",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Darkness_Sokoban",
+  "local_dir": "games/ps:darkness_sokoban"
+}

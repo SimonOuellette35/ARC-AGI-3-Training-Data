@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:dharma_dojo_demake",
+  "title": "Dharma Dojo demake",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Dharma_Dojo_demake",
+  "local_dir": "games/ps:dharma_dojo_demake"
+}

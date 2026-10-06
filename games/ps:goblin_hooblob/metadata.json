@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:goblin_hooblob",
+  "title": "Goblin Hooblob",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Goblin_Hooblob",
+  "local_dir": "games/ps:goblin_hooblob"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:the_observable_universe",
+  "title": "The Observable Universe",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "The_Observable_Universe",
+  "local_dir": "games/ps:the_observable_universe"
+}

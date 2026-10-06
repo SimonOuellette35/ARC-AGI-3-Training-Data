@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:silly_rabbit",
+  "title": "Silly Rabbit",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Silly_Rabbit",
+  "local_dir": "games/ps:silly_rabbit"
+}

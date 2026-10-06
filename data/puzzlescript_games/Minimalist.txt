@@ -1,0 +1,150 @@
+title Minimalist
+author Marcos Perez
+color_palette ega
+text_color green
+
+(ARC-AGI-3 rendering fix, 2026-08-14. One sprite added; the objects, the
+mechanics, the levels and the win condition are untouched, and
+solvers/generate_minimalist_training.py --audit is the check.
+
+THE WIN WAS INVISIBLE. Every object in this game shipped as a bare colour with
+no sprite at all, so `_render_cell_sprite` painted each one as a SOLID block --
+and the Player is drawn last, on top. The win condition is `all Player on
+Finish`, so the Player standing on the Finish painted exactly the same
+lightblue square as the Player standing on floor: nothing in the winning frame
+said what it was standing on. (It was still inferable from the frame as a whole
+-- the red square had vanished, and the only thing that can hide it is the
+win -- but "the goal is gone" is a much weaker signal than "the goal is under
+me", and it stops being available the moment anything else is red.)
+
+The Player is now a 3x3 lightblue body with a TRANSPARENT one-pixel border, so
+whatever it stands on shows through as a ring: red on the Finish, blue floor
+otherwise. The three of them stay mutually distinct in the ARC palette, which
+is what the audit asserts -- Background blue is 9, Player lightblue 10, Finish
+red 8 and Block white 0, and no two of the five cell compositions this game can
+show render alike.
+
+The ring, not the corners: this game's five board sizes render at cell_px 7, 9
+and 12, all of them large enough that a full border survives the centred
+nearest sample (at the smallest, cell_px 7, the ring is 24 of the 49 pixels).
+A 3x3-in-5x5 body is also invariant under all eight turns and mirrors, so it
+costs the `_FLIP_GAMES` augmentation nothing.)
+
+========
+OBJECTS
+========
+Player
+lightblue
+.....
+.000.
+.000.
+.000.
+.....
+Background
+blue
+Finish
+red
+Block
+white
+=======
+LEGEND
+=======
+P = Player
+B = Block
+. = Background
+V = Finish
+=======
+SOUNDS
+=======
+Player move 54158907
+startgame 53877700
+endlevel 45563303
+endgame 80365502
+================
+COLLISIONLAYERS
+================
+Background
+Finish
+Player,Block
+======
+RULES
+======
+[ > Player ] -> [ > Player ]
+==============
+WINCONDITIONS
+==============
+all Player on Finish
+=======
+LEVELS
+=======
+Message Level 1/10
+.....
+.v...
+..p..
+.....
+.....
+Message Level 2/10
+.....
+...v.
+b.bbb
+...p.
+.....
+Message Level 3/10
+.v
+.b
+..
+b.
+p.
+Message Level 4/10
+vb...
+.b.b.
+...b.
+bbbb.
+p....
+Message Level 5/10
+.......
+.bbbbb.
+....vb.
+bbbbbb.
+p......
+Message Level 6/10
+...b...
+.b.b.b.
+vb...b.
+bbbbbb.
+pb...b.
+.b.b.b.
+...b...
+Message Level 7/10
+......v
+.bbbbbb
+.......
+bbbbbb.
+p......
+Message Level 8/10
+......v
+.bbbbbb
+...b...
+..bb.b.
+b....b.
+.bbbbb.
+p......
+Message Level 9/10
+pb...bv
+.b.b.b.
+...b.b.
+bbbb.b.
+.....b.
+.bbbbb.
+.......
+Message Level 10/10
+pbbb.....
+.b...bbb.
+...bbb...
+bbbb...bb
+.....bbb.
+.bbbbb...
+.......b.
+bbbbbbbb.
+v........
+Message Thanks For Playing This Little Game!!! :)

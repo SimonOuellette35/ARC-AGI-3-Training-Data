@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:gobble_rush",
+  "title": "Gobble Rush!",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Gobble_Rush!",
+  "local_dir": "games/ps:gobble_rush"
+}

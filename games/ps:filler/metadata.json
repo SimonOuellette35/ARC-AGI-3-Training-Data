@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:filler",
+  "title": "Filler",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Filler",
+  "local_dir": "games/ps:filler"
+}

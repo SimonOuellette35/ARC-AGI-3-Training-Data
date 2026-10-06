@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:puzzleboi",
+  "title": "Puzzleboi",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Puzzleboi",
+  "local_dir": "games/ps:puzzleboi"
+}

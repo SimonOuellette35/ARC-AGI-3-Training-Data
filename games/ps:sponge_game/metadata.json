@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sponge_game",
+  "title": "Sponge Game",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sponge_Game",
+  "local_dir": "games/ps:sponge_game"
+}

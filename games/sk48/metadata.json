@@ -1,0 +1,20 @@
+{
+  "game_id": "sk48-41055498",
+  "title": "SK48",
+  "default_fps": 30,
+  "tags": [
+    "keyboard_click"
+  ],
+  "baseline_actions": [
+    15,
+    32,
+    35,
+    113,
+    304,
+    42,
+    63,
+    92
+  ],
+  "local_dir": "environment_files/sk48/41055498",
+  "date_downloaded": "2026-04-01T18:20:13.691362+00:00"
+}

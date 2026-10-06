@@ -1,0 +1,857 @@
+title STRATA-GEMS
+author Silvano Sorrentino
+homepage http://ilsilvano.tumblr.com/
+
+noaction
+(verbose_logging)
+
+background_color black
+text_color orange
+
+========
+OBJECTS
+========
+
+Background 
+black  
+
+Player
+orange 
+.....
+.....
+.00..
+.00..
+.....
+
+Wall 
+grey black
+11111
+00001
+01101
+01101
+00001
+
+(to give name to the 16 possible gems, I give value 0 or 1 to each of the four sections of the gems, so ad example 0100 means "empty filled empty empty")
+
+(Gem0000
+white yellow green red blue black  
+.5555
+00005
+00005
+00005
+0000.)
+
+Gem0001
+white yellow green red blue black  
+.5555
+00005
+00005
+00445
+0044.
+
+Gem0010
+white yellow green red blue black  
+.5555
+00005
+00005
+33005
+3300.
+
+Gem0011
+white yellow green red blue black  
+.5555
+00005
+00005
+33445
+3344.
+
+Gem0100
+white yellow green red blue black  
+.5555
+00225
+00225
+00005
+0000.
+
+Gem0101
+white yellow green red blue black  
+.5555
+00225
+00225
+00445
+0044.
+
+Gem0110
+white yellow green red blue black  
+.5555
+00225
+00225
+33005
+3300.
+
+Gem0111
+white yellow green red blue black  
+.5555
+00225
+00225
+33445
+3344.
+
+Gem1000
+white yellow green red blue black  
+.5555
+11005
+11005
+00005
+0000.
+
+Gem1001
+white yellow green red blue black  
+.5555
+11005
+11005
+00445
+0044.
+
+Gem1010
+white yellow green red blue black  
+.5555
+11005
+11005
+33005
+3300.
+
+Gem1011
+white yellow green red blue black  
+.5555
+11005
+11005
+33445
+3344.
+
+Gem1100
+white yellow green red blue black  
+.5555
+11225
+11225
+00005
+0000.
+
+Gem1101
+white yellow green red blue black  
+.5555
+11225
+11225
+00445
+0044.
+
+Gem1110
+white yellow green red blue black  
+.5555
+11225
+11225
+33005
+3300.
+
+Gem1111
+white yellow green red blue black  
+.5555
+11225
+15525
+35545
+3344.
+
+
+
+Logo1
+white gray
+.....
+1.111
+1.1.1
+111.1
+00000
+
+Logo2
+white gray
+.00..
+00000
+1.1.1
+1.1.1
+11111
+
+Logo3
+white gray yellow green red blue 
+0.000
+0...0
+00000
+.....
+..35.
+
+Logo4
+white gray yellow green red blue 
+..24.
+.....
+11111
+1.1..
+11111
+
+Logo5
+white gray
+0....
+00000
+0....
+11111
+1.1..
+
+Logo6
+white gray
+11111
+000.0
+0.00.
+00000
+1....
+
+Logo7
+white gray
+11111
+1....
+0.000
+0.0.0
+000.0
+
+
+Fill0
+white gray darkgray 
+00022
+00000
+00000
+00000
+00000
+
+Fill1
+white gray darkgray 
+00022
+00000
+00000
+00000
+11111
+
+Fill2
+white gray darkgray 
+00022
+00000
+00000
+11111
+11111
+
+Fill3
+white gray darkgray 
+00022
+00000
+11111
+11111
+11111
+
+Fill4
+white gray darkgray 
+00022
+11111
+11111
+11111
+11111
+
+Fill5
+darkgray gray 
+11100
+11111
+11111
+11111
+11111
+
+FillTop
+yellow black red green blue 
+11111
+01010
+00000
+32423
+11111
+
+=======
+LEGEND
+=======
+
+P = Player
+. = Background
+* = Wall
+(I use base16 to match each combination with a single letter)
+(0 = Gem0000 --- commented, short of objects!)
+1 = Gem0001
+2 = Gem0010
+3 = Gem0011
+4 = Gem0100
+5 = Gem0101
+6 = Gem0110
+7 = Gem0111
+8 = Gem1000
+9 = Gem1001
+A = Gem1010
+B = Gem1011
+C = Gem1100
+D = Gem1101
+E = Gem1110
+F = Gem1111
+
+Y = Logo1
+O = Logo2
+G = Logo3
+U = Logo4
+R = Logo5
+T = Logo6
+S = Logo7
+
+Z = Fill0
+H = Fill1
+I = Fill2
+L = Fill3
+M = Fill4
+N = Fill5
+W = FillTop
+
+
+Gem = Gem0001 or Gem0010 or Gem0011 or Gem0100 or Gem0101 or Gem0110 or Gem0111 or Gem1000 or Gem1001 or Gem1010 or Gem1011 or Gem1100 or Gem1101 or Gem1110
+
+
+
+=======
+SOUNDS
+=======
+sfx0 60906107 (carry)
+sfx1 81295104 (ouch!)
+sfx2 5523708 (full gem)
+
+
+================
+COLLISIONLAYERS
+================
+
+Background 
+Wall Logo1 Logo2 Logo3 Logo4 Logo5 Logo6 Logo7 Fill0 Fill1 Fill2 Fill3 Fill4 Fill5 FillTop
+(Gem0000) Gem0001 Gem0010 Gem0011 Gem0100 Gem0101 Gem0110 Gem0111 Gem1000 Gem1001 Gem1010 Gem1011 Gem1100 Gem1101 Gem1110 Gem1111
+Player
+
+======
+RULES     
+======     
+
+(if you start on a gem you carry it)
+[ >  Player Gem ] -> [ > Player  > Gem ] sfx0
+(you cannot walk over a complete gem)
+[ >  Player | Gem1111 ] -> [ Player  | Gem1111 ] sfx1
+[ >  Player | Wall ] -> [ Player  | Wall ] sfx1
+
+(gems cannot merge with a complete gem)
+[ >  Gem | Gem1111 ] -> [  Gem |  Gem1111 ]
+[ >  Gem | Wall ] -> [  Gem |  Wall ]
+
+(an empty gem merges with everything - just for completeness, but empty gems are not useful in this game)
+([ >  Gem0000 | Gem ] -> [  Background |  Gem ])
+([ >  Gem | Gem0000 ] -> [  Background |  Gem ])
+
+(the rest of the boring rules; just an OR between the codes! If you find a way to shorten this list please let me know...  EDIT: Increpare himself gave me a very good hint - using layers for the four colors of the gem - but I am not able to make it work, duh.)
+[ >  Gem0001 | Gem0001 ] -> [  Gem0001 |  Gem0001 ]
+[ >  Gem0001 | Gem0010 ] -> [  Background |  Gem0011 ]
+[ >  Gem0001 | Gem0011 ] -> [  Gem0001 |  Gem0011 ]
+[ >  Gem0001 | Gem0100 ] -> [  Background |  Gem0101 ]
+[ >  Gem0001 | Gem0101 ] -> [  Gem0001 |  Gem0101 ]
+[ >  Gem0001 | Gem0110 ] -> [  Background |  Gem0111 ]
+[ >  Gem0001 | Gem0111 ] -> [  Gem0001 |  Gem0111 ]
+[ >  Gem0001 | Gem1000 ] -> [  Background |  Gem1001 ]
+[ >  Gem0001 | Gem1001 ] -> [  Gem0001 |  Gem1001 ]
+[ >  Gem0001 | Gem1010 ] -> [  Background |  Gem1011 ]
+[ >  Gem0001 | Gem1011 ] -> [  Gem0001 |  Gem1011 ]
+[ >  Gem0001 | Gem1100 ] -> [  Background |  Gem1101 ]
+[ >  Gem0001 | Gem1101 ] -> [  Gem0001 |  Gem1101 ]
+[ >  Gem0001 | Gem1110 ] -> [  Background |  Gem1111 ] sfx2
+
+[ >  Gem0010 | Gem0001 ] -> [  Background |  Gem0011 ]
+[ >  Gem0010 | Gem0010 ] -> [  Gem0010 |  Gem0010 ]
+[ >  Gem0010 | Gem0011 ] -> [  Gem0010 |  Gem0011 ]
+[ >  Gem0010 | Gem0100 ] -> [  Background |  Gem0110 ]
+[ >  Gem0010 | Gem0101 ] -> [  Background |  Gem0111 ]
+[ >  Gem0010 | Gem0110 ] -> [  Gem0010 |  Gem0110 ]
+[ >  Gem0010 | Gem0111 ] -> [  Gem0010 |  Gem0111 ]
+[ >  Gem0010 | Gem1000 ] -> [  Background |  Gem1010 ]
+[ >  Gem0010 | Gem1001 ] -> [  Background |  Gem1011 ]
+[ >  Gem0010 | Gem1010 ] -> [  Gem0010 |  Gem1010 ]
+[ >  Gem0010 | Gem1011 ] -> [  Gem0010 |  Gem1011 ]
+[ >  Gem0010 | Gem1100 ] -> [  Background |  Gem1110 ]
+[ >  Gem0010 | Gem1101 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem0010 | Gem1110 ] -> [  Gem0010 |  Gem1110 ]
+
+[ >  Gem0011 | Gem0001 ] -> [  Gem0011 |  Gem0001 ]
+[ >  Gem0011 | Gem0010 ] -> [  Gem0011 |  Gem0010 ]
+[ >  Gem0011 | Gem0011 ] -> [  Gem0011 |  Gem0011 ]
+[ >  Gem0011 | Gem0100 ] -> [  Background |  Gem0111 ]
+[ >  Gem0011 | Gem0101 ] -> [  Gem0011 |  Gem0101 ]
+[ >  Gem0011 | Gem0110 ] -> [  Gem0011 |  Gem0110 ]
+[ >  Gem0011 | Gem0111 ] -> [  Gem0011 |  Gem0111 ]
+[ >  Gem0011 | Gem1000 ] -> [  Background |  Gem1011 ]
+[ >  Gem0011 | Gem1001 ] -> [  Gem0011 |  Gem1001 ]
+[ >  Gem0011 | Gem1010 ] -> [  Gem0011 |  Gem1010 ]
+[ >  Gem0011 | Gem1011 ] -> [  Gem0011 |  Gem1011 ]
+[ >  Gem0011 | Gem1100 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem0011 | Gem1101 ] -> [  Gem0011 |  Gem1101 ]
+[ >  Gem0011 | Gem1110 ] -> [  Gem0011 |  Gem1110 ]
+
+[ >  Gem0100 | Gem0001 ] -> [  Background |  Gem0101 ]
+[ >  Gem0100 | Gem0010 ] -> [  Background |  Gem0110 ]
+[ >  Gem0100 | Gem0011 ] -> [  Background |  Gem0111 ]
+[ >  Gem0100 | Gem0100 ] -> [  Gem0100 |  Gem0100 ]
+[ >  Gem0100 | Gem0101 ] -> [  Gem0100 |  Gem0101 ]
+[ >  Gem0100 | Gem0110 ] -> [  Gem0100 |  Gem0110 ]
+[ >  Gem0100 | Gem0111 ] -> [  Gem0100 |  Gem0111 ]
+[ >  Gem0100 | Gem1000 ] -> [  Background |  Gem1100 ]
+[ >  Gem0100 | Gem1001 ] -> [  Background |  Gem1101 ]
+[ >  Gem0100 | Gem1010 ] -> [  Background |  Gem1110 ]
+[ >  Gem0100 | Gem1011 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem0100 | Gem1100 ] -> [  Gem0100 |  Gem1100 ]
+[ >  Gem0100 | Gem1101 ] -> [  Gem0100 |  Gem1101 ]
+[ >  Gem0100 | Gem1110 ] -> [  Gem0100 |  Gem1110 ]
+
+[ >  Gem0101 | Gem0001 ] -> [  Gem0101 |  Gem0001 ]
+[ >  Gem0101 | Gem0010 ] -> [  Background |  Gem0111 ]
+[ >  Gem0101 | Gem0011 ] -> [  Gem0101 |  Gem0011 ]
+[ >  Gem0101 | Gem0100 ] -> [  Gem0101 |  Gem0100 ]
+[ >  Gem0101 | Gem0101 ] -> [  Gem0101 |  Gem0101 ]
+[ >  Gem0101 | Gem0110 ] -> [  Gem0101 |  Gem0110 ]
+[ >  Gem0101 | Gem0111 ] -> [  Gem0101 |  Gem0111 ]
+[ >  Gem0101 | Gem1000 ] -> [  Background |  Gem1101 ]
+[ >  Gem0101 | Gem1001 ] -> [  Gem0101 |  Gem1001 ]
+[ >  Gem0101 | Gem1010 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem0101 | Gem1011 ] -> [  Gem0101 |  Gem1011 ]
+[ >  Gem0101 | Gem1100 ] -> [  Gem0101 |  Gem1100 ]
+[ >  Gem0101 | Gem1101 ] -> [  Gem0101 |  Gem1101 ]
+[ >  Gem0101 | Gem1110 ] -> [  Gem0101 |  Gem1110 ]
+
+[ >  Gem0110 | Gem0001 ] -> [  Background |  Gem0111 ]
+[ >  Gem0110 | Gem0010 ] -> [  Gem0110 |  Gem0010 ]
+[ >  Gem0110 | Gem0011 ] -> [  Gem0110 |  Gem0011 ]
+[ >  Gem0110 | Gem0100 ] -> [  Gem0110 |  Gem0100 ]
+[ >  Gem0110 | Gem0101 ] -> [  Gem0110 |  Gem0101 ]
+[ >  Gem0110 | Gem0110 ] -> [  Gem0110 |  Gem0110 ]
+[ >  Gem0110 | Gem0111 ] -> [  Gem0110 |  Gem0111 ]
+[ >  Gem0110 | Gem1000 ] -> [  Background |  Gem1110 ]
+[ >  Gem0110 | Gem1001 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem0110 | Gem1010 ] -> [  Gem0110 |  Gem1010 ]
+[ >  Gem0110 | Gem1011 ] -> [  Gem0110 |  Gem1011 ]
+[ >  Gem0110 | Gem1100 ] -> [  Gem0110 |  Gem1100 ]
+[ >  Gem0110 | Gem1101 ] -> [  Gem0110 |  Gem1101 ]
+[ >  Gem0110 | Gem1110 ] -> [  Gem0110 |  Gem1110 ]
+
+[ >  Gem0111 | Gem0001 ] -> [  Gem0111 |  Gem0001 ]
+[ >  Gem0111 | Gem0010 ] -> [  Gem0111 |  Gem0010 ]
+[ >  Gem0111 | Gem0011 ] -> [  Gem0111 |  Gem0011 ]
+[ >  Gem0111 | Gem0100 ] -> [  Gem0111 |  Gem0100 ]
+[ >  Gem0111 | Gem0101 ] -> [  Gem0111 |  Gem0101 ]
+[ >  Gem0111 | Gem0110 ] -> [  Gem0111 |  Gem0110 ]
+[ >  Gem0111 | Gem0111 ] -> [  Gem0111 |  Gem0111 ]
+[ >  Gem0111 | Gem1000 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem0111 | Gem1001 ] -> [  Gem0111 |  Gem1001 ]
+[ >  Gem0111 | Gem1010 ] -> [  Gem0111 |  Gem1010 ]
+[ >  Gem0111 | Gem1011 ] -> [  Gem0111 |  Gem1011 ]
+[ >  Gem0111 | Gem1100 ] -> [  Gem0111 |  Gem1100 ]
+[ >  Gem0111 | Gem1101 ] -> [  Gem0111 |  Gem1101 ]
+[ >  Gem0111 | Gem1110 ] -> [  Gem0111 |  Gem1110 ]
+
+[ >  Gem1000 | Gem0001 ] -> [  Background |  Gem1001 ]
+[ >  Gem1000 | Gem0010 ] -> [  Background |  Gem1010 ]
+[ >  Gem1000 | Gem0011 ] -> [  Background |  Gem1011 ]
+[ >  Gem1000 | Gem0100 ] -> [  Background |  Gem1100 ]
+[ >  Gem1000 | Gem0101 ] -> [  Background |  Gem1101 ]
+[ >  Gem1000 | Gem0110 ] -> [  Background |  Gem1110 ]
+[ >  Gem1000 | Gem0111 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem1000 | Gem1000 ] -> [  Gem1000 |  Gem1000 ]
+[ >  Gem1000 | Gem1001 ] -> [  Gem1000 |  Gem1001 ]
+[ >  Gem1000 | Gem1010 ] -> [  Gem1000 |  Gem1010 ]
+[ >  Gem1000 | Gem1011 ] -> [  Gem1000 |  Gem1011 ]
+[ >  Gem1000 | Gem1100 ] -> [  Gem1000 |  Gem1100 ]
+[ >  Gem1000 | Gem1101 ] -> [  Gem1000 |  Gem1101 ]
+[ >  Gem1000 | Gem1110 ] -> [  Gem1000 |  Gem1110 ]
+
+[ >  Gem1001 | Gem0001 ] -> [  Gem1001 |  Gem0001 ]
+[ >  Gem1001 | Gem0010 ] -> [  Background |  Gem1011 ]
+[ >  Gem1001 | Gem0011 ] -> [  Gem1001 |  Gem0011 ]
+[ >  Gem1001 | Gem0100 ] -> [  Background |  Gem1101 ]
+[ >  Gem1001 | Gem0101 ] -> [  Gem1001 |  Gem0101 ]
+[ >  Gem1001 | Gem0110 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem1001 | Gem0111 ] -> [  Gem1001 |  Gem0111 ]
+[ >  Gem1001 | Gem1000 ] -> [  Gem1001 |  Gem1000 ]
+[ >  Gem1001 | Gem1001 ] -> [  Gem1001 |  Gem1001 ]
+[ >  Gem1001 | Gem1010 ] -> [  Gem1001 |  Gem1010 ]
+[ >  Gem1001 | Gem1011 ] -> [  Gem1001 |  Gem1011 ]
+[ >  Gem1001 | Gem1100 ] -> [  Gem1001 |  Gem1100 ]
+[ >  Gem1001 | Gem1101 ] -> [  Gem1001 |  Gem1101 ]
+[ >  Gem1001 | Gem1110 ] -> [  Gem1001 |  Gem1110 ]
+
+
+[ >  Gem1010 | Gem0001 ] -> [  Background |  Gem1011 ]
+[ >  Gem1010 | Gem0010 ] -> [  Gem1010 |  Gem0010 ]
+[ >  Gem1010 | Gem0011 ] -> [  Gem1010 |  Gem0011 ]
+[ >  Gem1010 | Gem0100 ] -> [  Background |  Gem1110 ]
+[ >  Gem1010 | Gem0101 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem1010 | Gem0110 ] -> [  Gem1010 |  Gem0110 ]
+[ >  Gem1010 | Gem0111 ] -> [  Gem1010 |  Gem0111 ]
+[ >  Gem1010 | Gem1000 ] -> [  Gem1010 |  Gem1000 ]
+[ >  Gem1010 | Gem1001 ] -> [  Gem1010 |  Gem1001 ]
+[ >  Gem1010 | Gem1010 ] -> [  Gem1010 |  Gem1010 ]
+[ >  Gem1010 | Gem1011 ] -> [  Gem1010 |  Gem1011 ]
+[ >  Gem1010 | Gem1100 ] -> [  Gem1010 |  Gem1100 ]
+[ >  Gem1010 | Gem1101 ] -> [  Gem1010 |  Gem1101 ]
+[ >  Gem1010 | Gem1110 ] -> [  Gem1010 |  Gem1110 ]
+
+[ >  Gem1011 | Gem0001 ] -> [  Gem1011 |  Gem0001 ]
+[ >  Gem1011 | Gem0010 ] -> [  Gem1011 |  Gem0010 ]
+[ >  Gem1011 | Gem0011 ] -> [  Gem1011 |  Gem0011 ]
+[ >  Gem1011 | Gem0100 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem1011 | Gem0101 ] -> [  Gem1011 |  Gem0101 ]
+[ >  Gem1011 | Gem0110 ] -> [  Gem1011 |  Gem0110 ]
+[ >  Gem1011 | Gem0111 ] -> [  Gem1011 |  Gem0111 ]
+[ >  Gem1011 | Gem1000 ] -> [  Gem1011 |  Gem1000 ]
+[ >  Gem1011 | Gem1001 ] -> [  Gem1011 |  Gem1001 ]
+[ >  Gem1011 | Gem1010 ] -> [  Gem1011 |  Gem1010 ]
+[ >  Gem1011 | Gem1011 ] -> [  Gem1011 |  Gem1011 ]
+[ >  Gem1011 | Gem1100 ] -> [  Gem1011 |  Gem1100 ]
+[ >  Gem1011 | Gem1101 ] -> [  Gem1011 |  Gem1101 ]
+[ >  Gem1011 | Gem1110 ] -> [  Gem1011 |  Gem1110 ]
+
+[ >  Gem1100 | Gem0001 ] -> [  Background |  Gem1101 ]
+[ >  Gem1100 | Gem0010 ] -> [  Background |  Gem1110 ]
+[ >  Gem1100 | Gem0011 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem1100 | Gem0100 ] -> [  Gem1100 |  Gem0100 ]
+[ >  Gem1100 | Gem0101 ] -> [  Gem1100 |  Gem0101 ]
+[ >  Gem1100 | Gem0110 ] -> [  Gem1100 |  Gem0110 ]
+[ >  Gem1100 | Gem0111 ] -> [  Gem1100 |  Gem0111 ]
+[ >  Gem1100 | Gem1000 ] -> [  Gem1100 |  Gem1000 ]
+[ >  Gem1100 | Gem1001 ] -> [  Gem1100 |  Gem1001 ]
+[ >  Gem1100 | Gem1010 ] -> [  Gem1100 |  Gem1010 ]
+[ >  Gem1100 | Gem1011 ] -> [  Gem1100 |  Gem1011 ]
+[ >  Gem1100 | Gem1100 ] -> [  Gem1100 |  Gem1100 ]
+[ >  Gem1100 | Gem1101 ] -> [  Gem1100 |  Gem1101 ]
+[ >  Gem1100 | Gem1110 ] -> [  Gem1100 |  Gem1110 ]
+
+[ >  Gem1101 | Gem0001 ] -> [  Gem1101 |  Gem0001 ]
+[ >  Gem1101 | Gem0010 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem1101 | Gem0011 ] -> [  Gem1101 |  Gem0011 ]
+[ >  Gem1101 | Gem0100 ] -> [  Gem1101 |  Gem0100 ]
+[ >  Gem1101 | Gem0101 ] -> [  Gem1101 |  Gem0101 ]
+[ >  Gem1101 | Gem0110 ] -> [  Gem1101 |  Gem0110 ]
+[ >  Gem1101 | Gem0111 ] -> [  Gem1101 |  Gem0111 ]
+[ >  Gem1101 | Gem1000 ] -> [  Gem1101 |  Gem1000 ]
+[ >  Gem1101 | Gem1001 ] -> [  Gem1101 |  Gem1001 ]
+[ >  Gem1101 | Gem1010 ] -> [  Gem1101 |  Gem1010 ]
+[ >  Gem1101 | Gem1011 ] -> [  Gem1101 |  Gem1011 ]
+[ >  Gem1101 | Gem1100 ] -> [  Gem1101 |  Gem1100 ]
+[ >  Gem1101 | Gem1101 ] -> [  Gem1101 |  Gem1101 ]
+[ >  Gem1101 | Gem1110 ] -> [  Gem1101 |  Gem1110 ]
+
+[ >  Gem1110 | Gem0001 ] -> [  Background |  Gem1111 ] sfx2
+[ >  Gem1110 | Gem0010 ] -> [  Gem1110 |  Gem0010 ]
+[ >  Gem1110 | Gem0011 ] -> [  Gem1110 |  Gem0011 ]
+[ >  Gem1110 | Gem0100 ] -> [  Gem1110 |  Gem0100 ]
+[ >  Gem1110 | Gem0101 ] -> [  Gem1110 |  Gem0101 ]
+[ >  Gem1110 | Gem0110 ] -> [  Gem1110 |  Gem0110 ]
+[ >  Gem1110 | Gem0111 ] -> [  Gem1110 |  Gem0111 ]
+[ >  Gem1110 | Gem1000 ] -> [  Gem1110 |  Gem1000 ]
+[ >  Gem1110 | Gem1001 ] -> [  Gem1110 |  Gem1001 ]
+[ >  Gem1110 | Gem1010 ] -> [  Gem1110 |  Gem1010 ]
+[ >  Gem1110 | Gem1011 ] -> [  Gem1110 |  Gem1011 ]
+[ >  Gem1110 | Gem1100 ] -> [  Gem1110 |  Gem1100 ]
+[ >  Gem1110 | Gem1101 ] -> [  Gem1110 |  Gem1101 ]
+[ >  Gem1110 | Gem1110 ] -> [  Gem1110 |  Gem1110 ]
+
+==============
+WINCONDITIONS
+==============
+
+No Gem
+
+=======     
+LEVELS
+=======
+
+(LEVEL 1)
+message Grab a gem to carry it.            Merge it with another gem.        You win if all gems are complete.
+*********
+*P*******
+*.*******
+*.1..8..*
+*******.*
+*******6*
+*********
+
+(LEVEL 2)
+message That was easy, right? Also: you cannot walk over a complete gem.
+*********
+*********
+*P.1F..E*
+*...F...*
+*.......*
+*********
+*********
+
+(LEVEL 3)
+message Final rule: you can merge only gems with no colors in common. Try walking right to see what happens.
+.........
+*********
+*********
+*P12.3.C*
+*.C.....*
+*********
+*********
+
+(LEVEL 4)
+message That's great. You are on your own now.
+.........
+.******..
+.*P124*..
+.*1248*..
+.*2481*..
+.*481A*..
+.******..
+
+(LEVEL 5)
+.........
+*********
+*********
+*PC21..C*
+*3..F...*
+*********
+*********
+
+(LEVEL 6)
+.*******.
+.*D2D2D*.
+.*2D2D2*.
+.*D2P2D*.
+.*2D2D2*.
+.*D2D2D*.
+.*******.
+
+(LEVEL 7)
+********.
+**1111**.
+***.****.
+**2222**.
+**4444**.
+*P8888**.
+********.
+
+(LEVEL 8)
+.*******.
+.*******.
+.*.C.86*.
+.*4FPF2*.
+.*93.1.*.
+.*******.
+.*******.
+
+(LEVEL 9)
+.*******.
+.*P8888*.
+.*87777*.
+.*87788*.
+.*87877*.
+.*87877*.
+.*******.
+
+(LEVEL 10)
+.........
+*********
+*492969**
+*9696961*
+*6969696*
+*P696968*
+*********
+
+(LEVEL 11)
+.*******.
+.*69*96*.
+.*.696.*.
+.***.***.
+.*.969.*.
+.*96P69*.
+.*******.
+
+(LEVEL 12)
+*********
+*1.214.2*
+*9**.**6*
+*4..P..8*
+*6*****9*
+*4.821.8*
+*********
+
+(LEVEL 13)
+.*******.
+.*14A12*.
+.*1FFF4*.
+.*C.P.3*.
+.*2FFF8*.
+.*88524*.
+.*******.
+
+(LEVEL 14)
+.*******.
+.**.A***.
+.*.PA8**.
+.*AA*55*.
+.**255.*.
+.***5.**.
+.*******.
+
+(LEVEL 15)
+.*******.
+.*2C1A1*.
+.*A14*4*.
+.*1*PC1*.
+.*A24*4*.
+.*1A1C2*.
+.*******.
+
+(LEVEL 16)
+....*....
+...*8*...
+..*844*..
+.*88P44*.
+*888*444*
+*3333333*
+*********
+
+(LEVEL 17)
+.*******.
+.*P....*.
+.*3F.F3*.
+.*33.C3*.
+.*3FCFC*.
+.*CCC3C*.
+.*******.
+
+(LEVEL 18)
+*944449*.
+*199*.2*.
+*1*9..2*.
+*1.P6*2*.
+*1.*662*.
+*688886*.
+********.
+
+(LEVEL 19)
+*4*1*4*1*
+*2*8*..6*
+*8*...2.*
+*A.9P9.5*
+*.2...*8*
+*6..*8*2*
+*1*4*1*4*
+
+(LEVEL 20)
+*********
+*P.D.9..*
+*2.****.*
+*DD6222D*
+*2.****.*
+*..D96..*
+*********
+
+(LEVEL 21)
+*********
+*9.9P6.6*
+*8*2*8*4*
+*1*4*1*2*
+*2*8*2*1*
+*4.1.4.8*
+*********
+
+(LEVEL 22)
+.*******.
+.*22.11*.
+.*22F11*.
+.*.FFF.*.
+.*88F44*.
+.*88P44*.
+.*******.
+
+(LEVEL 23)
+.*******.
+.*AA.55*.
+.*AAP55*.
+.*AA*55*.
+.*AA.55*.
+.*AA.55*.
+.*******.
+
+(LEVEL 24)
+*********
+*8*8.4*4*
+*888*444*
+*.*.P.*.*
+*222*111*
+*2*2.1*1*
+*********
+
+(LEVEL 25)
+*********
+*1.25842*
+*.51*****
+*4A8P2.8*
+*.***A1.*
+*421A854*
+*********
+
+(LEVEL 26)
+.***.***.
+**1*.*8**
+*42***41*
+*341P82C*
+*8*2*4*8*
+*124*812*
+.*******.
+
+(LEVEL 27)
+*********
+**A...5**
+**A5.A5**
+*A5A55A5*
+*A*5AA*5*
+**A5PA5**
+*********
+
+(LEVEL 28)
+*6B2.6.2*
+*BD49PD4*
+*2B9.6.6*
+*462D94D*
+*DB49B92*
+*.96B9DB*
+*2D42.46*
+
+(LEVEL 29)
+********.
+*9*9C9C*.
+*6C39*6*.
+*36*36C*.
+**96633*.
+*C39P*C*.
+********.
+
+(LEVEL 30)
+message This is the last level!       Discover its little secret...
+*5681A16*
+F59999696
+*.9669A6*
+*P966944*
+*.9669A6*
+F59999696
+*56A2826*
+
+message YOU WIN! THANK YOU FOR PLAYING   YOU WIN! THANK YOU FOR PLAYING  YOU WIN! THANK YOU FOR PLAYING

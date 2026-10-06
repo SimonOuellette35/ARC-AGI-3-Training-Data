@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:detroit_become_immense",
+  "title": "Detroit  Become Immense",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Detroit__Become_Immense",
+  "local_dir": "games/ps:detroit_become_immense"
+}

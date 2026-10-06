@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:velocity_castle",
+  "title": "Velocity Castle",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Velocity_Castle",
+  "local_dir": "games/ps:velocity_castle"
+}

@@ -1,0 +1,200 @@
+title Stand
+author Connorses
+homepage www.puzzlescript.net
+
+(RENDERING FIX for the ARC adapter -- ONE change, and it is about what a frame
+SHOWS, not about what the game DOES.  Every rule, every legend character, every
+level and every other sprite is byte-for-byte the author's.
+
+Target2 was  Darkgreen lightgreen .  The ARC palette has exactly ONE green, so
+darkgreen = lightgreen = green = index 14 -- the Background's own colour.  And
+Target2 is the object a lit target becomes:
+
+    late [Target1 Player] -> [Target2 Player]
+    late [Target2 no Player] -> [Target1]
+
+so the WINNING composition of this game -- a player standing on a target, which
+is the whole win condition ("No Target1", i.e. every target covered AT ONCE) --
+rendered pixel-identical to a player standing on grass, and a lit target with
+nobody on it (which cannot happen) to bare grass.  Measured by
+solvers/generate_stand_training.py --audit before the fix: `target2` == `floor`
+and `player on target2` == `player` at both cell sizes these levels use.
+An agent could see WHERE the unlit targets are and never see one light up.
+
+It is now  Yellow Yellow  (index 11: free of Background 14, Target1's DarkBlue
+9, the walls' Brown 12 and the Player's LightBlue 10), with the author's sprite
+geometry untouched -- rows 1-3 of the 5x5, which is exactly where the Player
+sprite is transparent (its own art occupies rows 0-2 and leaves 3-4 clear), so
+the lit tile shows through the body standing on it at every cell size.
+`--audit` is the regression test.)
+
+========
+OBJECTS
+========
+
+Background 
+GREEN  
+
+
+Target1
+DarkBlue Blue
+.....
+00000
+01110
+00000
+.....
+
+Target2
+Yellow Yellow
+.....
+00000
+01110
+00000
+.....
+
+Wall1 
+BROWN
+
+Wall2
+Brown
+00000
+00000
+00000
+00000
+.....
+
+Player 
+lightblue   
+.000.
+00000
+.0.0.
+.....
+.....
+
+Crate 
+Brown lightbrown darkbrown
+11111
+12201
+12021
+10221
+11111
+
+
+BigCrate
+Black grey
+01001
+10010
+00100
+01001
+10010
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall1
+% = Wall2
+P = Player
+* = Crate
++ = BigCrate
+@ = Crate and Target1
+O = Target1
+
+=======
+SOUNDS
+=======
+Target2 Destroy 24978900
+Target2 Create 44909500
+StartGame 89777708
+EndLevel 23510908
+EndGame  84025508
+Player Move 81570907
+Crate Move 89017902
+BigCrate Move 73907102
+================
+COLLISIONLAYERS
+================
+
+
+Background
+Target1, Target2
+Player, Wall1, Wall2 Crate, BigCrate
+
+======
+RULES     
+======     
+
+[ >  Player | Crate ] -> [  >  Player | > Crate  ]
+[ >  Crate  | Crate ] -> [  >  Crate  | > Crate  ]
+[ > Player | BigCrate] -> [ Player | > BigCrate ]
+late [Target1 Player] -> [Target2 Player]
+late [Target2 no Player] -> [Target1]
+
+==============
+WINCONDITIONS
+==============
+
+No Target1
+
+=======     
+LEVELS
+=======
+
+
+.......
+.......
+..#o#..
+..%%%..
+.......
+...p...
+Message Ah yes, um, stand on the light to progress.
+...........
+###%%%%#%##
+###....%o##
+#%%.##...##
+#p..#######
+######%%%%#
+#%%%##...o#
+#p..%%.####
+###....####
+%%%%%%%%%%%
+...........
+
+.#%%%%%%%#.
+.#p......#.
+.#.......#.
+.#%.....o#.
+.#....#..#.
+.#%%%%%%%#.
+.#p......#.
+.#.......#.
+.#....o..#.
+.#...#...#.
+.#########.
+
+...#p......
+...%#...p..
+.#..%%%#..o
+.#.....#..o
+.#.....#..o
+p#....%%..o
+%%........o
+.....%%#..o
+p......%#..
+..#%%%.p#..
+..#.p...##.
+
+Message OH, I nearly forgot to tell you, you'll have to stand on all of them at once. Yup.
+
+%....###%%.
+p.##.%%%..o
+####.....#.
+%%%%%%%%%%%
+%.....%#..o
+p.###..%.#.
+######...#.
+%%%%%%%%%%%
+.......###%
+o#.%.#.%%%p
+.#...#.....
+Message Part 1 complete!

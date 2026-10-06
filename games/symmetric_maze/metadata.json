@@ -1,0 +1,15 @@
+{
+    "game_id": "symmetric_maze",
+    "title": "Symmetric Cursor Maze",
+    "tags": ["maze", "symmetry", "multi-cursor", "coordination"],
+    "level_tags": [
+        ["7x7 maze", "easy"],
+        ["9x9 maze", "easy"],
+        ["11x11 maze", "medium"],
+        ["13x13 maze", "medium"],
+        ["13x13 maze", "hard"],
+        ["15x15 maze", "hard"],
+        ["15x15 maze", "expert"]
+    ],
+    "baseline_actions": [16, 26, 36, 46, 58, 74, 94]
+}

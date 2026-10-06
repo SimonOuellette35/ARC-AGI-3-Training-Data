@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:directioban",
+  "title": "Directioban",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Directioban",
+  "local_dir": "games/ps:directioban"
+}

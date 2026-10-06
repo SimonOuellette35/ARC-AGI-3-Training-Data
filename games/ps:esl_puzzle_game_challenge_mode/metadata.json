@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:esl_puzzle_game_challenge_mode",
+  "title": "ESL Puzzle Game -- CHALLENGE MODE",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "ESL_Puzzle_Game_Challenge_Mode",
+  "local_dir": "games/ps:esl_puzzle_game_challenge_mode"
+}

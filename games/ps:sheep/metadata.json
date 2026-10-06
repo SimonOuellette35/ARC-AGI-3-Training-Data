@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sheep",
+  "title": "Sheep",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sheep",
+  "local_dir": "games/ps:sheep"
+}

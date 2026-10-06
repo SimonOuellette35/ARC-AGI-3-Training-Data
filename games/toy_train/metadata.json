@@ -1,0 +1,15 @@
+{
+    "game_id": "toy_train",
+    "title": "Toy Train Routes",
+    "tags": ["puzzle", "navigation", "delivery", "planning"],
+    "level_tags": [
+        ["2-passengers-1-switch-11x9", "easy"],
+        ["3-passengers-2-switches-13x11", "medium"],
+        ["4-passengers-3-switches-15x13", "hard"],
+        ["5-passengers-4-switches-17x15", "expert"],
+        ["5-passengers-4-switches-19x17", "extra-hard"],
+        ["5-passengers-4-switches-21x19", "master"],
+        ["5-passengers-5-switches-21x19", "grandmaster"]
+    ],
+    "baseline_actions": [35, 70, 110, 160, 230, 310, 410]
+}

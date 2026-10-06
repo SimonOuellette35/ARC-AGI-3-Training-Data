@@ -1,0 +1,564 @@
+title Time-Reversed Minicosmos
+author Toph Wells with apologies to Aymeric du Peloux
+homepage http://sneezingtiger.com/sokoban/levels/minicosmosText.html
+background_color #c0a0ff
+text_color black
+noaction
+
+(ARC-AGI-3 rendering fix, 2026-08-21. ONE sprite redrawn -- Target. No colour
+name, object, collision layer, legend entry, rule, level or win condition is
+touched, so the mechanic is bit-for-bit the game it was:
+solvers/generate_time_reversed_minicosmos_training.py --selfcheck is the
+measurement of that (a native model fuzzed against this interpreter, the whole
+board plus the player's FACING plus the win flag compared after every press),
+and --audit is the check on the fix -- it renders every cell stack a board of
+this game can hold, at every board shape, and asserts they are all distinct.
+
+THE GOAL VANISHED UNDER THE PLAYER -- the same bug Swap Sokoban and Stickyban
+had. Target shipped as a yellow PLUS on rows/cols 1-3, which is exactly five of
+the pixels the Player's 5x5 paints over (Player is on the higher collision
+layer, with Wall and Crate):
+
+    PlayerR    ..000     PlayerL    000..     Target (was)   .....
+               .0101                1010.                    ..0..
+               .0202                2020.                    .000.
+               .0000                0000.                    ..0..
+               .0..0                0..0.                    .....
+
+so `player on target` rendered as the SAME frame as a player standing on bare
+floor, at every cell size the forty levels draw at (5, 6, 7 and 8 px). In THIS
+game that is not cosmetic and it is worse than in an ordinary sokoban: crates
+are PULLED, so the player has to stand on the far side of every crate it moves
+and spends its whole life crossing and re-crossing the squares the crates must
+end on -- and every frame it stood on one erased a goal from the picture.
+
+The fix keeps the plus and adds the four CORNERS:
+
+    Target (now)   0...0     under PlayerR: the LEFT corners survive
+                   ..0..     under PlayerL: the RIGHT corners survive
+                   .000.     under Crate:   the centre survives (a Crate is a
+                   ..0..                    solid 5x5 with a single hole at its
+                   0...0                    centre, which is where the plus
+                                            already showed through -- that
+                                            composition is unchanged)
+
+The corners are the only pixels that could have worked. PlayerR and PlayerL are
+each other's mirror, so the pixels left transparent by BOTH are just the single
+bottom-centre one; the corners work instead because each facing exposes the two
+on the side it turns away from, and they are an orbit of the full symmetry group
+of the square, so the marker stays symmetric under the whole augmentation group
+(rotation x both flips) the way the Player pair itself does.
+
+No sampling worry: the boards run 7x8 to 9x11 and `_render_frame` draws them at
+cell_px 5 to 8, all >= 5, so no sprite row or column is ever dropped.)
+
+========
+OBJECTS
+========
+
+Background
+#c0a0ff
+
+Target
+yellow
+0...0
+..0..
+.000.
+..0..
+0...0
+
+Wall
+#200040
+
+PlayerR 
+Red White Black
+..000
+.0101
+.0202
+.0000
+.0..0
+
+PlayerL
+Red White Black
+000..
+1010.
+2020.
+0000.
+0..0.
+
+Crate
+Orange
+00000
+00000
+00.00
+00000
+00000
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+@ = PlayerR
+O = Crate
+$ = Target
+* = Crate and Target
+
+Player = PlayerR or PlayerL
+
+=======
+SOUNDS
+=======
+
+Crate MOVE 43050307
+EndLevel 67379503
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Player, Wall, Crate
+
+======
+RULES
+======
+
+[Left PlayerR] -> [Left PlayerL]
+[Right PlayerL] -> [Right PlayerR]
+[No Crate| >  Player | Crate ] -> [ No Crate | < Player | < Crate  ]
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Crate
+
+=======
+LEVELS
+=======
+
+message Level 40 of 40
+..#####.
+###...#.
+#.$.#.##
+#.#..O.#
+#....#.#
+##.#...#
+.#@..###
+.#####..
+
+message Level 39 of 40
+..#####.
+###...#.
+#.$.#.##
+#.#..O.#
+#....#.#
+##$#O..#
+.#@..###
+.#####..
+
+message Level 38 of 40
+..#####.
+###...#.
+#.$.#.##
+#.#..O.#
+#.O@.#.#
+##$#O$.#
+.#...###
+.#####..
+
+message Level 37 of 40
+....####
+#####..#
+#...$..#
+#..O#..#
+##.##.##
+#......#
+#.@#...#
+#..#####
+####....
+
+message Level 36 of 40
+....####
+#####..#
+#...$..#
+#.*O#..#
+##.##.##
+#......#
+#.@#...#
+#..#####
+####....
+
+message Level 35 of 40
+....####
+#####..#
+#...*..#
+#.*O#..#
+##.##.##
+#.$....#
+#.@#...#
+#..#####
+####....
+
+message Level 34 of 40
+.#####..
+.#...##.
+##.#$.##
+#.$....#
+#O.O#..#
+###.@.##
+..#.#.#.
+..#...#.
+..#####.
+
+message Level 33 of 40
+.#####..
+.#...##.
+##O#$.##
+#.$....#
+#O.O#$.#
+###.@.##
+..#.#.#.
+..#...#.
+..#####.
+
+message Level 32 of 40
+.#####..
+.#...#..
+##$#.###
+#...$@.#
+#.#..#.#
+#.#O.O.#
+#...####
+#####...
+
+message Level 31 of 40
+.#####..
+.#...#..
+##$#.###
+#..O$@.#
+#.#..#.#
+#.#OO$.#
+#...####
+#####...
+
+message Level 30 of 40
+.#####...
+##...###.
+#.O.O..#.
+#.#.##.##
+#....$$@#
+###.#...#
+..#...###
+..#####..
+
+message Level 29 of 40
+.#####...
+##...###.
+#.O.O.O#.
+#.#.##.##
+#....$$@#
+###.#.$.#
+..#...###
+..#####..
+
+message Level 28 of 40
+....####.
+.####..#.
+##.$...#.
+#..#.#$#.
+#O@O...##
+##.#.#..#
+.#......#
+.#..#####
+.####....
+
+message Level 27 of 40
+....####.
+.####..#.
+##.$...#.
+#..#.#$#.
+#O@OO..##
+##.#.#..#
+.#...$..#
+.#..#####
+.####....
+
+message Level 26 of 40
+...####.
+####..#.
+#.$...#.
+#..O#.##
+##.#O..#
+#.@..$.#
+#...####
+#####...
+
+message Level 25 of 40
+...####.
+####..#.
+#.$.$.#.
+#..O#.##
+##.#O..#
+#.@..$.#
+#O..####
+#####...
+
+message Level 24 of 40
+....#####.
+...##...##
+..##.O#..#
+.##...@..#
+##....#..#
+#..$.#####
+#.*.##....
+#..##.....
+####......
+
+message Level 23 of 40
+....#####.
+...##...##
+..##.O#..#
+.##...@..#
+##..*.#..#
+#..$.#####
+#.*.##....
+#..##.....
+####......
+
+message Level 22 of 40
+####....
+#..####.
+#.....#.
+#.....#.
+###.###.
+#.$$..##
+#.O.O@.#
+####...#
+...#####
+
+message Level 21 of 40
+####....
+#..####.
+#.....#.
+#.....#.
+###.###.
+#.$$$.##
+#.OOO@.#
+####...#
+...#####
+
+message Level 20 of 40
+#####..
+#...###
+#.....#
+##....#
+####$##
+#..$.##
+#.@...#
+###O.O#
+..#####
+
+message Level 19 of 40
+#####..
+#...###
+#.O...#
+##.$..#
+####$##
+#..$.##
+#.@...#
+###O.O#
+..#####
+
+message Level 18 of 40
+......####.
+#######..#.
+#........#.
+#..$.#O#.#.
+#..$##.#.##
+###...@...#
+..###..#..#
+....##O..##
+.....#####.
+
+message Level 17 of 40
+......####.
+#######..#.
+#........#.
+#..$.#O#.#.
+#.$$##.#.##
+###.O.@...#
+..###..#..#
+....##O..##
+.....#####.
+
+message Level 16 of 40
+.....####
+...###..#
+.###.OO.#
+.#.$$#..#
+##.#.#@##
+#.......#
+#...#...#
+######..#
+.....####
+
+message Level 15 of 40
+.....####
+...###..#
+.###.OO.#
+.#.$$#..#
+##.#.#@##
+#..*....#
+#...#...#
+######..#
+.....####
+
+message Level 14 of 40
+.####...
+.#..####
+.#.....#
+.#.#O..#
+##*##$##
+#......#
+#.#.@..#
+#....###
+######..
+
+message Level 13 of 40
+.####...
+.#..####
+.#.....#
+.#.#O..#
+##*##$##
+#....*.#
+#.#.@..#
+#....###
+######..
+
+message Level 12 of 40
+########
+#...#..#
+#......#
+##.#O..#
+#....###
+#.#.O.#.
+#.$$#.#.
+###..@#.
+..#####.
+
+message Level 11 of 40
+########
+#...#..#
+#......#
+##.#O.O#
+#....###
+#.#.*.#.
+#.$$#.#.
+###..@#.
+..#####.
+
+message Level 10 of 40
+#####..
+#...##.
+#.#..##
+#O.#$.#
+#..@..#
+#O##$##
+#....#.
+######.
+
+message Level 9 of 40
+####...
+#..###.
+#....##
+#.O#$.#
+##.@..#
+.#O#$##
+.#...#.
+.#####.
+
+message Level 8 of 40
+.#######.
+.#..#..##
+##.**$O.#
+#...#...#
+#...@.###
+#..####..
+####.....
+
+message Level 7 of 40
+.#######.
+##..#..#.
+#..**$O##
+#...#...#
+###.@...#
+..####..#
+.....####
+
+message Level 6 of 40
+..####..
+###..###
+#...*$.#
+#.#.@#.#
+#.#.*O.#
+#...####
+#####...
+
+message Level 5 of 40
+#####...
+#...##..
+#.#..###
+#...*$.#
+###.@#.#
+..#.*O.#
+..#..###
+..####..
+
+message Level 4 of 40
+..####.
+.##..#.
+##...##
+#..*$.#
+#.#.#@#
+#..*O.#
+###..##
+..#..#.
+..####.
+
+message Level 3 of 40
+..####..
+..#..###
+.##.O..#
+##@$$$.#
+#.O.O.##
+#...###.
+#..##...
+####....
+
+message Level 2 of 40
+..#####.
+###...#.
+#.....#.
+#..#O###
+##@$$$.#
+.#O#O#.#
+.#.....#
+.#..####
+.####...
+
+message Level 1 of 40
+..####.
+.##..#.
+##.O.##
+#@$$$.#
+#O.O#.#
+#.#...#
+#...###
+####...
+
+message You win!

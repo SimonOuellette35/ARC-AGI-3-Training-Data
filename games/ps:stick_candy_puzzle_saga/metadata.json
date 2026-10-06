@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:stick_candy_puzzle_saga",
+  "title": "stick candy puzzle saga",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "stick_candy_puzzle_saga",
+  "local_dir": "games/ps:stick_candy_puzzle_saga"
+}

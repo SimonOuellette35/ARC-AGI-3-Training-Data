@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:bubble_boy",
+  "title": "Bubble Boy",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Bubble_Boy",
+  "local_dir": "games/ps:bubble_boy"
+}

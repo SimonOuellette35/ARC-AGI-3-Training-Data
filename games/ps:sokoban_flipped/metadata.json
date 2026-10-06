@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sokoban_flipped",
+  "title": "Sokoban Flipped",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sokoban_Flipped",
+  "local_dir": "games/ps:sokoban_flipped"
+}

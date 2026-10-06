@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:space_expedition",
+  "title": "Space Expedition",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Space_Expedition",
+  "local_dir": "games/ps:space_expedition"
+}

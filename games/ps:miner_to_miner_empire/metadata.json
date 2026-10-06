@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:miner_to_miner_empire",
+  "title": "Miner To Miner Empire",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Miner_To_Miner_Empire",
+  "local_dir": "games/ps:miner_to_miner_empire"
+}

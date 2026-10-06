@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:the_trouble_with_toasters",
+  "title": "The Trouble with Toasters",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "The_Trouble_with_Toasters",
+  "local_dir": "games/ps:the_trouble_with_toasters"
+}

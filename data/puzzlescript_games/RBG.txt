@@ -1,0 +1,293 @@
+title RBG
+author NiGHTcapD
+homepage www.puzzlescript.net
+
+noaction
+noundo
+
+(Modded by chaotic_iak)
+
+(If you actually mod this, please reference the original work as well. Alternate names for me: EGL, RainFlame, NiGHTcapD. Optionally, email me at evsterkid1234@comcast.net to let me know that you've done something.)
+
+========
+OBJECTS
+========
+
+Background 
+BLACK    
+
+Wall 
+BROWN
+
+(The seven mobile/inert colour bodies are drawn as a 3x3 core inside a
+transparent ring, so that the coloured wall a body is STANDING ON stays
+readable. A body can share a cell with a coloured wall -- that is what every
+filter rule produces, e.g. [ > Cyan | BlueWall ] -> [ Green | Blue BlueWall ]
+puts a Blue inside the wall -- and with the original solid 5x5 blocks the wall
+underneath was completely hidden, so which rule would fire next was not in the
+frame at all. The ring is symmetric under the whole 8-element rotation/flip
+group, so it costs the presentation augmentation nothing.)
+
+Red
+RED
+.....
+.000.
+.000.
+.000.
+.....
+
+Green
+GREEN
+.....
+.000.
+.000.
+.000.
+.....
+
+Blue
+BLUE
+.....
+.000.
+.000.
+.000.
+.....
+
+Cyan
+LightBlue
+.....
+.000.
+.000.
+.000.
+.....
+
+Magenta
+Pink
+.....
+.000.
+.000.
+.000.
+.....
+
+Yellow
+YELLOW
+.....
+.000.
+.000.
+.000.
+.....
+
+White
+WHITE
+.....
+.000.
+.000.
+.000.
+.....
+
+RedWall
+RED Gray
+01010
+10101
+01010
+10101
+01010
+
+GreenWall
+GREEN Gray
+01010
+10101
+01010
+10101
+01010
+
+BlueWall
+BLUE Gray
+01010
+10101
+01010
+10101
+01010
+
+CyanWall
+LightBlue Gray
+01010
+10101
+01010
+10101
+01010
+
+MagentaWall
+Pink Gray
+01010
+10101
+01010
+10101
+01010
+
+YellowWall
+YELLOW Gray
+01010
+10101
+01010
+10101
+01010
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+R = Red
+B = Blue
+G = Green
+C = Cyan
+M = Magenta
+Y = Yellow
+W = White
+F = RedWall
+S = BlueWall
+E = GreenWall
+A = CyanWall
+P = MagentaWall
+T = YellowWall
+
+Player = Red or Blue or Green or Cyan or Magenta or Yellow
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+RedWall, BlueWall, GreenWall, CyanWall, MagentaWall, YellowWall
+Wall, Player, White
+
+======
+RULES     
+======     
+
+[ >  Red | Wall ] -> [  Red | Wall ]
+[ >  Blue | Wall ] -> [  Blue | Wall ]
+[ >  Green | Wall ] -> [  Green | Wall ]
+[ >  Cyan | Wall ] -> [  Cyan | Wall ]
+[ >  Magenta | Wall ] -> [  Magenta | Wall ]
+[ >  Yellow | Wall ] -> [  Yellow | Wall ]
+
+[ >  Red | BlueWall ] -> [  Red | BlueWall ]
+[ >  Red | GreenWall ] -> [  Red | GreenWall ]
+[ >  Red | CyanWall ] -> [  Red | CyanWall ]
+[ >  Red | MagentaWall ] -> [  Red | MagentaWall ]
+[ >  Red | YellowWall ] -> [  Red | YellowWall ]
+
+[ >  Blue | RedWall ] -> [  Blue | RedWall ]     
+[ >  Blue | GreenWall ] -> [  Blue | GreenWall ] 
+[ >  Blue | CyanWall ] -> [  Blue | CyanWall ]
+[ >  Blue | MagentaWall ] -> [  Blue | MagentaWall ]
+[ >  Blue | YellowWall ] -> [  Blue | YellowWall ]
+
+[ >  Green | RedWall ] -> [ Green | RedWall ]     
+[ >  Green | BlueWall ] -> [ Green | BlueWall ] 
+[ >  Green | CyanWall ] -> [  Green | CyanWall ]
+[ >  Green | MagentaWall ] -> [  Green | MagentaWall ]
+[ >  Green | YellowWall ] -> [  Green | YellowWall ]
+
+[ >  Cyan | RedWall ] -> [ Cyan | RedWall ]
+[ >  Cyan | BlueWall ] -> [ Green | Blue  BlueWall ]
+[ >  Cyan | GreenWall ] -> [ Blue | Green  GreenWall ]
+[ >  Cyan | CyanWall ] -> [  | Cyan  CyanWall ]
+[ >  Cyan | MagentaWall ] -> [ Cyan | MagentaWall ]
+[ >  Cyan | YellowWall ] -> [ Cyan | YellowWall ]
+
+[ >  Magenta | RedWall ] -> [ Blue | Red RedWall ]
+[ >  Magenta | BlueWall ] -> [ Red | Blue  BlueWall ]
+[ >  Magenta | GreenWall ] -> [ Magenta |  GreenWall ]
+[ >  Magenta | CyanWall ] -> [ Magenta |   CyanWall ]
+[ >  Magenta | MagentaWall ] -> [  | Magenta  MagentaWall ]
+[ >  Magenta | YellowWall ] -> [ Magenta |   YellowWall ]
+
+[ >  Yellow | RedWall ] -> [ Green | Red  RedWall ]
+[ >  Yellow | BlueWall ] -> [ Yellow | BlueWall ]
+[ >  Yellow | GreenWall ] -> [ Red | Green  GreenWall ]
+[ >  Yellow | CyanWall ] -> [ Yellow | Green  CyanWall ]
+[ >  Yellow | MagentaWall ] -> [ Yellow | Red  MagentaWall ]
+[ >  Yellow | YellowWall ] -> [  | Yellow  YellowWall ]
+
+[ >  Green | stationary Blue ] -> [  | Cyan ]
+[ >  Blue | stationary Green ] -> [  | Cyan ]
+
+[ >  Red | stationary Blue ] -> [  | Magenta ]
+[ >  Blue | stationary Red ] -> [  | Magenta ]
+
+[ >  Red | stationary Green ] -> [  | Yellow ]
+[ >  Green | stationary Red ] -> [  | Yellow ]
+
+[ >  Red | stationary Cyan ] -> [  | White ]
+[ >  Blue | stationary Yellow ] -> [  | White ]
+[ >  Green | stationary Magenta ] -> [  | White ]
+[ >  Cyan | stationary Red ] -> [  | White ]
+[ >  Magenta | stationary Green ] -> [  | White ]
+[ >  Yellow | stationary Blue ] -> [  | White ]
+
+==============
+WINCONDITIONS
+==============
+
+Some White     
+
+=======     
+LEVELS
+=======
+
+Message: Level 0
+
+##########
+#G..R....#
+#........#
+#........#
+#........#
+#.....B..#
+##########
+
+Message: Level 1
+
+##########
+#...R#...#
+#....#...#
+#....#.G.#
+#....A...#
+#....#.B.#
+##########
+
+Message: Level 2
+
+##########
+#....S..R#
+#....#...#
+#....#...#
+#.G..A...#
+#....#.B.#
+##########
+
+Message: Level 2
+
+##########
+#....S...#
+##S###...#
+#....#...#
+#.R..P...#
+#....#.BG#
+##########
+
+Message: Final level
+
+##########
+#G.#R.#B.#
+#..A..P..#
+#..#..#..#
+#..S..F..#
+#..#..#..#
+##########

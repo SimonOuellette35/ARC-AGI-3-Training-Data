@@ -1,0 +1,17 @@
+{
+  "game_id": "mc:lamelightsout",
+  "title": "Lights Out (mouse)",
+  "description": "Click a light to toggle it and its four orthogonal neighbours; turn every light white (ON). Mouse-click remake of ps:lamelightsout -- ACTION6 only, no cursor.",
+  "default_fps": 20,
+  "baseline_actions": [
+    6
+  ],
+  "tags": [
+    "static",
+    "click",
+    "puzzle",
+    "lights-out"
+  ],
+  "adapter": "native",
+  "local_dir": "games/mc:lamelightsout"
+}

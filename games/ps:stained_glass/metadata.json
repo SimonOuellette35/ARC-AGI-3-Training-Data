@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:stained_glass",
+  "title": "Stained Glass",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Stained_Glass",
+  "local_dir": "games/ps:stained_glass"
+}

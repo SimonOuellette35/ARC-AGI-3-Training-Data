@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:spacekoban",
+  "title": "Spacekoban",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Spacekoban",
+  "local_dir": "games/ps:spacekoban"
+}

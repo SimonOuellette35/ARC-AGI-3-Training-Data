@@ -1,0 +1,393 @@
+title Sokubunny and the colored Boxes
+author Lucas Boedeker
+homepage www.l-boe.de
+
+(ARC-AGI-3 rendering fix, 2026-08-18. TWO sprites -- RedTarget's and
+BlueTarget's shape. The objects, their colours, the collision layers, the one
+rule, the levels and the two win conditions are untouched, so nothing
+mechanical moved: solvers/generate_sokubunny_training.py --selfcheck is the
+measurement of that (a native model fuzzed against this interpreter, the whole
+board compared after every press) and --audit is the check on the fix itself.
+
+WHICH COLOUR A TARGET IS VANISHED UNDER THE PLAYER, and this game is nothing
+but that distinction: the win is `All RedTarget on RedCrate` AND `All
+BlueTarget on BlueCrate`, so a red crate parked on a blue target is a mistake
+that looks exactly like a win. Both targets shipped as a `black` ring on
+rows/cols 1-3 with their colour on the SINGLE centre pixel:
+
+    .....        Player       .0.0.
+    .000.                     .0.0.
+    .010.                     .000.
+    .000.                     23332
+    .....                     .3.3.
+
+and the Player sprite is opaque across every cell of rows 2-3 and at cols 1
+and 3 of row 1 -- i.e. across the whole ring except (1,2), which is a `black`
+pixel in BOTH targets. So "player on a red target" was PIXEL-IDENTICAL to
+"player on a blue target" at every one of the six cell sizes these 23 boards
+render at (7, 8, 9, 10, 12 px). Same shape as the ground-tile bug in
+ps:dang_im_huge / ps:epicjamgame / ps:directioban / ps:sokoban_sanity, but
+sharper: it is not "is there a target here", it is "which of the two games'
+halves does this square belong to".
+
+The fix is the ground-tile one, adapted to a game where the crate and the
+target it belongs to are THE SAME COLOUR:
+
+  * SOLID in the middle, so the crate's open 3x3 shows the target's colour
+    rather than a hollow ring in it, and
+
+  * a 3x3 LATTICE around it -- the four corners and the four edge midpoints,
+    i.e. rows/cols {0,2,4} -- because those eight cells are exactly where the
+    Player sprite is transparent. Nine of the target's pixels now survive
+    under the player (three on row 0, three on row 4, (1,2) and (2,0), (2,4))
+    and all nine carry the colour. The lattice is also what the renderer's
+    centred sampling reads at cell_px 3, so the mark survives boards far
+    bigger than this game's.
+
+  * NOT solid 5x5, which is what ps:sokoban_sanity uses. There the crate is a
+    different colour from the target; here RedCrate is the same `red` as
+    RedTarget, so a solid tile under a same-colour crate ring would render as
+    one uniform block -- `redcrate + redtarget` would be pixel-identical to
+    `redtarget` alone, i.e. the winning composition would look like an empty
+    goal. The eight holes at (0,1), (0,3), (1,0), (1,4), (3,0), (3,4), (4,1),
+    (4,3) are what the crate's border fills in, and they are the whole
+    difference between "goal" and "goal satisfied".
+
+The shape is invariant under all eight turns and mirrors, which this game's
+frame augmentation needs. Colours are untouched: black (5) is dropped from
+both targets, since it now paints nothing, leaving Red (8) and Blue (9), which
+is what the pieces already are -- the game says a red box belongs on a red
+mark, and the frame should say the same.)
+
+========
+OBJECTS
+========
+
+Background
+LIGHTGREEN GREEN
+11111
+01111
+11101
+11111
+10111
+
+
+RedTarget
+Red
+0.0.0
+.000.
+00000
+.000.
+0.0.0
+
+BlueTarget
+Blue
+0.0.0
+.000.
+00000
+.000.
+0.0.0
+
+Wall
+BROWN DARKBROWN
+00010
+11111
+01000
+11111
+00010
+
+Player
+White Orange White Blue
+.0.0.
+.0.0.
+.000.
+23332
+.3.3.
+
+RedCrate
+Red
+00000
+0...0
+0...0
+0...0
+00000
+
+BlueCrate
+Blue
+00000
+0...0
+0...0
+0...0
+00000
+
+
+
+=======
+LEGEND
+=======
+
+Crate = RedCrate or BlueCrate
+Target = RedTarget or BlueTarget
+
+. = Background
+# = Wall
+P = Player
+R = RedCrate
+B = BlueCrate
+N = BlueTarget
+@ = RedCrate and BlueTarget
+T = RedTarget
+
+
+=======
+SOUNDS
+=======
+
+Crate MOVE 36772507
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Player, Wall, Crate
+
+======
+RULES
+======
+
+[ >  Player | Crate ] -> [  >  Player | > Crate  ]
+
+==============
+WINCONDITIONS
+==============
+
+All RedTarget on RedCrate
+All BlueTarget on BlueCrate
+
+=======
+LEVELS
+=======
+
+message 1 
+(16 - minimal and nice 9/10)
+
+######
+#....#
+#.NRT#
+#p.B##
+##..##
+######
+
+message 2
+(05 - stashaway1)
+
+########
+###.t..#
+###.p#.#
+#..rb..#
+#.#..###
+#..n.###
+########
+
+message 3
+(07 - veryclose single spot 1)
+
+########
+####t..#
+#..#...#
+#.p#..##
+#.@.b.##
+#..#..##
+########
+
+message 4
+(20 - stashaway and many steps turnaround)
+
+######
+##.T##
+##R..#
+##.N.#
+#..B.#
+#P..##
+######
+
+message 5
+(24 - (3) stashaway on correct target)
+
+#######
+#.T..T#
+#.R.#.#
+#N.R..#
+##B.###
+##P####
+#######
+
+message this are my 5 levels
+message now follow: the levels that did not make it
+
+message 09 - stashaway2
+
+#########
+#####.P.#
+#...#.#.#
+#.N.R...#
+#..B.####
+###T.####
+#########
+
+message 11 - stashaway3
+
+#######
+###N..#
+#PR...#
+#...###
+##B.T##
+##...##
+#######
+
+message 18 - stashaway4
+
+#######
+###T..#
+#...BN#
+#..#.##
+##PR..#
+#.....#
+#######
+message 00 - keller
+
+######
+#..###
+#rn###
+#tbp.#
+#....#
+######
+
+message 03 - telefon
+
+########
+###..###
+#....###
+#.#..###
+#..rb###
+###.pnt#
+###..###
+########
+
+message 04 - banane
+
+#######
+##n.p.#
+#tbr..#
+#..####
+#..####
+#######
+#######
+
+message 06 - balls
+
+#########
+##...n.##
+#...##.##
+#.prtb..#
+#...##..#
+#########
+
+message 12 - corridor
+
+######
+#....#
+#.PB.#
+#.R..#
+###N##
+###T##
+
+message 15 - smallTwist
+
+#######
+##....#
+##.B..#
+#.RP#N#
+#..T###
+#######
+
+
+message 17 - gready
+
+..NP#
+.R.B.
+.#.T.
+...#.
+###.#
+
+message 19 - okay
+
+#N..#
+..TB#
+#....
+#P.R.
+#..##
+
+message 21-  (3) there is only one way
+
+....P
+.B.RT
+.T.R#
+##N.#
+
+message 22 - (3) only spot
+
+N#...
+P..#R
+.RB.T
+...T.
+##.##
+
+message 23 - (3) step by step
+
+##.N#
+T.#.#
+...R.
+.BR.T
+#.P..
+
+message 10 - looks hard but is easy + many steps
+
+#######
+#TN...#
+#...R.#
+##.#B.#
+##P..##
+#######
+
+message 14 - looks easy and is easy2
+
+######
+#..###
+#.R.N#
+#T.B.#
+#P..##
+######
+
+message 13 - looks easy and is easy1
+
+#######
+#...###
+#.BR..#
+#NTP..#
+#######
+
+message 08 - looks hard but is easy
+
+####.#
+#P#.#.
+.....#
+.BRT..
+..#..#
+N..##.
+
+
+
+

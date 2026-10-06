@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:l_a_s_e_r",
+  "title": "L.A.S.E.R",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "L.A.S.E.R",
+  "local_dir": "games/ps:l_a_s_e_r"
+}

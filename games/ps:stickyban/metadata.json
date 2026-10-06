@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:stickyban",
+  "title": "Stickyban",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Stickyban",
+  "local_dir": "games/ps:stickyban"
+}

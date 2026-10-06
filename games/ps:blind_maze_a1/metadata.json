@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:blind_maze_a1",
+  "title": "Blind Maze a1",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Blind_Maze_a1",
+  "local_dir": "games/ps:blind_maze_a1"
+}

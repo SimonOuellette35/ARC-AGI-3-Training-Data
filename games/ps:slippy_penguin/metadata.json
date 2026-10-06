@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:slippy_penguin",
+  "title": "Slippy Penguin",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Slippy_Penguin",
+  "local_dir": "games/ps:slippy_penguin"
+}

@@ -1,0 +1,15 @@
+{
+    "game_id": "klotski",
+    "title": "Klotski Block Slide",
+    "tags": ["puzzle", "sliding-blocks", "navigation", "planning"],
+    "level_tags": [
+        ["standard-4x5", "easy"],
+        ["medium-complexity", "medium"],
+        ["high-complexity", "hard"],
+        ["expert-complexity", "expert"],
+        ["5x6-7pieces", "extra-hard"],
+        ["6x7-7pieces", "master"],
+        ["6x7-8pieces", "grandmaster"]
+    ],
+    "baseline_actions": [20, 40, 70, 100, 150, 205, 280]
+}

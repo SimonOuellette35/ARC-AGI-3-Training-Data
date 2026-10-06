@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:crocodiles_love_cookies",
+  "title": "Crocodiles Love Cookies",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Crocodiles_Love_Cookies",
+  "local_dir": "games/ps:crocodiles_love_cookies"
+}

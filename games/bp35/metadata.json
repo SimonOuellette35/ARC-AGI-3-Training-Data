@@ -1,0 +1,21 @@
+{
+  "game_id": "bp35-0a0ad940",
+  "title": "BP35",
+  "default_fps": 20,
+  "tags": [
+    "keyboard_click"
+  ],
+  "baseline_actions": [
+    15,
+    72,
+    36,
+    31,
+    31,
+    48,
+    86,
+    155,
+    163
+  ],
+  "local_dir": "environment_files/bp35/0a0ad940",
+  "date_downloaded": "2026-04-01T18:20:15.302825+00:00"
+}

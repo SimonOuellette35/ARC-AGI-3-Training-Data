@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:dreaming_of_strawberries",
+  "title": "Dreaming of Strawberries",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Dreaming_of_Strawberries",
+  "local_dir": "games/ps:dreaming_of_strawberries"
+}

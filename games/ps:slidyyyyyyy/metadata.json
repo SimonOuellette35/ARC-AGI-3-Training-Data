@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:slidyyyyyyy",
+  "title": "Slidyyyyyyy",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Slidyyyyyyy",
+  "local_dir": "games/ps:slidyyyyyyy"
+}

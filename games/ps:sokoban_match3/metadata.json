@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sokoban_match3",
+  "title": "Sokoban Match3",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "sokoban_match3",
+  "local_dir": "games/ps:sokoban_match3"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:ims445_puzzlescript_game_buoy_deploy",
+  "title": "IMS445 Puzzlescript Game  Buoy Deploy ",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "IMS445_Puzzlescript_Game__Buoy_Deploy_",
+  "local_dir": "games/ps:ims445_puzzlescript_game_buoy_deploy"
+}

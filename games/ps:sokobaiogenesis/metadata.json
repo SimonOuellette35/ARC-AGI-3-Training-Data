@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sokobaiogenesis",
+  "title": "Sokobaiogenesis",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sokobaiogenesis",
+  "local_dir": "games/ps:sokobaiogenesis"
+}

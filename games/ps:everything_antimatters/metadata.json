@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:everything_antimatters",
+  "title": "Everything Antimatters",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Everything_Antimatters",
+  "local_dir": "games/ps:everything_antimatters"
+}

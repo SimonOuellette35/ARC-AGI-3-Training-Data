@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:sticky_cubes",
+  "title": "Sticky Cubes",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Sticky_Cubes",
+  "local_dir": "games/ps:sticky_cubes"
+}

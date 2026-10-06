@@ -1,0 +1,9 @@
+{
+    "game_id": "color_sorter",
+    "title": "Color Sorter",
+    "description": "One or two fixed axes split the board; ride a cursor along the axes and press ACTION5 to swap the coloured shape tokens straddling an axis until every region is a single colour.",
+    "default_fps": 6,
+    "baseline_actions": [10, 14, 14, 26, 40, 28],
+    "tags": ["static", "puzzle", "symmetry", "sorting", "64-grid"],
+    "local_dir": "games/color_sorter"
+}

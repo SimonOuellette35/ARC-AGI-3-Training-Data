@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:the_saga_of_the_candy_scroll",
+  "title": "The Saga of the Candy Scroll",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "The_Saga_of_the_Candy_Scroll",
+  "local_dir": "games/ps:the_saga_of_the_candy_scroll"
+}

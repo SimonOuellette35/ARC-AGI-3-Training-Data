@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:spiders_hollow",
+  "title": "Spider's Hollow",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Spider's_Hollow",
+  "local_dir": "games/ps:spiders_hollow"
+}

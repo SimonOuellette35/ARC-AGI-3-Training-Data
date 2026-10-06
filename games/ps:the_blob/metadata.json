@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:the_blob",
+  "title": "The Blob",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "The_Blob",
+  "local_dir": "games/ps:the_blob"
+}

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:coin_dropper",
+  "title": "Coin Dropper",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Coin_Dropper",
+  "local_dir": "games/ps:coin_dropper"
+}

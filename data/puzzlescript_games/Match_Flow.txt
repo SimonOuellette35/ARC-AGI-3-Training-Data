@@ -1,0 +1,420 @@
+title Match Flow
+author edderiofer
+homepage http://edderiofer.blogspot.com
+run_rules_on_level_start
+background_color #000
+again_interval 0
+key_repeat_interval 0.15
+noaction
+
+========
+OBJECTS
+========
+
+background
+grey
+
+square
+darkgrey lightred
+00000
+00000
+00100
+00000
+00000
+
+block
+darkgrey #303030
+00000
+00100
+01110
+00100
+00000
+
+connectedl
+lightblue
+.....
+.....
+000..
+.....
+.....
+
+connectedr
+lightblue
+.....
+.....
+..000
+.....
+.....
+
+connectedu
+lightblue
+..0..
+..0..
+..0..
+.....
+.....
+
+connectedd
+lightblue
+.....
+.....
+..0..
+..0..
+..0..
+
+(player was a solid fill. The switch pad sits BELOW the piece layer -- unlike
+ the deactivator, which sits above it and draws over a tower fine -- so a solid
+ player standing on the pad erased the only thing the last level is about. The
+ corners are transparent so the pad's own corners always show through.)
+player
+pink
+.000.
+00000
+00000
+00000
+.000.
+
+vwall
+black
+
+(iwall was `transparent`. It is a wall in every respect -- it shares the
+ collision layer with vwall and no rule tells them apart -- but it was drawn as
+ nothing at all, so the cage around the player in "Oh no, I'm trapped!" and its
+ epilogue was invisible. Drawn as vwall is, because that is what it is.)
+iwall
+black
+
+winning
+transparent
+
+endpointcounter
+transparent
+
+connected
+transparent
+
+(switch was `transparent`. It is the target of the whole last level -- push the
+ dosquare onto it -- and it rendered as bare floor, so the goal was unobservable.
+ Drawn as a green pad outline; it sits under the piece layer, so a square parked
+ on it hides it, which is exactly the frame on which the game is won.)
+switch
+green
+00000
+0...0
+0...0
+0...0
+00000
+
+
+fsquare
+black lightred
+00000
+00000
+00100
+00000
+00000
+
+deactivator
+red
+.....
+.0.0.
+..0..
+.0.0.
+.....
+
+(overload was a single `red` centre pixel -- drawn on top of a square whose own
+ centre pixel is `lightred`, and this palette maps red and lightred to the same
+ index, so the "this tower is branching" marker repainted the pixel that was
+ already there and was invisible. Drawn as four corner pips instead, which no
+ other object here uses; the deactivator's X is the inner diagonal.)
+overload
+red
+0...0
+.....
+.....
+.....
+0...0
+
+(ksquare behaves EXACTLY like fsquare -- neither is in `msquare`, so neither can
+ be pushed, and both are in `squares` -- but it shipped with fsquare's mechanics
+ and square's picture, i.e. it looked pushable and was not. Drawn as fsquare.)
+ksquare
+black lightred
+00000
+00000
+00100
+00000
+00000
+
+
+
+(dosquare is a pushable square that also REPLACES the win condition: while one is
+ on the board the only way to win is to park it on a switch. It shipped as a
+ byte-identical picture of a plain square. Its core is green -- the switch's own
+ colour, so the piece and its pad read as a pair -- and, like the player, its
+ corners are transparent so the pad shows through the frame it is standing on.)
+dosquare
+darkgrey green
+.000.
+00000
+00100
+00000
+.000.
+
+
+=======
+LEGEND
+=======
+
+con = connectedu or connectedl or connectedr or connectedd or connected or overload
+squares = square or fsquare or ksquare or dosquare
+msquare = square or block or dosquare
+wall = iwall or vwall
+q = player
+s = square
+k = ksquare
+. = background
+# = vwall
+x = deactivator
+@ = square and deactivator
+f = fsquare
+b = block
+i = switch
+j = dosquare
+% = iwall
+
+
+
+=======
+SOUNDS
+=======
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+switch
+player, wall, msquare, fsquare, ksquare
+connectedl
+connectedr
+connectedu
+connectedd
+overload
+deactivator
+winning, endpointcounter, connected
+
+======
+RULES
+======
+
+(Move blocks around)
+[> player|msquare] -> [> player | > msquare]
+
+(Setup for winning checks)
+[player] -> [player winning]
+[con] -> []
+
+(Checks to make sure there aren't any desquares)
+
+late [winning][square deactivator] -> [][square deactivator]
+
+(Checks to make sure that all squares form a single connected mass)
+late random [squares no deactivator] -> [squares connected]
+(The flood below is wrapped in startloop/endloop. That is a no-op in real
+ PuzzleScript -- a rule is re-applied until it stops matching, so the mark
+ reaches the whole component in one turn -- but PSEngine._execute_late_single
+ iterates each of the rule's four expanded DIRECTIONS to a fixpoint and never
+ re-runs the direction LIST, so an unlooped flood only propagates as far as one
+ up/down/left/right sweep carries it. Without this, a winding connected mass
+ reads as DISCONNECTED -- the shipped ring in "Oh no, I'm trapped!" is exactly
+ such a mass, so that level and its epilogue twin could not be won at all.
+ In general an unlooped flood is also orientation-dependent, since the sweep
+ order is fixed in engine coordinates; measured on these boards it is not
+ -- see generate_match_flow_training.py --symmetry.)
+startloop
+late [squares connected|squares no connected no deactivator] -> [squares connected|squares connected]
+endloop
+late [winning][squares no connected] -> [][squares]
+
+(Renders connection)
+late up [squares no deactivator|squares no deactivator] -> [squares connectedu|squares connectedd]
+late right [squares no deactivator|squares no deactivator] -> [squares connectedr|squares connectedl]
+
+(Renders overloading)
+late [connectedu connectedr connectedl] -> [connectedu connectedr connectedl overload]
+late [connectedu connectedr connectedd] -> [connectedu connectedr connectedd overload]
+late [connectedu connectedd connectedl] -> [connectedu connectedd connectedl overload]
+late [connectedd connectedr connectedl] -> [connectedd connectedr connectedl overload]
+
+(Unrenders deactivation)
+late [square deactivator con] -> [square deactivator no con]
+
+(Checks to make sure there's no overloading)
+late [winning][overload] -> [][overload]
+
+(Last level check)
+late [winning][dosquare] -> [][dosquare]
+late [dosquare i] -> win
+
+(Winning check)
+late [winning] -> win
+
+==============
+WINCONDITIONS
+==============
+
+=======
+LEVELS
+=======
+
+MESSAGE [With great thanks to Jack Lance, and no apologies to Ziad Antar.]
+
+MESSAGE I was hired by some researchers.
+
+#...#
+fs..f
+#.s.#
+#..s#
+#.q.#
+
+MESSAGE I have to connect up all their giant electronics towers.
+
+##f###
+#..s..
+f.....
+#ss...
+#...q.
+#.....
+
+MESSAGE Towers can only supply so much energy. I can't leave any of them overloaded, so no branching.
+
+##f###
+#..s..
+f.s...
+#ssss.
+#.s.q.
+#.....
+
+MESSAGE Once I'm done with this place, it's back home I go.
+
+#f###f#
+..s.s..
+.f.s.f.
+..s.s..
+...q...
+
+MESSAGE Why the hell are these broken towers in the way?
+
+f.f
+...
+sss
+.b.
+.q.
+
+MESSAGE They should have been thrown out long ago.
+
+f.f
+...
+bbb
+.s.
+.q.
+
+MESSAGE Ugh, interference from the floor above.
+
+#...#
+#...#
+f.x.f
+#sxs#
+#.s.#
+#s.s#
+#.q.#
+
+MESSAGE What sort of thing would generate so much interference, but only in one spot?
+
+.......
+..s.s..
+.f.f.f.
+.xs.s..
+.f.f.f.
+..s.sx.
+.f.f.f.
+..s.s..
+...q...
+
+MESSAGE Too many towers! This place must be run by incompetent nincompoops!
+
+#.....#
+f@xxs.f
+f.@bs.f
+f.xsx.f
+f.sb@.f
+f.sxx@f
+#..q..#
+
+MESSAGE Right, just one more.
+
+.......
+.fffff.
+.f...f.
+.f...f.
+.f.s.f.
+.ff.ff.
+...q...
+
+MESSAGE Oh no, I'm trapped!
+
+.......
+.fffff.
+.f...f.
+.f.%.f.
+.f%q%f.
+.ffkff.
+.......
+
+MESSAGE ---THE END---
+
+MESSAGE ---BONUS LEVEL---
+
+#.....#
+#x@x@x#
+f.....f
+fs.sxsf
+f.sss.f
+fsxs.sf
+f.....f
+#x@x@x#
+#..q..#
+
+MESSAGE [If you're reading this, either you solved that last level, or you're looking at the game in the editor.]
+
+MESSAGE [If it's the former, great! If it's the latter, go back and solve it, you cheat.]
+
+MESSAGE ---EPILOGUE---
+
+MESSAGE Zzz... Blagh, these towers have invaded my dreams!
+
+MESSAGE And I'm still stuck in here.
+
+.......
+.fffff.
+.f...f.
+.f.%.f.
+.f%q%f.
+.ffkff.
+.......
+.......
+
+MESSAGE Oh wait, I can just push the tower out.
+
+.......
+.fffff.
+.f...f.
+.f...f.
+.f.q.f.
+.ffjff.
+.......
+...i...
+
+MESSAGE ---THE TRUE END---

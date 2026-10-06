@@ -1,0 +1,345 @@
+title Stand aside, everyone! I take large steps!
+author ncrecc
+homepage www.puzzlescript.net
+
+(ARC-AGI-3 changes, 2026-08-18. Two sprites and the LEVELS section. The
+OBJECTS' roles, the LEGEND, the COLLISIONLAYERS, every RULE and both WIN
+CONDITIONS are untouched, and solvers/generate_large_steps_training.py --verify
+is the proof that nothing mechanical moved: a native model of the rules is
+re-seated onto this interpreter and pressed in all five directions from every
+board these levels can reach, whole grid and win flag compared after each one.
+
+1. THE SHIPPED LEVEL COULD NOT BE WON, AND THE REASON IS PARITY. It is kept
+   below as level 7, verbatim except for ONE cell -- the player's start moves
+   from (1,1), the top of the left corridor, to (8,2). Nothing else about that
+   board is different: the walls, both crates, both targets and the
+   VictoryStand are where ncrecc drew them.
+
+   The proof is exhaustive, not an argument: forward-BFS the shipped board and
+   it has 38378 reachable states, 191890 of whose presses were replayed through
+   this interpreter with zero disagreements, and NOT ONE of them has both
+   targets covered -- never mind the player also standing on the stand. The
+   mechanism is that a press normally moves the player TWO cells, so its row
+   and column parities are conserved; the only free way to break one is
+   `[> Player||Wall] -> [|Player|Wall]`, the short step taken when the cell two
+   ahead is a wall. Every wall on that board sits on an EVEN row or an EVEN
+   column, so every short step it offers runs even -> odd. The player started
+   at (1,1), odd/odd; the VictoryStand is at (6,2), even/even. The only other
+   way to break parity is to shove a crate (a push moves the player one cell),
+   and the field says every such shove available there strands a crate where no
+   later push can recover it. Moving the start is the ONLY single-cell repair
+   that exists: `--repair` in that generator re-derives the claim by testing
+   every relocation of the player, of each crate, of each target and of the
+   stand, plus every one-cell wall edit, over the whole board.
+
+2. THE WIN FRAME WAS INVISIBLE, and so was every target the player stood on.
+   Player is opaque across rows/cols 1-3 -- exactly the window VictoryStand's
+   yellow plus and Target's 3x3 block were drawn in -- so "player on the
+   VictoryStand", the frame this game's win condition is about, rendered
+   PIXEL-IDENTICAL to the player standing on bare floor. Both are framed
+   squares now: painted out to the sprite border, which is where the Player is
+   transparent, and solid across the middle, which is where the Crate's ring is
+   open. Target also moves off `#336`, because that quantises to ARC 13 -- the
+   same index as the Wall's DARKBROWN, so the goal was drawn in the wall's own
+   colour. It is Blue/LightBlue now and the stand Yellow/Green; the two-tone
+   frame is what keeps two adjacent goal squares from merging into one bar.
+   `--audit` is the check, and it FAILS on the unpatched file.
+
+3. SIXTEEN LEVELS WERE AUTHORED around the repaired original, ordered by expert
+   plan length, 2 to 44 presses. One board is not a corpus. Every one is proved
+   winnable AND proved shortest by the exact distance field in that generator,
+   and every plan is replayed through this interpreter to certify it. The first
+   six are one rule each: the gap push, the rock leap, the two-cell push, the
+   two-cell step, the short step against a wall, and the cut-short push. A ROCK
+   -- which the shipped file defines and never places -- is worth its own level
+   because it is the one Obstacle that is leapt OVER where a crate would be
+   shoved.)
+
+========
+OBJECTS
+========
+
+Background
+Black #333
+00000
+00000
+00100
+00000
+00000
+
+
+Target
+Blue LightBlue
+11111
+10001
+10001
+10001
+11111
+
+Wall
+BROWN DARKBROWN
+00010
+11111
+01000
+11111
+00010
+
+Player
+Orange White
+.111.
+.000.
+11111
+.111.
+.1.1.
+
+Crate
+Orange
+00000
+0...0
+0...0
+0...0
+00000
+
+Rock
+Gray
+00000
+0...0
+0...0
+0...0
+00000
+
+VictoryStand
+Yellow Green
+11111
+10001
+10001
+10001
+11111
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+* = Crate
+% = Rock
+@ = Crate and Target
+O = Target
++ = VictoryStand
+
+Obstacle = Wall or Crate or Rock
+
+=======
+SOUNDS
+=======
+
+Crate MOVE 36772507
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target, VictoryStand
+Player, Wall, Crate, Rock
+
+======
+RULES
+======
+
+(collide and stop moving)
+
+[> Player|Wall] -> [Player|Wall]
+[> Player|Obstacle|Obstacle] -> [Player|Obstacle|Obstacle]
+[> Player||Wall] -> [|Player|Wall]
+[> Player||Obstacle|Obstacle] -> [|Player|Obstacle|Obstacle]
+
+(crate push cut short)
+[> Player|Crate||Obstacle] -> [|Player|Crate|Obstacle]
+
+(crate push freely)
+[> Player||Crate|] -> [||Player|Crate]
+[> Player|Crate||] -> [||Player|Crate]
+
+(move freely)
+[> Player||] -> [||Player]
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Crate
+All Player on VictoryStand
+
+=======
+LEVELS
+=======
+
+(level 0 -- the gap push: a crate TWO cells ahead is shoved one cell, and you
+land where it stood. Two presses.)
+########
+#p.*o..#
+#......#
+#..+...#
+########
+
+(level 1 -- the rock leap: a Rock is an Obstacle, but no rule pushes it, so a
+press with a free cell behind it steps straight OVER. A crate there would be
+shoved onto the stand instead and the level would be lost.)
+######
+#p%.+#
+#....#
+######
+
+(level 2 -- the two-cell push: a crate you are standing next to is shoved TWO
+cells and you take its place.)
+########
+#p*.o..#
+#......#
+#..+...#
+########
+
+(level 3 -- every press is two cells.)
+#######
+#p....#
+#.....#
+#....+#
+#######
+
+(level 4 -- the short step: with a wall two cells ahead you move only one, and
+that is the only way to reach a cell an odd number of steps away.)
+######
+#p...#
+#....#
+#...+#
+######
+
+(level 5 -- the cut-short push: a wall behind the landing cell turns the
+two-cell shove into a one-cell one.)
+#######
+#p*o#.#
+#....+#
+#.....#
+#######
+
+(level 6 -- a room.)
+#######
+#.....#
+#...###
+#.+...#
+#...p##
+#.*.o##
+##....#
+#######
+
+(level 7 -- ncrecc's board, one cell changed: the player starts at the bottom
+of the left corridor rather than at the top. See the note at the top of this
+file.)
+#########
+#.#.....#
+#.#.....#
+#.#.o.*.#
+#.#.....#
+#...*...#
+#.+.....#
+#.....o.#
+#.p.#...#
+#...#...#
+#########
+
+(level 8 -- two crates side by side.)
+#######
+#....##
+#..**.#
+#..p..#
+#.o.+.#
+#.##o.#
+#######
+
+(level 9 -- a rock in the wall.)
+##########
+#.+......#
+#.......o#
+##.......#
+##%*######
+##..p...##
+##########
+
+(level 10 -- you start on the stand's doorstep and have to leave it.)
+###########
+#+p%......#
+#.%......##
+#....o..*.#
+#..#####..#
+#.........#
+###########
+
+(level 11 -- two crates, one room.)
+#########
+#..####.#
+#..o....#
+#.*.....#
+#.....*##
+#......##
+#...po+##
+#########
+
+(level 12 -- two crates in a hooked room.)
+########
+#..###.#
+#......#
+#..#####
+#+*.o*.#
+#.....o#
+#...#..#
+#..p#..#
+########
+
+(level 13 -- tight quarters. The rock here CAN be eaten -- land on it from two
+cells away -- and the level is still winnable afterwards; level 1's cannot,
+because the only cell it could be eaten from is the stand, which ends the
+level.)
+########
+#...o..#
+#...p..#
+#......#
+#%*o...#
+#.*+...#
+#.###..#
+########
+
+(level 14 -- split rooms.)
+###########
+#..#..p.###
+#.o#.######
+#..#......#
+#...*....+#
+#.*.....o.#
+###########
+
+(level 15 -- the long way round.)
+##########
+#.....p..#
+#........#
+#..+.....#
+#...#..o.#
+#...#..###
+#..###...#
+#...#....#
+#....*...#
+#....#####
+##########
+
+(level 16 -- the long way round, again.)
+###########
+#.....o...#
+#..####...#
+#.*....p..#
+#.###.....#
+#.........#
+#.........#
+#.....+...#
+#####.....#
+###########

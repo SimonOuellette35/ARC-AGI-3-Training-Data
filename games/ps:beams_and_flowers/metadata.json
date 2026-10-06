@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:beams_and_flowers",
+  "title": "Beams and Flowers",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Beams_and_Flowers",
+  "local_dir": "games/ps:beams_and_flowers"
+}

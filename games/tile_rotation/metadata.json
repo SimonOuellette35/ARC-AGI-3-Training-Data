@@ -1,0 +1,15 @@
+{
+    "game_id": "tr87",
+    "title": "Tile Rotation Matching",
+    "tags": ["rotation", "matching", "pattern", "observation"],
+    "level_tags": [
+        ["3 tiles", "easy"],
+        ["4 tiles", "easy"],
+        ["5 tiles", "medium"],
+        ["6 tiles", "medium"],
+        ["7 tiles", "hard"],
+        ["8 tiles", "hard"],
+        ["10 tiles", "expert"]
+    ],
+    "baseline_actions": [12, 16, 20, 24, 28, 32, 40]
+}

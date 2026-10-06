@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:circuit_breaker",
+  "title": "Circuit Breaker",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Circuit_Breaker",
+  "local_dir": "games/ps:circuit_breaker"
+}

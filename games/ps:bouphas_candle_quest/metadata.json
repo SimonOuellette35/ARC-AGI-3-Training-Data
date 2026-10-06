@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:bouphas_candle_quest",
+  "title": "Boupha's Candle Quest",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Boupha's_Candle_Quest",
+  "local_dir": "games/ps:bouphas_candle_quest"
+}

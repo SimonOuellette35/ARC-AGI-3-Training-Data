@@ -1,0 +1,363 @@
+title L.A.S.E.R.
+author Franklin P. Dyer
+run_rules_on_level_start on
+key_repeat_interval 1
+youtube 4cg1jXGZpjc
+========
+OBJECTS
+========
+
+Background .
+#ecaeae
+
+Wall /
+#380707 #3c1616
+10000
+01000
+00100
+00010
+00001
+
+(ART NOTE -- the sprites and colours below are re-drawn for the ARC renderer;
+the mechanic is untouched. Two things forced it.
+
+ 1. COLOUR. The original palette is monochrome dark red: #380707, #6d1b1b,
+    #742d2d, #511d1d, #850e0e and #a31616 ALL quantize to the same ARC index
+    (13), so wall, player, box, target and laser were one colour and only the
+    5x5 shapes told them apart. Box / target / player now take three distinct
+    ARC indices (orange 12, green 14, blue 9); wall keeps 13 and the beams keep
+    red 8, so danger is still the alarming colour.
+
+ 2. GEOMETRY. Objects that STACK have to stay readable through each other, and
+    the renderer samples sprite rows/cols 0,1,3,4 and DROPS the middle one when
+    a level renders at 4px per cell (level 18, the 11x13 board). Three frames
+    the game is actually about were pixel-identical before:
+      * player standing IN a beam == player standing safe. That is the frame
+        that kills you -- the beams pass THROUGH the player, and ending a turn
+        on one deletes the player on the next press.
+      * box on target == box on floor. That is the WIN frame.
+      * at 4px, the target vanished into the background entirely and both
+        beams vanished with it (they were one-pixel-thick, on the dropped
+        middle row/column).
+    So: the target is drawn at the four CORNERS, which every stackable object
+    now leaves transparent; the beams are two lines each, on rows/cols 1 and 3,
+    which survive the 4px sampling and stick out past the player's 3x3 body;
+    and the box is a hollow ring so the target reads through it.
+ `--audit` in solvers/generate_l_a_s_e_r_training.py re-checks every one of
+ these compositions at all eight cell sizes the twenty levels use.)
+
+Player @
+#1e93ff
+.....
+.000.
+.000.
+.000.
+.....
+
+Box o
+#ff851b
+.000.
+0...0
+0...0
+0...0
+.000.
+
+Target +
+#4fcc30
+0...0
+.....
+..0..
+.....
+0...0
+
+Horizap
+#f26363
+.....
+00000
+.....
+00000
+.....
+
+Vertzap
+#f26363
+.0.0.
+.0.0.
+.0.0.
+.0.0.
+.0.0.
+
+LaserRight >
+#850e0e #f93c31
+.....
+.0001
+.000.
+.0001
+.....
+
+LaserLeft <
+#850e0e #f93c31
+.....
+1000.
+.000.
+1000.
+.....
+
+LaserUp ^
+#850e0e #f93c31
+.1.1.
+.000.
+.000.
+.000.
+.....
+
+LaserDown v
+#850e0e #f93c31
+.....
+.000.
+.000.
+.000.
+.1.1.
+
+=======
+LEGEND
+=======
+
+# = Wall
+& = Box and Target
+
+Laser = LaserUp or LaserDown or LaserLeft or LaserRight
+Obstacle = Wall or Laser or Box
+Zap = Horizap or Vertzap
+
+=======
+SOUNDS
+=======
+
+SFX0 69003702
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Horizap
+Vertzap
+Wall, Player, Laser, Box
+
+======
+RULES
+======
+
+[Player Zap] -> [Zap] SFX0
+
+[Zap] -> []
+
+[> Player|Laser] -> [> Player|> Laser]
+[> Player|Box] -> [> Player|> Box]
+
+LATE RIGHT[LaserRight|No Horizap No Obstacle] -> [LaserRight|Horizap]
+LATE LEFT[LaserLeft|No Horizap No Obstacle] -> [LaserLeft|Horizap]
+LATE UP[LaserUp|No Vertzap No Obstacle] -> [LaserUp|Vertzap]
+LATE DOWN[LaserDown|No Vertzap No Obstacle] -> [LaserDown|Vertzap]
+LATE HORIZONTAL[Horizap|No Horizap No Obstacle] -> [Horizap|Horizap]
+LATE VERTICAL[Vertzap|No Vertzap No Obstacle] -> [Vertzap|Vertzap]
+
+==============
+WINCONDITIONS
+==============
+
+All target on box
+No player on zap
+Some player
+
+=======
+LEVELS
+=======
+
+message Stage 1 of 3: Beginner
+message Push the boxes so that every target is covered up.
+message Don't let the lasers zap you.
+
+/////
+/+../
+/.o./
+/..@/
+/////
+
+//////
+/@..+/
+/.oo//
+/...</
+/.o.//
+/...+/
+//////
+
+///////
+/..v../
+/.o.../
+/...///
+/....+/
+/@..o+/
+///////
+
+///////
+/+./.+/
+/..v../
+/..o../
+/..o../
+/..@../
+///////
+
+///////
+/.+.../
+>.....<
+/...o./
+/.o.o./
+/@..../
+///////
+
+////
+/.@/
+/o</
+/../
+/+./
+////
+
+message Stage 2 of 3: Intermediate
+
+////////
+/+..v../
+/.....+/
+/....../
+/.o...</
+/.oo.../
+/@....+/
+////////
+
+////////
+//.v..//
+/.o././/
+/./..+./
+/...</./
+//./.../
+//@...//
+////////
+
+/////////
+//..+.../
+/>+...../
+/././/.//
+/....oo@/
+///./.../
+///...///
+/////////
+
+//////////
+////....//
+/./.o...//
+/..+oo..</
+/.///.////
+/...+...//
+/@./..^o//
+/////..///
+//////////
+
+/////////
+//../..//
+/>+ooo+./
+/.../..</
+//o.o..//
+//@....//
+/////////
+
+///v////
+//...///
+//.o.+//
+/.ooo../
+/..o.+.<
+//.@.///
+////////
+
+/////v////
+///+..////
+//../+////
+/.@.o..///
+/.o.o..///
+//o/./.../
+//.......<
+///../////
+////^/////
+
+///////v//
+/..//..+./
+/.o......<
+/..///.../
+//@//+.o//
+/../+oo.//
+/>.....///
+/.....////
+//////////
+
+message Stage 3 of 3: Expert
+
+/////////
+/+..v..@/
+/....o../
+/.....o./
+/>.....</
+/....o../
+/......./
+/+..^.../
+/////////
+
+////////
+/.....+/
+/.....</
+//./+../
+//o//o//
+/...@../
+////////
+
+//////
+//.../
+//..</
+//.o./
+/.+++/
+/.oo@/
+///../
+//////
+
+///////////
+////.////./
+///..///.</
+//.o....../
+/...@o./../
+///oo///../
+///../++../
+///.//&////
+//......<//
+//.....////
+///////////
+
+//////////v//
+///........</
+///././/...//
+/......//.../
+/@oooo+.//o./
+/../....//.+/
+//..//^./.o./
+///..////+o+/
+////......../
+/////////..//
+/////////////
+
+//////v//
+///.././/
+/.o...../
+/.+.o/../
+///+@/o//
+/.+.o/../
+/.o...../
+//////../
+/////////

@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:dont_play_on_the_ice",
+  "title": "Don't Play On the Ice",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "Don't_Play_On_the_Ice",
+  "local_dir": "games/ps:dont_play_on_the_ice"
+}

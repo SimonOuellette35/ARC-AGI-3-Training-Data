@@ -1,0 +1,12 @@
+{
+  "game_id": "ps:idols_to_the_burnt_god",
+  "title": "IDOLS TO THE BURNT GOD",
+  "default_fps": 6,
+  "tags": [
+    "puzzlescript",
+    "keyboard"
+  ],
+  "adapter": "puzzlescript",
+  "adapter_game_name": "IDOLS_TO_THE_BURNT_GOD",
+  "local_dir": "games/ps:idols_to_the_burnt_god"
+}

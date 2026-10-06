@@ -1,0 +1,30 @@
+{
+    "game_id": "tw01",
+    "title": "PathDots - \u8def\u5f84\u5fc5\u7ecf\u70b9",
+    "class_name": "Tw01",
+    "tags": [
+        "witness",
+        "path-constraint",
+        "spatial-reasoning"
+    ],
+    "baseline_actions": [
+        11,
+        15,
+        15,
+        17,
+        18,
+        18,
+        20,
+        20,
+        28,
+        30,
+        11,
+        14,
+        18,
+        20,
+        20,
+        20
+    ],
+    "date_downloaded": "2026-03-05T00:00:00Z",
+    "local_dir": "games/tw01"
+}

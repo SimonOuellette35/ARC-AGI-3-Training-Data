@@ -1,0 +1,314 @@
+title Directioban
+author Franklin P. Dyer
+color_palette gameboycolour
+text_color Orange
+
+========
+OBJECTS
+========
+
+Background
+LIGHTGREEN GREEN
+11111
+01111
+11101
+11111
+10111
+
+
+Target
+DarkBlue
+00000
+00000
+00000
+00000
+00000
+
+Wall
+BROWN DARKBROWN
+00010
+11111
+01000
+11111
+00010
+
+Player
+Black Red White Black
+.000.
+.111.
+22222
+.333.
+.3.3.
+
+Crate1
+Purple
+00000
+0.0.0
+0.0.0
+0.0.0
+00000
+
+Crate2
+Purple
+00000
+0...0
+00000
+0...0
+00000
+
+Crate3
+Purple
+00000
+0...0
+0...0
+0...0
+00000
+
+Crate4
+Purple
+00000
+0.0.0
+00000
+0.0.0
+00000
+
+=======
+LEGEND
+=======
+
+Crate = Crate1 or Crate2 or Crate3 or Crate4
+
+. = Background
+x = Wall
+P = Player
+1 = Crate1
+2 = Crate2
+3 = Crate3
+4 = Crate4
+O = Target
+
+
+=======
+SOUNDS
+=======
+
+Crate MOVE 36772507
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target
+Player, Wall, Crate
+
+======
+RULES
+======
+
+[ > Player | Wall ] -> [ Player | Wall ]
+VERTICAL [ > Player | Crate1 ] -> [  > Player | > Crate1  ]
+VERTICAL [ < Player | Crate1 ] -> [  < Player | < Crate1  ]
+VERTICAL [ > Crate | Crate1 ] -> [  > Crate | > Crate1  ]
+HORIZONTAL [ > Player | Crate2 ] -> [  > Player | > Crate2  ]
+HORIZONTAL [ < Player | Crate2 ] -> [  < Player | < Crate2  ]
+HORIZONTAL [ > Crate | Crate2 ] -> [  > Crate | > Crate2  ]
+[ > Player | Crate3 ] -> [  > Player | > Crate3  ]
+[ > Crate | Crate3 ] -> [  > Crate | > Crate3  ]
+[ ^ Player |...| Crate4 ] -> [ ^ Player |...| ^ Crate4  ]
+[ v Player |...| Crate4 ] -> [ v Player |...| v Crate4  ]
+[ ^ Player | Crate4 ] -> [ ^ Player | ^ Crate4  ]
+[ v Player | Crate4 ] -> [ v Player | v Crate4  ]
+[ > Crate | Crate4 ] -> [  > Crate | > Crate4  ]
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Crate
+
+=======
+LEVELS
+=======
+
+
+xxxxxxx
+x.....x
+xo....x
+x.....x
+x..3..x
+x..p..x
+xxxxxxx
+
+xxxxxxx
+x.....x
+x.o.o.x
+x.1.1.x
+x.....x
+x..p..x
+xxxxxxx
+
+xxxxxxx
+x..1..x
+x.....x
+x..o..x
+x.....x
+x..p..x
+xxxxxxx
+
+xxxxxxx
+x.....x
+x.....x
+x2.o.px
+x.....x
+x.....x
+xxxxxxx
+
+xxxxxxx
+x.....x
+xo2...x
+x..p..x
+x...2ox
+x.....x
+xxxxxxx
+
+xxxxxxx
+x..o..x
+x..1..x
+xo2...x
+x.....x
+x..p..x
+xxxxxxx
+
+xxxxxxx
+x..xoox
+x..x.4x
+x..x..x
+x..x4.x
+xp.x..x
+xxxxxxx
+
+xxxxxxx
+xo...4x
+x.x...x
+x....xx
+x.x...x
+xp....x
+xxxxxxx
+
+xxxxxxx
+xo...ox
+x.....x
+x.3.3.x
+x..p..x
+x.....x
+xxxxxxx
+
+xxxxxxx
+xp....x
+x..xo4x
+x...x.x
+x.xo..x
+x.x..4x
+xxxxxxx
+
+xxxxxxx
+x4..oxx
+x.4..ox
+xxxxxxx
+xo.3.px
+xo.3..x
+xxxxxxx
+
+xxxxxxx
+x...xox
+x..3.px
+x..x4.x
+x..x..x
+x...o.x
+xxxxxxx
+
+xxxxxxx
+xx...xx
+xo.p3.x
+x.33..x
+xo..o.x
+x..x..x
+xxxxxxx
+
+xxxxxxx
+xx....x
+x..o3.x
+x.3o3.x
+xo.xx.x
+x...p.x
+xxxxxxx
+
+xxxxxxx
+xx...ox
+xx..1.x
+x.3...x
+x...o.x
+xop.2.x
+xxxxxxx
+
+xxxxxxx
+x.4o.4x
+x.xx..x
+x...oxx
+xp....x
+x..x..x
+xxxxxxx
+
+xxxxxxxxx
+x....o..x
+x4x.o.p.x
+x.x.1...x
+x.......x
+x.xx..xxx
+x.xx.3..x
+x.x...oxx
+xxxxxxxxx
+
+xxxxxxx
+xp.x4.x
+xoo...x
+x...3.x
+x..xx.x
+x.....x
+xxxxxxx
+
+xxxxxxx
+xo2..ox
+x...3.x
+xo..p1x
+x...x.x
+x...x.x
+xxxxxxx
+
+xxxxxxxxx
+xo..4x..x
+x..xx.1.x
+x..x.3.xx
+x......xx
+x...xxo.x
+x.ox....x
+xx.....px
+xxxxxxxxx
+
+xxxxxxx
+xo.ooox
+x3x.x3x
+x..3..x
+x.3p3.x
+x....ox
+xxxxxxx
+
+xxxxxxx
+xo3.pox
+x.o...x
+x1xo33x
+x..1x.x
+xo.2.ox
+xxxxxxx
+
