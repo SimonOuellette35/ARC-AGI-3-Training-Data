@@ -11,8 +11,8 @@
 # file into the interpreter selected by --python (or ARC_PYTHON). Compression
 # needs zstandard in --compress-python (or SYSTEM_PYTHON) too; select the same
 # interpreter for both to use one environment. Compression also requires the
-# project's convert_training_data.py beside master_data_generator.py; that
-# script is not a pip dependency. Use --no-compress if it is unavailable.
+# project's utils/convert_training_data.py and utils/episode_codec.py; these
+# files are not pip dependencies. Use --no-compress if they are unavailable.
 #
 # Non-pip prerequisites: Git, a C++ compiler, Make, CMake 3.x, and Qt5
 # development libraries for the Procgen source build. See:

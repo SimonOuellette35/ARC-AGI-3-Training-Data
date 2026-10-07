@@ -7,11 +7,11 @@ Given a CSV list of games, this resolves each name to its
 game's output and DELETES the uncompressed JSON -- i.e. per game::
 
     <gen python>  solvers/generate_<x>_training.py --episodes N --out data/training_multi_level/<game_id>
-    <sys python3> convert_training_data.py --game <game_id> --root data/training_multi_level --delete
+    <compress python> utils/convert_training_data.py --game <game_id> --root data/training_multi_level --delete
 
-Two interpreters are needed and neither can do both jobs: the generators import
-``arcengine`` (conda env ``ARC-AGI-3``), while ``convert_training_data.py``
-imports ``zstandard`` (system ``python3``). Both are auto-detected and can be
+The generators require ``arcengine``, while ``utils/convert_training_data.py``
+requires ``numpy`` and ``zstandard``. The generator and compression interpreters
+can use the same environment when it has all dependencies. Both are auto-detected and can be
 overridden with ``--python`` / ``--compress-python`` (or ``$ARC_PYTHON`` /
 ``$SYSTEM_PYTHON``). This launcher itself is stdlib-only, so it runs under
 either.
@@ -59,6 +59,7 @@ Notes
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import json
 import os
@@ -77,7 +78,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent
 GEN_DIR = REPO / "solvers"
 DEFAULT_OUT_ROOT = REPO / "data" / "training_multi_level"
-CONVERTER = REPO / "convert_training_data.py"
+CONVERTER = REPO / "utils" / "convert_training_data.py"
 INDEX_CACHE = REPO / ".master_gen_index.json"
 
 #: Where the generators' interpreter usually lives on this machine. Only used
@@ -117,7 +118,7 @@ def default_compress_python() -> str:
 # Resolving a game name -> (generator script, game_id)
 # ---------------------------------------------------------------------------
 # The output directory has to be the generator's own ``game_id`` (that is what
-# the corpus is keyed by, and what ``convert_training_data.py --game`` takes), so
+# the corpus is keyed by, and what ``utils/convert_training_data.py --game`` takes), so
 # the launcher must know it before the generator runs. Most generators declare it
 # as a literal; the minigrid/gymgw families DERIVE it from ``env_id`` at class
 # definition time, which no regex can see -- those are resolved by importing the
@@ -125,6 +126,11 @@ def default_compress_python() -> str:
 _RE_GAME_ID = re.compile(r'\bgame_id\s*[:=]\s*["\']([\w.:/\-]+)["\']')
 _RE_GAME_ID_CONST = re.compile(r'^GAME_ID\s*=\s*["\']([\w.:/\-]+)["\']', re.M)
 _RE_ENV_ID = re.compile(r'^\s*env_id\s*(?::\s*str\s*)?=\s*["\']([^"\']+)["\']', re.M)
+# Match complete Python string literals so titles containing apostrophes,
+# punctuation, or escaped quotes keep their full spelling.
+_RE_GAME_ALIAS = re.compile(
+    r'''^\s*(?:GAME_NAME|game_name|GAME_MODULE|GAME_MODULE_ID|game_module_id)\s*(?::\s*str\s*)?=\s*'''
+    r'''("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')''', re.M)
 #: The ``sys.exit(XxxSolver.main(SPEC))`` line -- names the object whose
 #: ``game_id`` the generator actually writes under.
 _RE_MAIN_CALL = re.compile(r'(?:sys\.exit|raise\s+SystemExit)\(\s*([\w.]+)\s*\(([^)]*)\)')
@@ -169,6 +175,9 @@ def _normalize(name: str) -> str:
     ``gymgridworlds_fourrooms_8x7`` / ``gymgw_fourrooms8x7`` /
     ``puzzlescript_drop_maze`` / ``drop_maze`` all have to find each other."""
     s = name.strip().lower()
+    # Accept client names that accidentally repeat the PuzzleScript namespace.
+    while s.startswith("ps:"):
+        s = s[len("ps:"):]
     for pre in ("puzzlescript_", "ps_", "ps:", "gymgridworlds_", "gymgw_", "gymgw:"):
         if s.startswith(pre):
             s = s[len(pre):]
@@ -200,6 +209,16 @@ class GeneratorIndex:
             self._alias(s.stem, s)
             self._alias(stem, s)
             src = s.read_text(errors="replace")
+            # Client IDs and source titles can differ substantially from a
+            # generator's shorter filename/corpus ID. Register declared aliases
+            # without importing the generator or guessing by substring.
+            for literal in _RE_GAME_ALIAS.findall(src):
+                try:
+                    alias = ast.literal_eval(literal)
+                except (SyntaxError, ValueError):
+                    continue
+                if alias:
+                    self._alias(alias, s)
             # Register the actual environment ID, including its version. Partial
             # MiniGrid generators share env_id with full-observation generators,
             # so only register their prefixed client name.
@@ -616,11 +635,11 @@ def build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--keep-json", action="store_true",
                    help="Compress but KEEP the .json originals (no --delete).")
     p.add_argument("--compress-jobs", type=int, default=1,
-                   help="Worker processes inside convert_training_data.py, per game.")
+                   help="Worker processes inside utils/convert_training_data.py, per game.")
     p.add_argument("--python", default=default_gen_python(),
                    help="Interpreter for the generators (needs arcengine).")
     p.add_argument("--compress-python", default=default_compress_python(),
-                   help="Interpreter for convert_training_data.py (needs zstandard).")
+                   help="Interpreter for utils/convert_training_data.py (needs numpy and zstandard).")
     p.add_argument("--log-dir", type=Path, default=None,
                    help="Where per-game logs go (default logs/master_data_generator/<ts>).")
     p.add_argument("--dry-run", action="store_true",

@@ -192,7 +192,7 @@ Usage
 -----
     python solvers/generate_savior_training.py --episodes 1600
         # -> data/training_multi_level/puzzlescript_savior, then
-        # python3 convert_training_data.py --game puzzlescript_savior --delete
+        # python3 utils/convert_training_data.py --game puzzlescript_savior --delete
 
     python solvers/generate_savior_training.py --plans     # per-level report
     python solvers/generate_savior_training.py --verify    # labels + replay

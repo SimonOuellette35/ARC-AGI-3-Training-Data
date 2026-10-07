@@ -133,7 +133,11 @@ of the next. The format does not include per-step rewards, terminal flags, or
 per-pixel labels; the generators save successful demonstrations.
 
 These details describe the solvers' JSON output. The master launcher also
-attempts conversion to `.ep.zst` files through `convert_training_data.py`, deleting
+attempts conversion to `.ep.zst` files through `utils/convert_training_data.py`, deleting
 the original JSON after successful verification by default. Use `--keep-json`
 to retain the JSON alongside compressed output, or `--no-compress` to generate
 JSON only. The conversion script must be present to use compression.
+
+To compress existing JSON episodes without regenerating them, run
+`python3 utils/convert_training_data.py --jobs 6` from the repository root.
+This keeps the JSON originals; add `--delete` to remove them after verification.
