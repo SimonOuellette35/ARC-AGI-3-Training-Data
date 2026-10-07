@@ -1,0 +1,38 @@
+"""Generate Phase-1 training data for Gym-Gridworlds/Empty-Distract-6x6-v0.
+
+Walk to the green goal. A dark-green DISTRACTOR tile also sits in the room:
+standing on it and pressing stay ends the episode for a tenth of the reward,
+so the expert weights it as a tile to route around rather than a second goal.
+
+All of the solving is in ``common/gymgw.py`` -- one weighted shortest-path
+field over the live tile grid (walls and pits impassable, quicksand ~10
+actions to leave, penalty tiles weighted, arrow tiles reduced to a single
+exit), re-derived every step, which is what makes the epsilon exploration
+prefix and the perturbation bursts recoverable (``supports_recovery = True``).
+One env reset per level, ``levels_per_episode`` levels per episode.
+
+Absolute action set: ACTION1 up, ACTION2 down, ACTION3 left, ACTION4 right (+
+ACTION5 stay where the env has it). The adapter rotates the frame per level
+and inverse-remaps directional input, so the expert plans in grid space and
+converts to the screen-space key to press.
+
+Usage (run from the repo root, with the ARC-AGI-3 conda python):
+    python solvers/generate_gymgw_empty_distract_6x6_training.py --episodes 1000 \
+        --out data/training_multi_level/gymgridworlds_empty_distract_6x6
+"""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from solvers.common.gymgw import GymgwSolver              # noqa: E402
+
+
+class GymgwEmptyDistract6x6Solver(GymgwSolver):
+    env_id = "Gym-Gridworlds/Empty-Distract-6x6-v0"
+
+
+if __name__ == "__main__":
+    sys.exit(GymgwEmptyDistract6x6Solver.main())

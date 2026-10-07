@@ -1,4 +1,5 @@
-# Dependencies for play.py and all game backends in its game list.
+# Dependencies for play.py, master_data_generator.py, and solvers/ (including
+# demo_recorders), plus their game backends.
 # Versions match the existing ARC-AGI-3 environment (Python 3.12).
 #
 # Procgen is built from source on Python 3.12. Its legacy build imports gym3,
@@ -6,13 +7,21 @@
 #   python -m pip install setuptools wheel gym3==0.3.3
 #   python -m pip install --no-build-isolation -r requirements.txt
 #
+# master_data_generator.py itself uses only the standard library. Install this
+# file into the interpreter selected by --python (or ARC_PYTHON). Compression
+# needs zstandard in --compress-python (or SYSTEM_PYTHON) too; select the same
+# interpreter for both to use one environment. Compression also requires the
+# project's convert_training_data.py beside master_data_generator.py; that
+# script is not a pip dependency. Use --no-compress if it is unavailable.
+#
 # Non-pip prerequisites: Git, a C++ compiler, Make, CMake 3.x, and Qt5
 # development libraries for the Procgen source build. See:
 # https://github.com/openai/procgen/blob/master/CONTRIBUTING.md
-# Interactive play also needs a display and Python's tkinter module
+# Interactive play/demo recording also needs a display and Python's tkinter module
 # (Debian/Ubuntu system Python: python3-tk; Conda: conda install tk).
 # Keep game_envs.py, adapters/, utils/, games/, and data/puzzlescript_games/
-# alongside play.py; these project files and game assets are not pip packages.
+# alongside play.py and solvers/; these project files and game assets are not
+# pip packages.
 
 # ARC runtime and player rendering.
 arc-agi==0.9.6
@@ -22,6 +31,12 @@ Pillow==12.1.1
 numpy==1.26.4  # Procgen and gym3 require NumPy < 2.
 scipy==1.17.1
 typing_extensions==4.15.0
+
+# Interactive demonstration recorders in solvers/demo_recorders/.
+pygame==2.6.1
+
+# Training-data compression launched by master_data_generator.py.
+zstandard==0.25.0
 
 # MiniGrid and Gym-Gridworlds; ALE is imported by adapters/__init__.py.
 gymnasium==1.2.3
