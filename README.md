@@ -20,7 +20,7 @@ Augmented/randomized versions of games from the [ARC Prize Foundation's ARC-AGI-
 
 ### Homemade
 
-Custom games implemented for this collection, AI-generated from human-seeded ideas. These include navigation, sorting, and puzzle tasks, with some mechanics inspired by existing games. For example, `tw01`–`tw06` implement puzzle mechanics from [*The Witness* by Thekla](https://www.playstation.com/en-sa/games/the-witness/), and `mc:lamelightsout` is a mouse-controlled remake of Matthew VanDevander's [LameLightsOut](data/puzzlescript_games/LameLightsOut.txt).
+Custom games implemented for this collection, AI-generated from human-seeded ideas. These include navigation, sorting, and puzzle tasks, with some mechanics inspired by existing games.
 
 ![Nine homemade game screenshots in a 3×3 grid](images/homemade/cascade.png)
 
