@@ -4,7 +4,7 @@
 
 This repository collects games from different sources into a common ARC-AGI-3-style framework for training data generation. It contains 429 distinct games, together with solvers and demonstration generators. Each game uses a subset of the ARC-AGI-3 action set and represents observations as a 64×64 matrix, allowing trajectories from different game collections to share a common format.
 
-The collection combines ARC-AGI-3 games, Gym-Gridworlds, MiniGrid, Procgen, community-authored PuzzleScript games, and homemade games. Original game designs and environments are credited to their creators below.
+The collection combines ARC-AGI-3 public demo games (with various data augmentations), Gym-Gridworlds, MiniGrid, Procgen, community-authored PuzzleScript games, and homemade games. Original game designs and environments are credited to their creators below.
 
 Many of these games required adaptations to fit the ARC-AGI-3-style action set and observation format. I carried out this adaptation work to bring them into the common framework for training data generation. This repository also provides augmentation, solvers, and demonstration-generation tooling.
 
