@@ -6,6 +6,50 @@ This repository contains 429 distinct games in the style of ARC-AGI-3 games. Tha
 
 Additionally, most games have an element of randomization/data augmentation builtin. For example, if you run ar25 several times in a row using play.py, you will see different shapes and different starting positions. If desired, determinism can be preserved by specifying the seed number.
 
+The examples below show nine games from each category, except Procgen, which shows three levels from each of its three supported games.
+
+### ARC-native
+
+ARC-AGI-3 games, including `ar25`, `ls20`, and `sb26`. Augmented/randomized versions of the original games.
+
+![Nine ARC-AGI-3 game screenshots in a 3×3 grid](images/arc-native/cascade.png)
+
+### Homemade
+
+Native non-ARC games, "homemade", custom games AI-generated from human-seeded ideas.
+
+![Nine homemade game screenshots in a 3×3 grid](images/homemade/cascade.png)
+
+### Gym-Gridworlds
+
+Gridworld navigation and puzzle environments, rendered through the Gym-Gridworlds adapter.
+
+![Nine Gym-Gridworlds game screenshots in a 3×3 grid](images/gym-gridworld/cascade.png)
+
+### MiniGrid
+
+MiniGrid environments with the full map visible.
+
+![Nine MiniGrid game screenshots with full observations in a 3×3 grid](images/minigrid/cascade.png)
+
+### MiniGrid partial observations
+
+MiniGrid environments showing only the agent's local field of view.
+
+![Nine MiniGrid game screenshots with partial observations in a 3×3 grid](images/minigrid-partial/cascade.png)
+
+### Procgen
+
+Levels 1, 3, and 5 of `heist`, `maze`, and `miner`, with one game per row.
+
+![Three levels each of Procgen heist, maze, and miner in a 3×3 grid](images/procgen/cascade.png)
+
+### PuzzleScript
+
+PuzzleScript games rendered through the adapter, including `a_knights_tour`, `circuit_breaker`, and `vrps`.
+
+![Nine PuzzleScript game screenshots in a 3×3 grid](images/puzzlescript/cascade.png)
+
 ## Playing the games
 
 To list the available games:
