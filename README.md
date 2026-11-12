@@ -429,3 +429,7 @@ PuzzleScript definitions beyond these registered games.
 | [Zombie Rescue](data/puzzlescript_games/Zombie_Rescue.txt) | Matt Slaybaugh |
 
 </details>
+
+## Independent model-play evaluations
+
+[Terra evaluation, 12 November 2026](evaluations/2026-11-12-terra/README.md): per-game outcomes, settings, source hashes and recorded replays for the homemade games. Evaluation evidence is separate from generated training demonstrations.
